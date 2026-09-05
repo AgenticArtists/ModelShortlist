@@ -1,0 +1,13 @@
+{
+  "name": "openanalysis",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check api/models.js && node --check api/health.js && node --check lib/artificial-analysis.js && node --check lib/openrouter.js && node --check lib/match.js && node --check lib/catalog.js && node --check lib/http.js"
+  }
+}
