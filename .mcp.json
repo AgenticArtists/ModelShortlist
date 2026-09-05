@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "openanalysis": {
+      "command": "node",
+      "args": ["mcp/server.js"]
+    }
+  }
+}
