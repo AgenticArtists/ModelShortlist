@@ -1,6 +1,6 @@
 {
   "name": "openanalysis",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "engines": {
@@ -8,6 +8,11 @@
   },
   "scripts": {
     "test": "node --test",
-    "check": "node --check api/models.js && node --check api/health.js && node --check lib/artificial-analysis.js && node --check lib/openrouter.js && node --check lib/match.js && node --check lib/catalog.js && node --check lib/http.js"
+    "check": "node --check api/models.js && node --check api/health.js && node --check lib/artificial-analysis.js && node --check lib/openrouter.js && node --check lib/match.js && node --check lib/catalog.js && node --check lib/http.js && node --check mcp/server.js",
+    "mcp": "node mcp/server.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/server": "2.0.0",
+    "zod": "4.5.4"
   }
 }
