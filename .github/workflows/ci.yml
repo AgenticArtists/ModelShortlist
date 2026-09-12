@@ -31,3 +31,6 @@ jobs:
 
       - name: Check syntax
         run: npm run check
+
+      - name: Validate npm package
+        run: npm run pack:check
