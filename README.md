@@ -1,18 +1,20 @@
-# OpenAnalysis
+# ModelShortlist
 
-[![CI](https://github.com/AgenticArtists/OpenAnalysis/actions/workflows/ci.yml/badge.svg)](https://github.com/AgenticArtists/OpenAnalysis/actions/workflows/ci.yml)
+[![CI](https://github.com/AgenticArtists/ModelShortlist/actions/workflows/ci.yml/badge.svg)](https://github.com/AgenticArtists/ModelShortlist/actions/workflows/ci.yml)
 
 **Stop guessing which AI model to use.**
 
-OpenAnalysis is a local, bring-your-own-key MCP server that gives your AI assistant current model-selection context from **OpenRouter Zero Data Retention endpoints** and **Artificial Analysis benchmarks**.
+ModelShortlist is a local, bring-your-own-key MCP server that gives your AI assistant current model-selection context from **OpenRouter Zero Data Retention endpoints** and **Artificial Analysis benchmarks**.
 
 No hosted service. No account. No deployment. Your API keys are supplied locally and used only to call the upstream services directly.
 
-## Why OpenAnalysis
+Website: [modelshortlist.com](https://modelshortlist.com)
+
+## Why ModelShortlist
 
 Model choice is no longer just "which model has the highest benchmark score?" The right answer depends on the workload and the endpoint you can actually use.
 
-OpenAnalysis helps your chat agent reason over:
+ModelShortlist helps your chat agent reason over:
 
 - current OpenRouter ZDR endpoint availability
 - tool/function-calling support
@@ -26,7 +28,7 @@ OpenAnalysis helps your chat agent reason over:
 
 Hard constraints are checked against a **single real ZDR endpoint**. A model does not qualify for tool use plus 100k context unless at least one current ZDR endpoint satisfies both.
 
-The chat model makes the final recommendation based on your use case. OpenAnalysis deliberately does not impose one universal ranking formula.
+The chat model makes the final recommendation based on your use case. ModelShortlist deliberately does not impose one universal ranking formula.
 
 ## Quick start
 
@@ -37,22 +39,22 @@ Requirements:
 - an OpenRouter API key
 - an MCP-capable chat client such as Hermes Desktop, Claude Code, Cursor, or VS Code/Copilot
 
-OpenAnalysis is published on npm as:
+The npm package is:
 
 ```text
-@agentic.artists/openanalysis
+@agentic.artists/modelshortlist
 ```
 
 ### Fastest install: run from npm
 
-Most stdio MCP hosts can launch OpenAnalysis directly with `npx`.
+Most stdio MCP hosts can launch ModelShortlist directly with `npx`.
 
 ```json
 {
   "mcpServers": {
-    "openanalysis": {
+    "modelshortlist": {
       "command": "npx",
-      "args": ["-y", "@agentic.artists/openanalysis"],
+      "args": ["-y", "@agentic.artists/modelshortlist"],
       "env": {
         "ARTIFICIAL_ANALYSIS_API_KEY": "YOUR_KEY",
         "OPENROUTER_API_KEY": "YOUR_KEY"
@@ -71,8 +73,8 @@ This option keeps the API keys in a local gitignored file and generates client c
 #### Windows
 
 ```powershell
-git clone https://github.com/AgenticArtists/OpenAnalysis.git
-cd OpenAnalysis
+git clone https://github.com/AgenticArtists/ModelShortlist.git
+cd ModelShortlist
 npm.cmd install
 npm.cmd run setup
 ```
@@ -80,8 +82,8 @@ npm.cmd run setup
 #### macOS / Linux
 
 ```bash
-git clone https://github.com/AgenticArtists/OpenAnalysis.git
-cd OpenAnalysis
+git clone https://github.com/AgenticArtists/ModelShortlist.git
+cd ModelShortlist
 npm install
 npm run setup
 ```
@@ -103,7 +105,7 @@ In Hermes Desktop, open **Skills & Tools → MCP**, import the JSON, and save it
 
 - `recommend_models`
 - `compare_models`
-- `openanalysis_status`
+- `modelshortlist_status`
 
 Then start a normal chat and ask something like:
 
@@ -140,25 +142,25 @@ It returns current candidates that are both ZDR-eligible and confidently matched
 
 Returns current Artificial Analysis benchmark information and OpenRouter ZDR endpoint information for a specific shortlist of OpenRouter model IDs.
 
-### `openanalysis_status`
+### `modelshortlist_status`
 
 Shows match coverage, ambiguous/unmatched records, cache state, and Artificial Analysis rate-limit metadata.
 
 ## How matching works
 
-The Artificial Analysis Free API does not expose an OpenRouter model ID. OpenAnalysis therefore reconciles models conservatively:
+The Artificial Analysis Free API does not expose an OpenRouter model ID. ModelShortlist therefore reconciles models conservatively:
 
 1. manually verified aliases
 2. exact normalized name matches
 3. otherwise the model remains unmatched
 
-OpenAnalysis does **not** fuzzy-match uncertain model variants. This is intentional: a missing candidate is better than attaching benchmark data to the wrong model.
+ModelShortlist does **not** fuzzy-match uncertain model variants. This is intentional: a missing candidate is better than attaching benchmark data to the wrong model.
 
 Verified aliases live in [`config/aliases.json`](./config/aliases.json).
 
 ## ZDR is enforced at selection time, not inference time
 
-OpenAnalysis identifies models with current ZDR-capable OpenRouter endpoints. If you later call a selected model through OpenRouter, enforce ZDR again in the actual inference request:
+ModelShortlist identifies models with current ZDR-capable OpenRouter endpoints. If you later call a selected model through OpenRouter, enforce ZDR again in the actual inference request:
 
 ```json
 {
@@ -171,14 +173,14 @@ OpenAnalysis identifies models with current ZDR-capable OpenRouter endpoints. If
 
 ## Data sources and attribution
 
-OpenAnalysis uses data accessed with **your own API credentials**.
+ModelShortlist uses data accessed with **your own API credentials**.
 
 - Benchmark and model-performance data: [Artificial Analysis](https://artificialanalysis.ai/)
 - ZDR eligibility, providers, pricing, context, supported parameters, latency, throughput, and uptime: [OpenRouter](https://openrouter.ai/)
 
-OpenAnalysis is not affiliated with or endorsed by Artificial Analysis or OpenRouter.
+ModelShortlist is not affiliated with or endorsed by Artificial Analysis or OpenRouter.
 
-The OpenAnalysis source code is licensed under the MIT License. Upstream data and APIs remain subject to their respective terms. In particular, Artificial Analysis API access may have restrictions on external use and redistribution. OpenAnalysis does not bundle or host their dataset; each user accesses upstream data with their own credentials and is responsible for complying with the applicable terms.
+The ModelShortlist source code is licensed under the MIT License. Upstream data and APIs remain subject to their respective terms. In particular, Artificial Analysis API access may have restrictions on external use and redistribution. ModelShortlist does not bundle or host their dataset; each user accesses upstream data with their own credentials and is responsible for complying with the applicable terms.
 
 See [ATTRIBUTION.md](./ATTRIBUTION.md) for more detail.
 
@@ -187,10 +189,10 @@ See [ATTRIBUTION.md](./ATTRIBUTION.md) for more detail.
 - `.env.local` is gitignored for the clone-based setup.
 - API keys are loaded locally by the MCP process.
 - The setup command masks API-key input.
-- OpenAnalysis does not operate a hosted backend.
+- ModelShortlist does not operate a hosted backend.
 - MCP tools are read-only.
 - The server writes protocol traffic to stdout and diagnostic messages to stderr.
-- No telemetry is built into OpenAnalysis.
+- No telemetry is built into ModelShortlist.
 
 If you discover a security issue, see [SECURITY.md](./SECURITY.md).
 
@@ -214,7 +216,7 @@ npm.cmd run mcp
 A healthy server prints:
 
 ```text
-OpenAnalysis MCP server running on stdio
+ModelShortlist MCP server running on stdio
 ```
 
 and waits for an MCP client. Press `Ctrl+C` to stop it.
