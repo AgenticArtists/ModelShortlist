@@ -1,12 +1,12 @@
 {
-  "name": "@agentic.artists/openanalysis",
+  "name": "@agentic.artists/modelshortlist",
   "version": "0.2.1",
-  "description": "A local BYOK MCP server that helps AI assistants choose models using OpenRouter ZDR endpoint data and Artificial Analysis benchmarks.",
+  "description": "A local BYOK MCP server that helps AI assistants shortlist models using OpenRouter ZDR endpoint data and Artificial Analysis benchmarks.",
   "type": "module",
   "license": "MIT",
-  "mcpName": "io.github.AgenticArtists/openanalysis",
+  "mcpName": "io.github.AgenticArtists/modelshortlist",
   "bin": {
-    "openanalysis": "bin/openanalysis.js"
+    "modelshortlist": "bin/modelshortlist.js"
   },
   "files": [
     "bin/",
@@ -22,11 +22,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/AgenticArtists/OpenAnalysis.git"
+    "url": "git+https://github.com/AgenticArtists/ModelShortlist.git"
   },
-  "homepage": "https://github.com/AgenticArtists/OpenAnalysis#readme",
+  "homepage": "https://modelshortlist.com",
   "bugs": {
-    "url": "https://github.com/AgenticArtists/OpenAnalysis/issues"
+    "url": "https://github.com/AgenticArtists/ModelShortlist/issues"
   },
   "keywords": [
     "mcp",
@@ -35,6 +35,7 @@
     "artificial-analysis",
     "llm",
     "model-selection",
+    "model-recommendation",
     "zdr",
     "ai"
   ],
@@ -44,7 +45,7 @@
   "scripts": {
     "setup": "node scripts/setup.js",
     "test": "node --test",
-    "check": "node --check bin/openanalysis.js && node --check lib/artificial-analysis.js && node --check lib/openrouter.js && node --check lib/match.js && node --check lib/catalog.js && node --check lib/http.js && node --check mcp/server.js && node --check scripts/setup.js",
+    "check": "node --check bin/modelshortlist.js && node --check lib/artificial-analysis.js && node --check lib/openrouter.js && node --check lib/match.js && node --check lib/catalog.js && node --check lib/http.js && node --check mcp/server.js && node --check scripts/setup.js",
     "pack:check": "npm pack --dry-run",
     "mcp": "node mcp/server.js"
   },
