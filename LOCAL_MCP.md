@@ -2,26 +2,29 @@
 
 OpenAnalysis runs locally as an MCP server. Nothing needs to be deployed.
 
-Your MCP client launches `mcp/server.js`; OpenAnalysis then fetches current OpenRouter ZDR endpoint data and Artificial Analysis data using your own API keys. The host chat model uses those facts to recommend a model for your workload.
+Your MCP client launches `mcp/server.js`; OpenAnalysis fetches current OpenRouter ZDR endpoint data and Artificial Analysis data using your own API keys. The host chat model uses those facts to recommend a model for your workload.
 
-## One-time setup on Windows
+## Recommended setup
+
+### Windows
 
 ```powershell
 git clone https://github.com/AgenticArtists/OpenAnalysis.git
 cd OpenAnalysis
 npm.cmd install
-Copy-Item .env.local.example .env.local
-notepad .env.local
+npm.cmd run setup
 ```
 
-Put these values in `.env.local`:
+### macOS / Linux
 
-```text
-ARTIFICIAL_ANALYSIS_API_KEY=your_key_here
-OPENROUTER_API_KEY=your_key_here
+```bash
+git clone https://github.com/AgenticArtists/OpenAnalysis.git
+cd OpenAnalysis
+npm install
+npm run setup
 ```
 
-`.env.local` is gitignored. Do not commit it.
+The setup command masks API-key input, writes the keys only to the gitignored `.env.local`, and prints ready-to-paste MCP JSON for Hermes Desktop / Cursor and VS Code / Copilot.
 
 If PowerShell blocks `npm.ps1`, use `npm.cmd`; you do not need to change your execution policy.
 
@@ -34,24 +37,11 @@ npm.cmd run check
 
 ## Hermes Desktop
 
-Open **Skills & Tools → MCP** in Hermes Desktop and import:
+Run `npm.cmd run setup` and copy the **Hermes Desktop / Cursor MCP config** that it prints.
 
-```json
-{
-  "mcpServers": {
-    "openanalysis": {
-      "command": "node",
-      "args": [
-        "C:/FULL/PATH/TO/OpenAnalysis/mcp/server.js"
-      ]
-    }
-  }
-}
-```
+In Hermes Desktop, open **Skills & Tools → MCP**, import that JSON, and save it.
 
-Use the actual path on your machine. On Windows, forward slashes work well inside the JSON string.
-
-After saving, Hermes should discover:
+Hermes should discover:
 
 - `recommend_models`
 - `compare_models`
@@ -79,7 +69,7 @@ claude mcp add --transport stdio --scope user openanalysis -- node "$PWD\mcp\ser
 
 ## Cursor
 
-Create or update `.cursor/mcp.json`:
+The setup command prints a Cursor-compatible configuration. Or create/update `.cursor/mcp.json` manually:
 
 ```json
 {
@@ -94,7 +84,7 @@ Create or update `.cursor/mcp.json`:
 
 ## VS Code + GitHub Copilot Chat
 
-Create or update `.vscode/mcp.json`:
+The setup command also prints the VS Code format. Or create/update `.vscode/mcp.json` manually:
 
 ```json
 {
@@ -122,6 +112,24 @@ Most local MCP hosts need only:
 ```
 
 The server loads `.env.local` from the OpenAnalysis repository root automatically.
+
+## Manual credential setup
+
+If you prefer not to run the interactive setup command:
+
+```powershell
+Copy-Item .env.local.example .env.local
+notepad .env.local
+```
+
+Put these values in `.env.local`:
+
+```text
+ARTIFICIAL_ANALYSIS_API_KEY=your_key_here
+OPENROUTER_API_KEY=your_key_here
+```
+
+`.env.local` is gitignored. Do not commit it.
 
 ## Tools
 
