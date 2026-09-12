@@ -1,16 +1,16 @@
-# Use OpenAnalysis as a local MCP tool
+# Use ModelShortlist as a local MCP tool
 
-OpenAnalysis runs locally as an MCP server. Nothing needs to be deployed.
+ModelShortlist runs locally as an MCP server. Nothing needs to be deployed.
 
-Your MCP client launches `mcp/server.js`; OpenAnalysis fetches current OpenRouter ZDR endpoint data and Artificial Analysis data using your own API keys. The host chat model uses those facts to recommend a model for your workload.
+Your MCP client launches `mcp/server.js`; ModelShortlist fetches current OpenRouter ZDR endpoint data and Artificial Analysis data using your own API keys. The host chat model uses those facts to recommend a model for your workload.
 
 ## Recommended setup
 
 ### Windows
 
 ```powershell
-git clone https://github.com/AgenticArtists/OpenAnalysis.git
-cd OpenAnalysis
+git clone https://github.com/AgenticArtists/ModelShortlist.git
+cd ModelShortlist
 npm.cmd install
 npm.cmd run setup
 ```
@@ -18,8 +18,8 @@ npm.cmd run setup
 ### macOS / Linux
 
 ```bash
-git clone https://github.com/AgenticArtists/OpenAnalysis.git
-cd OpenAnalysis
+git clone https://github.com/AgenticArtists/ModelShortlist.git
+cd ModelShortlist
 npm install
 npm run setup
 ```
@@ -45,7 +45,7 @@ Hermes should discover:
 
 - `recommend_models`
 - `compare_models`
-- `openanalysis_status`
+- `modelshortlist_status`
 
 Then ask normally:
 
@@ -53,7 +53,7 @@ Then ask normally:
 
 ## Claude Code
 
-The repository contains a project-scoped `.mcp.json`. After setup, launch Claude Code from the OpenAnalysis directory:
+The repository contains a project-scoped `.mcp.json`. After setup, launch Claude Code from the ModelShortlist directory:
 
 ```powershell
 claude
@@ -61,10 +61,10 @@ claude
 
 Approve the MCP server if prompted and use `/mcp` to verify the connection.
 
-To register it at user scope from the OpenAnalysis directory:
+To register it at user scope from the ModelShortlist directory:
 
 ```powershell
-claude mcp add --transport stdio --scope user openanalysis -- node "$PWD\mcp\server.js"
+claude mcp add --transport stdio --scope user modelshortlist -- node "$PWD\mcp\server.js"
 ```
 
 ## Cursor
@@ -74,9 +74,9 @@ The setup command prints a Cursor-compatible configuration. Or create/update `.c
 ```json
 {
   "mcpServers": {
-    "openanalysis": {
+    "modelshortlist": {
       "command": "node",
-      "args": ["C:/FULL/PATH/TO/OpenAnalysis/mcp/server.js"]
+      "args": ["C:/FULL/PATH/TO/ModelShortlist/mcp/server.js"]
     }
   }
 }
@@ -89,10 +89,10 @@ The setup command also prints the VS Code format. Or create/update `.vscode/mcp.
 ```json
 {
   "servers": {
-    "openanalysis": {
+    "modelshortlist": {
       "type": "stdio",
       "command": "node",
-      "args": ["C:/FULL/PATH/TO/OpenAnalysis/mcp/server.js"]
+      "args": ["C:/FULL/PATH/TO/ModelShortlist/mcp/server.js"]
     }
   }
 }
@@ -107,11 +107,11 @@ Most local MCP hosts need only:
 ```json
 {
   "command": "node",
-  "args": ["/absolute/path/to/OpenAnalysis/mcp/server.js"]
+  "args": ["/absolute/path/to/ModelShortlist/mcp/server.js"]
 }
 ```
 
-The server loads `.env.local` from the OpenAnalysis repository root automatically.
+The server loads `.env.local` from the ModelShortlist repository root automatically.
 
 ## Manual credential setup
 
@@ -141,7 +141,7 @@ Returns current candidate models that satisfy the requested hard constraints and
 
 Returns current data for a shortlist of specific OpenRouter model IDs.
 
-### `openanalysis_status`
+### `modelshortlist_status`
 
 Shows match coverage, ambiguous/unmatched records, cache state, and Artificial Analysis rate-limit metadata.
 
@@ -156,7 +156,7 @@ npm.cmd run mcp
 A healthy server prints to stderr:
 
 ```text
-OpenAnalysis MCP server running on stdio
+ModelShortlist MCP server running on stdio
 ```
 
 and then waits for MCP traffic. Press `Ctrl+C` to stop it before reconnecting from your MCP client.
