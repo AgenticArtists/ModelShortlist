@@ -1,30 +1,33 @@
 # Changelog
 
-All notable public changes to OpenAnalysis will be documented here.
+All notable public changes to ModelShortlist will be documented here.
 
 ## Unreleased
 
-### Added
-
-- npm package executable entry point (`openanalysis`).
-- Official MCP Registry identity metadata (`io.github.AgenticArtists/openanalysis`).
-- Controlled npm package file list and public publish configuration.
-- CI validation of the prospective npm package with `npm pack --dry-run`.
-- Dependabot configuration.
-- GitHub issue templates and a public distribution roadmap.
-
 ### Changed
 
-- Package metadata is prepared for future npm/MCP Registry distribution while remaining protected by `private: true`.
+- Renamed the project from **OpenAnalysis** to **ModelShortlist** before Official MCP Registry publication.
+- New npm package identity: `@agentic.artists/modelshortlist`.
+- New Official MCP Registry identity: `io.github.AgenticArtists/modelshortlist`.
+- CLI executable renamed to `modelshortlist`.
+- MCP server identity renamed to `modelshortlist`.
+- Status tool renamed from `openanalysis_status` to `modelshortlist_status`.
+- Public website set to `https://modelshortlist.com`.
+- Documentation, setup output, client configuration examples, and CI smoke tests updated for the new name.
+
+### Migration
+
+- The previously published `@agentic.artists/openanalysis` package remains a historical artifact and should be deprecated on npm after `@agentic.artists/modelshortlist` is published and verified.
+- The Official MCP Registry never received the old `io.github.AgenticArtists/openanalysis` identity, so no Registry migration is required.
 
 ## 0.2.0 - 2026-09-12
 
-First public MVP.
+First public MVP, originally released under the OpenAnalysis name.
 
 ### Added
 
 - Local stdio MCP server for workload-specific AI model selection.
-- `recommend_models`, `compare_models`, and `openanalysis_status` tools.
+- `recommend_models`, `compare_models`, and status/diagnostics tools.
 - OpenRouter Zero Data Retention endpoint filtering.
 - Artificial Analysis benchmark and performance integration.
 - Conservative model reconciliation with verified aliases and exact normalized matching.
@@ -34,7 +37,7 @@ First public MVP.
 
 ### Security and privacy
 
-- Local BYOK architecture; no hosted OpenAnalysis backend.
+- Local BYOK architecture with no hosted backend.
 - `.env.local` is gitignored.
 - MCP tools are read-only.
 - No telemetry.
