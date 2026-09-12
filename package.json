@@ -5,6 +5,21 @@
   "private": true,
   "type": "module",
   "license": "MIT",
+  "mcpName": "io.github.AgenticArtists/openanalysis",
+  "bin": {
+    "openanalysis": "mcp/server.js"
+  },
+  "files": [
+    "mcp/",
+    "lib/",
+    "config/",
+    "scripts/setup.js",
+    ".env.local.example",
+    "ATTRIBUTION.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/AgenticArtists/OpenAnalysis.git"
@@ -30,6 +45,7 @@
     "setup": "node scripts/setup.js",
     "test": "node --test",
     "check": "node --check lib/artificial-analysis.js && node --check lib/openrouter.js && node --check lib/match.js && node --check lib/catalog.js && node --check lib/http.js && node --check mcp/server.js && node --check scripts/setup.js",
+    "pack:check": "npm pack --dry-run",
     "mcp": "node mcp/server.js"
   },
   "dependencies": {
