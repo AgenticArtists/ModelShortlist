@@ -1,5 +1,7 @@
 # OpenAnalysis
 
+[![CI](https://github.com/AgenticArtists/OpenAnalysis/actions/workflows/ci.yml/badge.svg)](https://github.com/AgenticArtists/OpenAnalysis/actions/workflows/ci.yml)
+
 **Stop guessing which AI model to use.**
 
 OpenAnalysis is a local, bring-your-own-key MCP server that gives your AI assistant current model-selection context from **OpenRouter Zero Data Retention endpoints** and **Artificial Analysis benchmarks**.
@@ -26,7 +28,7 @@ Hard constraints are checked against a **single real ZDR endpoint**. A model doe
 
 The chat model makes the final recommendation based on your use case. OpenAnalysis deliberately does not impose one universal ranking formula.
 
-## Quick start on Windows
+## Quick start
 
 Requirements:
 
@@ -35,59 +37,48 @@ Requirements:
 - an OpenRouter API key
 - an MCP-capable chat client such as Hermes Desktop, Claude Code, Cursor, or VS Code/Copilot
 
-Clone and install:
+### Windows
 
 ```powershell
 git clone https://github.com/AgenticArtists/OpenAnalysis.git
 cd OpenAnalysis
 npm.cmd install
-Copy-Item .env.local.example .env.local
-notepad .env.local
+npm.cmd run setup
 ```
 
-Add your keys:
+`npm.cmd run setup`:
 
-```text
-ARTIFICIAL_ANALYSIS_API_KEY=your_key_here
-OPENROUTER_API_KEY=your_key_here
-```
+- asks for your two API keys with masked input
+- stores them only in the gitignored `.env.local`
+- prints a ready-to-paste Hermes Desktop / Cursor MCP config using your actual local path
+- also prints the VS Code / Copilot MCP format
 
 If PowerShell blocks `npm.ps1`, use `npm.cmd` as shown above. You do not need to change your execution policy.
 
-### Hermes Desktop
+### macOS / Linux
 
-In Hermes Desktop, open **Skills & Tools → MCP** and import:
-
-```json
-{
-  "mcpServers": {
-    "openanalysis": {
-      "command": "node",
-      "args": [
-        "C:/FULL/PATH/TO/OpenAnalysis/mcp/server.js"
-      ]
-    }
-  }
-}
+```bash
+git clone https://github.com/AgenticArtists/OpenAnalysis.git
+cd OpenAnalysis
+npm install
+npm run setup
 ```
 
-For example:
+## Hermes Desktop
 
-```text
-C:/Users/yourname/OpenAnalysis/mcp/server.js
-```
+After running setup, copy the **Hermes Desktop / Cursor MCP config** it prints.
 
-After saving, Hermes should discover three tools:
+In Hermes Desktop, open **Skills & Tools → MCP**, import the JSON, and save it. Hermes should discover three tools:
 
 - `recommend_models`
 - `compare_models`
 - `openanalysis_status`
 
-Then just chat normally:
+Then start a normal chat and ask something like:
 
 > I need a model for a long-running autonomous coding agent. ZDR is mandatory, tool calling is required, and I need at least 100k context. Quality matters more than cost, but I care about value. What should I use?
 
-More client setup examples are in [LOCAL_MCP.md](./LOCAL_MCP.md).
+More client setup examples and manual configuration are in [LOCAL_MCP.md](./LOCAL_MCP.md).
 
 ## Example prompts
 
@@ -164,12 +155,31 @@ See [ATTRIBUTION.md](./ATTRIBUTION.md) for more detail.
 
 - `.env.local` is gitignored.
 - API keys are loaded locally by the MCP process.
+- The setup command masks API-key input.
 - OpenAnalysis does not operate a hosted backend.
 - MCP tools are read-only.
 - The server writes protocol traffic to stdout and diagnostic messages to stderr.
 - No telemetry is built into OpenAnalysis.
 
 If you discover a security issue, see [SECURITY.md](./SECURITY.md).
+
+## Manual setup
+
+If you prefer not to use the setup script:
+
+```powershell
+Copy-Item .env.local.example .env.local
+notepad .env.local
+```
+
+Add:
+
+```text
+ARTIFICIAL_ANALYSIS_API_KEY=your_key_here
+OPENROUTER_API_KEY=your_key_here
+```
+
+Then use one of the MCP configurations in [LOCAL_MCP.md](./LOCAL_MCP.md).
 
 ## Development
 
