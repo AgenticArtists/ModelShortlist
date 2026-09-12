@@ -2,6 +2,21 @@
 
 All notable public changes to OpenAnalysis will be documented here.
 
+## Unreleased
+
+### Added
+
+- npm package executable entry point (`openanalysis`).
+- Official MCP Registry identity metadata (`io.github.AgenticArtists/openanalysis`).
+- Controlled npm package file list and public publish configuration.
+- CI validation of the prospective npm package with `npm pack --dry-run`.
+- Dependabot configuration.
+- GitHub issue templates and a public distribution roadmap.
+
+### Changed
+
+- Package metadata is prepared for future npm/MCP Registry distribution while remaining protected by `private: true`.
+
 ## 0.2.0 - 2026-09-12
 
 First public MVP.
