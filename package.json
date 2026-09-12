@@ -1,8 +1,7 @@
 {
-  "name": "openanalysis",
+  "name": "@agentic.artists/openanalysis",
   "version": "0.2.0",
   "description": "A local BYOK MCP server that helps AI assistants choose models using OpenRouter ZDR endpoint data and Artificial Analysis benchmarks.",
-  "private": true,
   "type": "module",
   "license": "MIT",
   "mcpName": "io.github.AgenticArtists/openanalysis",
