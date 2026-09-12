@@ -1,38 +1,34 @@
 # Distribution roadmap
 
-OpenAnalysis is currently distributed directly from GitHub as a local BYOK MCP server.
+OpenAnalysis is public on GitHub and npm. The next milestone is publication to the Official MCP Registry.
 
-The next distribution milestone is npm + the Official MCP Registry.
-
-## Final package identity
+## Final identities
 
 - npm package: `@agentic.artists/openanalysis`
 - Official MCP Registry name: `io.github.AgenticArtists/openanalysis`
 
-The npm organization is `agentic.artists`, so npm grants the matching `@agentic.artists` scope. The package name in `package.json` is now ready for first publication.
+## Completed
 
-## Package preparation complete
-
-The repository is prepared for npm/MCP Registry distribution:
-
-- scoped npm package name: `@agentic.artists/openanalysis`
+- public GitHub repository
+- scoped npm package name
+- npm publication of `@agentic.artists/openanalysis@0.2.0`
 - stdio MCP executable exposed as the `openanalysis` package binary
 - executable shebang on `mcp/server.js`
-- stable Official MCP Registry identity: `io.github.AgenticArtists/openanalysis`
+- stable Official MCP Registry identity
 - matching `mcpName` metadata in `package.json`
 - controlled npm package file list
 - `publishConfig.access` set to `public`
-- CI validates the prospective npm package with `npm pack --dry-run`
+- CI validates the npm package with `npm pack --dry-run`
 - `server.json` declares the npm package, stdio transport, and required secrets
 
 ## Remaining publication work
 
-1. Confirm the logged-in npm user has permission to publish under the `agentic.artists` organization.
-2. Publish version `0.2.0` publicly to npm.
-3. Verify `npx @agentic.artists/openanalysis` resolves and launches the MCP process.
-4. Authenticate to the Official MCP Registry using the AgenticArtists GitHub identity.
-5. Validate and publish `server.json` with `mcp-publisher`.
-6. Configure npm trusted publishing using GitHub Actions/OIDC for future releases.
+1. Verify `npx -y @agentic.artists/openanalysis` resolves and launches the MCP process.
+2. Authenticate to the Official MCP Registry using the AgenticArtists GitHub identity.
+3. Validate and publish `server.json` with `mcp-publisher`.
+4. Verify the public Registry listing.
+5. Configure npm trusted publishing using GitHub Actions/OIDC for future releases.
+6. Submit to downstream directories after the Official Registry listing exists.
 
 ## Required user-supplied secrets
 
@@ -45,5 +41,4 @@ OpenAnalysis remains local/BYOK. It does not operate a hosted proxy or bundle up
 
 - https://modelcontextprotocol.io/registry/quickstart
 - https://registry.modelcontextprotocol.io/docs
-- https://docs.npmjs.com/creating-and-publishing-an-organization-scoped-package/
 - https://docs.npmjs.com/trusted-publishers/
