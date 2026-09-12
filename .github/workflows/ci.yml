@@ -45,12 +45,12 @@ jobs:
           npm init -y >/dev/null 2>&1
           npm install "$PACKAGE_PATH" >/dev/null 2>&1
           set +e
-          OUTPUT="$(timeout 2s ./node_modules/.bin/openanalysis 2>&1)"
+          OUTPUT="$(timeout 2s ./node_modules/.bin/modelshortlist 2>&1)"
           STATUS=$?
           set -e
           echo "$OUTPUT"
           test "$STATUS" -eq 0 -o "$STATUS" -eq 124
-          echo "$OUTPUT" | grep -q "OpenAnalysis MCP server running on stdio"
+          echo "$OUTPUT" | grep -q "ModelShortlist MCP server running on stdio"
 
   windows-package:
     runs-on: windows-latest
@@ -73,13 +73,13 @@ jobs:
         run: |
           $tarball = npm pack --silent
           $packagePath = Join-Path $PWD $tarball
-          $tempDir = Join-Path $env:RUNNER_TEMP "openanalysis-package-test"
+          $tempDir = Join-Path $env:RUNNER_TEMP "modelshortlist-package-test"
           New-Item -ItemType Directory -Force -Path $tempDir | Out-Null
           Set-Location $tempDir
           npm init -y | Out-Null
           npm install $packagePath | Out-Null
-          $output = cmd /c ".\node_modules\.bin\openanalysis.cmd < NUL" 2>&1 | Out-String
+          $output = cmd /c ".\node_modules\.bin\modelshortlist.cmd < NUL" 2>&1 | Out-String
           Write-Host $output
-          if ($output -notmatch "OpenAnalysis MCP server running on stdio") {
+          if ($output -notmatch "ModelShortlist MCP server running on stdio") {
             throw "Packaged Windows executable did not start correctly."
           }
