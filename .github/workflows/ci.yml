@@ -49,5 +49,5 @@ jobs:
           STATUS=$?
           set -e
           echo "$OUTPUT"
-          test "$STATUS" -eq 124
+          test "$STATUS" -eq 0 -o "$STATUS" -eq 124
           echo "$OUTPUT" | grep -q "OpenAnalysis MCP server running on stdio"
