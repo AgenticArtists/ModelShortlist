@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Report an OpenAnalysis installation, MCP, matching, or runtime problem
+about: Report a ModelShortlist installation, MCP, matching, or runtime problem
 title: "[Bug] "
 labels: ""
 assignees: ""
@@ -14,7 +14,7 @@ Describe the problem and what you expected instead.
 
 - OS:
 - Node version (`node --version`):
-- OpenAnalysis commit/version:
+- ModelShortlist commit/version:
 - MCP client (Hermes Desktop, Claude Code, Cursor, VS Code/Copilot, other):
 
 ## Reproduction
