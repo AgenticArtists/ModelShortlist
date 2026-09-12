@@ -1,7 +1,7 @@
 ---
 name: Feature request
 about: Suggest an improvement to OpenAnalysis
- title: "[Feature] "
+title: "[Feature] "
 labels: ""
 assignees: ""
 ---
