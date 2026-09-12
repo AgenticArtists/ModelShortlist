@@ -1,6 +1,6 @@
 {
   "mcpServers": {
-    "openanalysis": {
+    "modelshortlist": {
       "command": "node",
       "args": ["mcp/server.js"]
     }
