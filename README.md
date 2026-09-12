@@ -1,107 +1,142 @@
 # OpenAnalysis
 
-Private, ZDR-aware AI model selection for chat agents.
+**Stop guessing which AI model to use.**
 
-> **Recommended use:** run OpenAnalysis locally as an MCP tool in Claude Code, Cursor, VS Code/Copilot, or another MCP host. **No deployment is required.** See [LOCAL_MCP.md](./LOCAL_MCP.md).
+OpenAnalysis is a local, bring-your-own-key MCP server that gives your AI assistant current model-selection context from **OpenRouter Zero Data Retention endpoints** and **Artificial Analysis benchmarks**.
 
-OpenAnalysis intersects **OpenRouter's current Zero Data Retention endpoints** with **Artificial Analysis Free** benchmark data. It does not hard-code a universal ranking formula. The service supplies current model facts; the chat model decides which tradeoffs matter for the workload you describe.
+No hosted service. No account. No deployment. Your API keys stay on your machine and are used only to call the upstream services directly.
 
-## What it does
+## Why OpenAnalysis
 
-OpenAnalysis combines:
+Model choice is no longer just "which model has the highest benchmark score?" The right answer depends on the workload and the endpoint you can actually use.
 
-- OpenRouter ZDR endpoint eligibility
-- OpenRouter provider, context, tool support, price, latency, throughput, and uptime data
+OpenAnalysis helps your chat agent reason over:
+
+- current OpenRouter ZDR endpoint availability
+- tool/function-calling support
+- context and completion limits
+- endpoint-level input/output pricing
+- latency, throughput, and uptime
 - Artificial Analysis Intelligence Index
 - Artificial Analysis Coding Index
 - Artificial Analysis Agentic Index
 - Artificial Analysis pricing and median performance
 
-The Free Artificial Analysis API does not include `openrouter_api_id`, so OpenAnalysis uses conservative reconciliation. It accepts manually verified aliases and exact normalized matches; it deliberately does **not** fuzzy-match uncertain model names.
+Hard constraints are checked against a **single real ZDR endpoint**. A model does not qualify for tool use plus 100k context unless at least one current ZDR endpoint satisfies both.
 
-Hard constraints are evaluated against a **single real ZDR provider endpoint**. A model does not qualify for `tools=true` plus `100k` context unless at least one actual ZDR endpoint satisfies both.
+The chat model makes the final recommendation based on your use case. OpenAnalysis deliberately does not impose one universal ranking formula.
 
-## Fastest path: chat with it locally
+## Quick start on Windows
 
-On Windows:
+Requirements:
+
+- Node.js 20+
+- an Artificial Analysis API key
+- an OpenRouter API key
+- an MCP-capable chat client such as Hermes Desktop, Claude Code, Cursor, or VS Code/Copilot
+
+Clone and install:
 
 ```powershell
 git clone https://github.com/AgenticArtists/OpenAnalysis.git
 cd OpenAnalysis
-npm install
+npm.cmd install
 Copy-Item .env.local.example .env.local
 notepad .env.local
 ```
 
-Add your two keys:
+Add your keys:
 
 ```text
-ARTIFICIAL_ANALYSIS_API_KEY=...
-OPENROUTER_API_KEY=...
+ARTIFICIAL_ANALYSIS_API_KEY=your_key_here
+OPENROUTER_API_KEY=your_key_here
 ```
 
-Then launch Claude Code from the repo:
+If PowerShell blocks `npm.ps1`, use `npm.cmd` as shown above. You do not need to change your execution policy.
 
-```powershell
-claude
+### Hermes Desktop
+
+In Hermes Desktop, open **Skills & Tools → MCP** and import:
+
+```json
+{
+  "mcpServers": {
+    "openanalysis": {
+      "command": "node",
+      "args": [
+        "C:/FULL/PATH/TO/OpenAnalysis/mcp/server.js"
+      ]
+    }
+  }
+}
 ```
 
-The checked-in `.mcp.json` registers OpenAnalysis as a project MCP server. Approve it when Claude Code asks, then run `/mcp` to confirm that `openanalysis` is connected.
+For example:
 
-Now ask normally:
+```text
+C:/Users/yourname/OpenAnalysis/mcp/server.js
+```
 
-> I need a model for a long-running autonomous coding loop. ZDR is mandatory. It needs tool calling and at least 100k context. Quality matters more than cost, but I don't want frontier-premium pricing. What should I use?
+After saving, Hermes should discover three tools:
 
-The chat model can call OpenAnalysis automatically and answer from current Artificial Analysis + OpenRouter data.
+- `recommend_models`
+- `compare_models`
+- `openanalysis_status`
 
-Full setup and other MCP clients: [LOCAL_MCP.md](./LOCAL_MCP.md).
+Then just chat normally:
+
+> I need a model for a long-running autonomous coding agent. ZDR is mandatory, tool calling is required, and I need at least 100k context. Quality matters more than cost, but I care about value. What should I use?
+
+More client setup examples are in [LOCAL_MCP.md](./LOCAL_MCP.md).
+
+## Example prompts
+
+> What's the cheapest model I'd trust with repetitive coding subagents? ZDR and tool use are required.
+
+> I need 200k context, tool use, and ZDR. What are my best current options?
+
+> Is the premium frontier model actually worth the price for this coding workload?
+
+> Best model for extracting structured data from thousands of documents while keeping output cost low?
+
+> I need maximum autonomous coding performance under $10 per million output tokens. What should I use?
 
 ## MCP tools
 
 ### `recommend_models`
 
-Primary tool for natural-language model selection. Accepts the use case plus hard constraints such as tool calling, minimum context, maximum price, creator, and model filters. The calling chat model receives current candidates and makes the final recommendation.
+The primary tool. It accepts a workload plus hard constraints such as:
+
+- tool calling required
+- minimum context
+- maximum input/output price
+- creator/model filter
+
+It returns current candidates that are both ZDR-eligible and confidently matched to Artificial Analysis data. The host model then makes the recommendation.
 
 ### `compare_models`
 
-Returns current Artificial Analysis and OpenRouter ZDR data for a specific shortlist of OpenRouter model IDs.
+Returns current Artificial Analysis benchmark information and OpenRouter ZDR endpoint information for a specific shortlist of OpenRouter model IDs.
 
 ### `openanalysis_status`
 
-Returns match coverage, ambiguous/unmatched records, cache state, and Artificial Analysis rate-limit metadata.
+Shows match coverage, ambiguous/unmatched records, cache state, and Artificial Analysis rate-limit metadata.
 
-## Data sources
+## How matching works
 
-- OpenRouter: `GET https://openrouter.ai/api/v1/endpoints/zdr`
-- Artificial Analysis Free: `GET https://artificialanalysis.ai/api/v2/language/models/free`
+The Artificial Analysis Free API does not expose an OpenRouter model ID. OpenAnalysis therefore reconciles models conservatively:
 
-Artificial Analysis requires attribution and describes Free API use as internal use. Keep this repository and its use private unless you obtain the rights needed for broader redistribution.
+1. manually verified aliases
+2. exact normalized name matches
+3. otherwise the model remains unmatched
 
-## Optional HTTP API
+OpenAnalysis does **not** fuzzy-match uncertain model variants. This is intentional: a missing candidate is better than attaching benchmark data to the wrong model.
 
-The original private HTTP endpoint remains available if you later want a remote client. It is not required for local MCP use.
+Verified aliases live in [`config/aliases.json`](./config/aliases.json).
 
-Routes:
+## ZDR is enforced at selection time, not inference time
 
-```text
-/api/models
-/api/health
-```
-
-A remote deployment should configure:
-
-```text
-ARTIFICIAL_ANALYSIS_API_KEY=<your AA key>
-OPENROUTER_API_KEY=<your OpenRouter key>
-MODEL_SELECTOR_ACCESS_TOKEN=<long random token>
-MODEL_SELECTOR_CACHE_TTL_MS=43200000
-```
-
-`/api/models` requires the separate selector access token. Local MCP does not.
-
-## Enforce ZDR during actual inference
-
-Selection-time eligibility is not enough. When you actually call the chosen model through OpenRouter, enforce ZDR again:
+OpenAnalysis identifies models with current ZDR-capable OpenRouter endpoints. If you later call a selected model through OpenRouter, enforce ZDR again in the actual inference request:
 
 ```json
 {
@@ -112,19 +147,44 @@ Selection-time eligibility is not enough. When you actually call the chosen mode
 }
 ```
 
-`require_parameters` helps prevent routing to an endpoint that cannot support parameters used by your request, such as tools.
+## Data sources and attribution
 
-## Local validation
+OpenAnalysis uses data accessed with **your own API credentials**.
+
+- Benchmark and model-performance data: [Artificial Analysis](https://artificialanalysis.ai/)
+- ZDR eligibility, providers, pricing, context, supported parameters, latency, throughput, and uptime: [OpenRouter](https://openrouter.ai/)
+
+OpenAnalysis is not affiliated with or endorsed by Artificial Analysis or OpenRouter.
+
+The OpenAnalysis source code is licensed under the MIT License. Upstream data and APIs remain subject to their respective terms. In particular, Artificial Analysis API access may have restrictions on external use and redistribution. OpenAnalysis does not bundle or host their dataset; each user accesses upstream data with their own credentials and is responsible for complying with the applicable terms.
+
+See [ATTRIBUTION.md](./ATTRIBUTION.md) for more detail.
+
+## Privacy and security
+
+- `.env.local` is gitignored.
+- API keys are loaded locally by the MCP process.
+- OpenAnalysis does not operate a hosted backend.
+- MCP tools are read-only.
+- The server writes protocol traffic to stdout and diagnostic messages to stderr.
+- No telemetry is built into OpenAnalysis.
+
+If you discover a security issue, see [SECURITY.md](./SECURITY.md).
+
+## Development
+
+Install dependencies and run validation:
 
 ```powershell
-npm test
-npm run check
+npm.cmd install
+npm.cmd test
+npm.cmd run check
 ```
 
-Test the MCP process itself:
+Test the MCP process manually:
 
 ```powershell
-npm run mcp
+npm.cmd run mcp
 ```
 
 A healthy server prints:
@@ -135,10 +195,8 @@ OpenAnalysis MCP server running on stdio
 
 and waits for an MCP client. Press `Ctrl+C` to stop it.
 
-## Security
+Contributions are welcome. See [CONTRIBUTING.md](./CONTRIBUTING.md).
 
-- `.env` and `.env.local` are gitignored.
-- Upstream API keys stay on your machine for local MCP use.
-- MCP tools are read-only.
-- The server logs only to stderr because stdout is reserved for MCP protocol traffic.
-- The optional HTTP endpoint uses a separate low-privilege access token.
+## License
+
+MIT. See [LICENSE](./LICENSE).
