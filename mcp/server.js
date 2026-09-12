@@ -180,8 +180,8 @@ const recommendationSchema = z.object({
 
 function createServer() {
   const server = new McpServer({
-    name: 'openanalysis',
-    version: '0.2.0',
+    name: 'modelshortlist',
+    version: '0.2.1',
   })
 
   server.registerTool(
@@ -239,7 +239,7 @@ function createServer() {
       } catch (error) {
         return {
           isError: true,
-          content: [{ type: 'text', text: `OpenAnalysis error: ${error.message}` }],
+          content: [{ type: 'text', text: `ModelShortlist error: ${error.message}` }],
         }
       }
     },
@@ -291,16 +291,16 @@ function createServer() {
       } catch (error) {
         return {
           isError: true,
-          content: [{ type: 'text', text: `OpenAnalysis error: ${error.message}` }],
+          content: [{ type: 'text', text: `ModelShortlist error: ${error.message}` }],
         }
       }
     },
   )
 
   server.registerTool(
-    'openanalysis_status',
+    'modelshortlist_status',
     {
-      title: 'Check OpenAnalysis status',
+      title: 'Check ModelShortlist status',
       description:
         'Use this to diagnose model matching coverage or Artificial Analysis quota state.',
       inputSchema: z.object({
@@ -330,7 +330,7 @@ function createServer() {
       } catch (error) {
         return {
           isError: true,
-          content: [{ type: 'text', text: `OpenAnalysis error: ${error.message}` }],
+          content: [{ type: 'text', text: `ModelShortlist error: ${error.message}` }],
         }
       }
     },
@@ -340,4 +340,4 @@ function createServer() {
 }
 
 void serveStdio(createServer)
-console.error('OpenAnalysis MCP server running on stdio')
+console.error('ModelShortlist MCP server running on stdio')
