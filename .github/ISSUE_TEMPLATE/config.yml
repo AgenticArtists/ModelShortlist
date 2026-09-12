@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Security issue
+    url: https://github.com/AgenticArtists/OpenAnalysis/security
+    about: Please review SECURITY.md before reporting a sensitive issue publicly.
