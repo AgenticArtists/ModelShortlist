@@ -91,7 +91,7 @@ function maskPrompt(label) {
 
 function envFile(values) {
   return [
-    '# OpenAnalysis local credentials',
+    '# ModelShortlist local credentials',
     '# This file is gitignored. Do not commit it.',
     `ARTIFICIAL_ANALYSIS_API_KEY=${values.ARTIFICIAL_ANALYSIS_API_KEY}`,
     `OPENROUTER_API_KEY=${values.OPENROUTER_API_KEY}`,
@@ -111,7 +111,7 @@ function printClientConfig() {
   const serverPath = slashPath(MCP_PATH)
   const standardConfig = {
     mcpServers: {
-      openanalysis: {
+      modelshortlist: {
         command: nodePath,
         args: [serverPath],
       },
@@ -119,7 +119,7 @@ function printClientConfig() {
   }
   const vscodeConfig = {
     servers: {
-      openanalysis: {
+      modelshortlist: {
         type: 'stdio',
         command: nodePath,
         args: [serverPath],
@@ -135,7 +135,7 @@ function printClientConfig() {
 }
 
 async function main() {
-  console.log('OpenAnalysis setup')
+  console.log('ModelShortlist setup')
   console.log('Your API keys are stored only in .env.local on this machine.')
   console.log('Input is masked and is not sent anywhere by this setup script.\n')
 
@@ -170,7 +170,7 @@ async function main() {
   console.log(`\nSaved local credentials to ${ENV_PATH}`)
   printClientConfig()
   console.log('\nNext: paste the appropriate config into your MCP client, then start a new chat.')
-  console.log('Try: "Use OpenAnalysis to recommend a model for my workload."')
+  console.log('Try: "Use ModelShortlist to recommend a model for my workload."')
 }
 
 main().catch((error) => {
