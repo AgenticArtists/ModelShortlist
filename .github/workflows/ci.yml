@@ -51,3 +51,35 @@ jobs:
           echo "$OUTPUT"
           test "$STATUS" -eq 0 -o "$STATUS" -eq 124
           echo "$OUTPUT" | grep -q "OpenAnalysis MCP server running on stdio"
+
+  windows-package:
+    runs-on: windows-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Pack and smoke test Windows executable
+        shell: pwsh
+        run: |
+          $tarball = npm pack --silent
+          $packagePath = Join-Path $PWD $tarball
+          $tempDir = Join-Path $env:RUNNER_TEMP "openanalysis-package-test"
+          New-Item -ItemType Directory -Force -Path $tempDir | Out-Null
+          Set-Location $tempDir
+          npm init -y | Out-Null
+          npm install $packagePath | Out-Null
+          $output = cmd /c ".\node_modules\.bin\openanalysis.cmd < NUL" 2>&1 | Out-String
+          Write-Host $output
+          if ($output -notmatch "OpenAnalysis MCP server running on stdio") {
+            throw "Packaged Windows executable did not start correctly."
+          }
