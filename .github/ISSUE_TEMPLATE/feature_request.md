@@ -1,6 +1,6 @@
 ---
 name: Feature request
-about: Suggest an improvement to OpenAnalysis
+about: Suggest an improvement to ModelShortlist
 title: "[Feature] "
 labels: ""
 assignees: ""
@@ -18,6 +18,6 @@ Describe the smallest useful change.
 
 Show the prompt/workload where this would matter.
 
-## Why this belongs in OpenAnalysis
+## Why this belongs in ModelShortlist
 
 Explain why this should be part of model selection rather than handled by the host chat client or another tool.
