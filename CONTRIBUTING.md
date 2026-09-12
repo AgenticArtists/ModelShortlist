@@ -1,12 +1,12 @@
-# Contributing to OpenAnalysis
+# Contributing to ModelShortlist
 
 Contributions are welcome, especially improvements to model reconciliation, MCP client compatibility, tests, and installation UX.
 
 ## Development setup
 
 ```powershell
-git clone https://github.com/AgenticArtists/OpenAnalysis.git
-cd OpenAnalysis
+git clone https://github.com/AgenticArtists/ModelShortlist.git
+cd ModelShortlist
 npm.cmd install
 Copy-Item .env.local.example .env.local
 ```
