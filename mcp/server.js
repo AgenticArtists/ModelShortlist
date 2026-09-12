@@ -188,7 +188,7 @@ function createServer() {
     {
       title: 'Recommend AI models',
       description:
-        'Use this whenever the user asks which AI model to use for a workload. It fetches current OpenRouter ZDR-eligible endpoints and intersects them with Artificial Analysis Free benchmark data. After calling this tool, YOU must make the recommendation based on the user use case; do not simply pick the first model or a single benchmark winner.',
+        'Use this whenever the user asks which AI model to use for a workload. It fetches current OpenRouter ZDR-eligible endpoints and intersects them with Artificial Analysis Free benchmark data. After calling this tool, YOU must make the recommendation based on the user use case; do not simply pick the first model or a single benchmark winner. Clearly attribute benchmark metrics to Artificial Analysis and endpoint operational data to OpenRouter in the answer.',
       inputSchema: recommendationSchema,
       annotations: {
         readOnlyHint: true,
@@ -212,6 +212,8 @@ function createServer() {
             'For high-volume workloads, weigh OpenRouter price and throughput heavily.',
             'For interactive workloads, weigh latency more heavily.',
             'Distinguish Artificial Analysis benchmark/performance data from OpenRouter endpoint operational data.',
+            'When referencing benchmark scores or benchmark-derived performance, visibly attribute them to Artificial Analysis.',
+            'When referencing ZDR availability, provider details, context, pricing, latency, throughput, uptime, or supported parameters, visibly attribute them to OpenRouter.',
             'Recommend one primary model and normally two alternatives with explicit tradeoffs.',
             'When the chosen model is actually called through OpenRouter, enforce provider.zdr=true.',
           ],
@@ -247,7 +249,7 @@ function createServer() {
     {
       title: 'Compare specific AI models',
       description:
-        'Use this after model discovery when the user wants a focused comparison of specific OpenRouter model IDs using current ZDR endpoint data and Artificial Analysis metrics.',
+        'Use this after model discovery when the user wants a focused comparison of specific OpenRouter model IDs using current ZDR endpoint data and Artificial Analysis metrics. Attribute benchmark metrics to Artificial Analysis and endpoint operational data to OpenRouter in the answer.',
       inputSchema: z.object({
         model_ids: z.array(z.string()).min(2).max(12),
         force_refresh: z.boolean().default(false),
@@ -276,6 +278,8 @@ function createServer() {
               generated_at: catalog.generated_at,
               models,
               missing_model_ids: missing,
+              response_instruction:
+                'Attribute Artificial Analysis benchmark/performance metrics to Artificial Analysis and OpenRouter endpoint operational data to OpenRouter.',
               attribution: {
                 artificial_analysis: 'https://artificialanalysis.ai/',
                 openrouter: 'https://openrouter.ai/',
