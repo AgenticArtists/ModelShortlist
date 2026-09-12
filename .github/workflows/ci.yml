@@ -34,3 +34,20 @@ jobs:
 
       - name: Validate npm package
         run: npm run pack:check
+
+      - name: Smoke test packaged executable
+        shell: bash
+        run: |
+          PACKAGE_TARBALL="$(npm pack --silent)"
+          PACKAGE_PATH="$PWD/$PACKAGE_TARBALL"
+          TEMP_DIR="$(mktemp -d)"
+          cd "$TEMP_DIR"
+          npm init -y >/dev/null 2>&1
+          npm install "$PACKAGE_PATH" >/dev/null 2>&1
+          set +e
+          OUTPUT="$(timeout 2s ./node_modules/.bin/openanalysis 2>&1)"
+          STATUS=$?
+          set -e
+          echo "$OUTPUT"
+          test "$STATUS" -eq 124
+          echo "$OUTPUT" | grep -q "OpenAnalysis MCP server running on stdio"
