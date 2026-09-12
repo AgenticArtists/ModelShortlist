@@ -107,11 +107,12 @@ function slashPath(value) {
 }
 
 function printClientConfig() {
+  const nodePath = slashPath(process.execPath)
   const serverPath = slashPath(MCP_PATH)
   const standardConfig = {
     mcpServers: {
       openanalysis: {
-        command: 'node',
+        command: nodePath,
         args: [serverPath],
       },
     },
@@ -120,7 +121,7 @@ function printClientConfig() {
     servers: {
       openanalysis: {
         type: 'stdio',
-        command: 'node',
+        command: nodePath,
         args: [serverPath],
       },
     },
@@ -130,6 +131,7 @@ function printClientConfig() {
   console.log(JSON.stringify(standardConfig, null, 2))
   console.log('\nVS Code / Copilot MCP config:')
   console.log(JSON.stringify(vscodeConfig, null, 2))
+  console.log('\nThe generated config uses the exact Node executable running setup, so GUI clients do not need Node on their PATH.')
 }
 
 async function main() {
