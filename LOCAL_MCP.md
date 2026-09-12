@@ -1,83 +1,100 @@
-# Use OpenAnalysis as a local chat tool
+# Use OpenAnalysis as a local MCP tool
 
-This is the recommended way to use OpenAnalysis. Nothing needs to be deployed.
+OpenAnalysis runs locally as an MCP server. Nothing needs to be deployed.
 
-OpenAnalysis runs as a local **MCP server**. An MCP-capable chat client launches it on your computer, OpenAnalysis fetches current OpenRouter ZDR endpoint data plus Artificial Analysis Free data, and the chat model uses those facts to recommend a model for your workload.
+Your MCP client launches `mcp/server.js`; OpenAnalysis then fetches current OpenRouter ZDR endpoint data and Artificial Analysis data using your own API keys. The host chat model uses those facts to recommend a model for your workload.
 
 ## One-time setup on Windows
-
-Clone the repo and install the two MCP dependencies:
 
 ```powershell
 git clone https://github.com/AgenticArtists/OpenAnalysis.git
 cd OpenAnalysis
-npm install
+npm.cmd install
 Copy-Item .env.local.example .env.local
 notepad .env.local
 ```
 
-Put only these two real values in `.env.local`:
+Put these values in `.env.local`:
 
 ```text
-ARTIFICIAL_ANALYSIS_API_KEY=...
-OPENROUTER_API_KEY=...
+ARTIFICIAL_ANALYSIS_API_KEY=your_key_here
+OPENROUTER_API_KEY=your_key_here
 ```
 
 `.env.local` is gitignored. Do not commit it.
 
-Test the server:
+If PowerShell blocks `npm.ps1`, use `npm.cmd`; you do not need to change your execution policy.
+
+Validate the install:
 
 ```powershell
-npm run mcp
+npm.cmd test
+npm.cmd run check
 ```
 
-A working server prints this to stderr and then waits for an MCP client:
+## Hermes Desktop
 
-```text
-OpenAnalysis MCP server running on stdio
+Open **Skills & Tools → MCP** in Hermes Desktop and import:
+
+```json
+{
+  "mcpServers": {
+    "openanalysis": {
+      "command": "node",
+      "args": [
+        "C:/FULL/PATH/TO/OpenAnalysis/mcp/server.js"
+      ]
+    }
+  }
+}
 ```
 
-Press `Ctrl+C` after the test.
+Use the actual path on your machine. On Windows, forward slashes work well inside the JSON string.
 
-## Claude Code: easiest option
-
-The repository already contains a project-scoped `.mcp.json`. After the one-time setup above, launch Claude Code from the `OpenAnalysis` folder:
-
-```powershell
-claude
-```
-
-Approve the project MCP server when prompted. Then run `/mcp`; `openanalysis` should be connected and expose:
+After saving, Hermes should discover:
 
 - `recommend_models`
 - `compare_models`
 - `openanalysis_status`
 
-Then just chat normally:
+Then ask normally:
 
-> I need a model for a long-running autonomous coding loop. ZDR is mandatory. It needs tool calling and at least 100k context. Quality matters more than cost, but I don't want frontier-premium pricing. What should I use?
+> I need a model for a long-running autonomous coding loop. ZDR is mandatory. It needs tool calling and at least 100k context. Quality matters more than cost, but I care about value. What should I use?
 
-Claude should invoke `recommend_models` automatically and answer from current data.
+## Claude Code
 
-### Make it available across Claude Code projects
+The repository contains a project-scoped `.mcp.json`. After setup, launch Claude Code from the OpenAnalysis directory:
 
-From the `OpenAnalysis` directory, you can also register it at user scope:
+```powershell
+claude
+```
+
+Approve the MCP server if prompted and use `/mcp` to verify the connection.
+
+To register it at user scope from the OpenAnalysis directory:
 
 ```powershell
 claude mcp add --transport stdio --scope user openanalysis -- node "$PWD\mcp\server.js"
 ```
 
-Then verify:
+## Cursor
 
-```powershell
-claude mcp list
+Create or update `.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "openanalysis": {
+      "command": "node",
+      "args": ["C:/FULL/PATH/TO/OpenAnalysis/mcp/server.js"]
+    }
+  }
+}
 ```
-
-If user-scope MCP registration behaves inconsistently in your installed Claude Code version, use the checked-in `.mcp.json` from the OpenAnalysis project or register the server in the individual project where you want it.
 
 ## VS Code + GitHub Copilot Chat
 
-Create `.vscode/mcp.json` in the workspace where you want OpenAnalysis available:
+Create or update `.vscode/mcp.json`:
 
 ```json
 {
@@ -91,51 +108,47 @@ Create `.vscode/mcp.json` in the workspace where you want OpenAnalysis available
 }
 ```
 
-Use Copilot Chat in Agent mode. It can call the OpenAnalysis tools automatically.
+Use Copilot Chat in an MCP/tool-capable agent mode.
 
-## Cursor
+## Generic stdio MCP configuration
 
-Create `.cursor/mcp.json`:
+Most local MCP hosts need only:
 
 ```json
 {
-  "mcpServers": {
-    "openanalysis": {
-      "command": "node",
-      "args": ["C:/FULL/PATH/TO/OpenAnalysis/mcp/server.js"]
-    }
-  }
+  "command": "node",
+  "args": ["/absolute/path/to/OpenAnalysis/mcp/server.js"]
 }
 ```
 
-## ChatGPT
-
-A local MCP server is not directly usable from normal ChatGPT web Chat. ChatGPT's custom MCP/developer-mode availability is plan/workspace dependent; on a personal Plus account, the practical local path is Codex/another MCP host rather than ordinary ChatGPT web.
-
-If you later want OpenAnalysis in ChatGPT itself, keep this same MCP tool surface and add a supported remote/private transport or package it for the current plugin/app workflow. The core selection logic does not need to change.
+The server loads `.env.local` from the OpenAnalysis repository root automatically.
 
 ## Tools
 
 ### `recommend_models`
 
-The primary tool. It accepts the workload plus hard constraints such as:
-
-- tool calling required
-- minimum context
-- maximum input/output price
-- creator/model filter
-
-It returns only models that are both:
-
-1. currently available through a ZDR OpenRouter endpoint satisfying the hard constraints; and
-2. confidently matched to Artificial Analysis Free data.
-
-The chat model then makes the recommendation using the use case rather than a universal fixed score.
+Returns current candidate models that satisfy the requested hard constraints and are confidently reconciled between OpenRouter ZDR data and Artificial Analysis data. The host model makes the final recommendation.
 
 ### `compare_models`
 
-Retrieves current data for specific OpenRouter model IDs after a shortlist exists.
+Returns current data for a shortlist of specific OpenRouter model IDs.
 
 ### `openanalysis_status`
 
-Shows match coverage, ambiguous/unmatched records, cache state, and AA rate-limit metadata.
+Shows match coverage, ambiguous/unmatched records, cache state, and Artificial Analysis rate-limit metadata.
+
+## Manual process test
+
+You normally should let the MCP host launch the process. For troubleshooting only:
+
+```powershell
+npm.cmd run mcp
+```
+
+A healthy server prints to stderr:
+
+```text
+OpenAnalysis MCP server running on stdio
+```
+
+and then waits for MCP traffic. Press `Ctrl+C` to stop it before reconnecting from your MCP client.
