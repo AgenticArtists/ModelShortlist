@@ -50,7 +50,8 @@ npm.cmd run setup
 
 - asks for your two API keys with masked input
 - stores them only in the gitignored `.env.local`
-- prints a ready-to-paste Hermes Desktop / Cursor MCP config using your actual local path
+- prints a ready-to-paste Hermes Desktop / Cursor MCP config using your actual local paths
+- uses the exact Node executable that ran setup, avoiding GUI-client PATH issues
 - also prints the VS Code / Copilot MCP format
 
 If PowerShell blocks `npm.ps1`, use `npm.cmd` as shown above. You do not need to change your execution policy.
@@ -63,6 +64,8 @@ cd OpenAnalysis
 npm install
 npm run setup
 ```
+
+The same setup command generates absolute Node and server paths for the machine it runs on.
 
 ## Hermes Desktop
 
