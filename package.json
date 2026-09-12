@@ -1,14 +1,15 @@
 {
   "name": "@agentic.artists/openanalysis",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A local BYOK MCP server that helps AI assistants choose models using OpenRouter ZDR endpoint data and Artificial Analysis benchmarks.",
   "type": "module",
   "license": "MIT",
   "mcpName": "io.github.AgenticArtists/openanalysis",
   "bin": {
-    "openanalysis": "mcp/server.js"
+    "openanalysis": "bin/openanalysis.js"
   },
   "files": [
+    "bin/",
     "mcp/",
     "lib/",
     "config/",
@@ -43,7 +44,7 @@
   "scripts": {
     "setup": "node scripts/setup.js",
     "test": "node --test",
-    "check": "node --check lib/artificial-analysis.js && node --check lib/openrouter.js && node --check lib/match.js && node --check lib/catalog.js && node --check lib/http.js && node --check mcp/server.js && node --check scripts/setup.js",
+    "check": "node --check bin/openanalysis.js && node --check lib/artificial-analysis.js && node --check lib/openrouter.js && node --check lib/match.js && node --check lib/catalog.js && node --check lib/http.js && node --check mcp/server.js && node --check scripts/setup.js",
     "pack:check": "npm pack --dry-run",
     "mcp": "node mcp/server.js"
   },
