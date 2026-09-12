@@ -1,14 +1,34 @@
 {
   "name": "openanalysis",
   "version": "0.2.0",
+  "description": "A local BYOK MCP server that helps AI assistants choose models using OpenRouter ZDR endpoint data and Artificial Analysis benchmarks.",
   "private": true,
   "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AgenticArtists/OpenAnalysis.git"
+  },
+  "homepage": "https://github.com/AgenticArtists/OpenAnalysis#readme",
+  "bugs": {
+    "url": "https://github.com/AgenticArtists/OpenAnalysis/issues"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "openrouter",
+    "artificial-analysis",
+    "llm",
+    "model-selection",
+    "zdr",
+    "ai"
+  ],
   "engines": {
     "node": ">=20"
   },
   "scripts": {
     "test": "node --test",
-    "check": "node --check api/models.js && node --check api/health.js && node --check lib/artificial-analysis.js && node --check lib/openrouter.js && node --check lib/match.js && node --check lib/catalog.js && node --check lib/http.js && node --check mcp/server.js",
+    "check": "node --check lib/artificial-analysis.js && node --check lib/openrouter.js && node --check lib/match.js && node --check lib/catalog.js && node --check lib/http.js && node --check mcp/server.js",
     "mcp": "node mcp/server.js"
   },
   "dependencies": {
