@@ -6,7 +6,7 @@
 
 OpenAnalysis is a local, bring-your-own-key MCP server that gives your AI assistant current model-selection context from **OpenRouter Zero Data Retention endpoints** and **Artificial Analysis benchmarks**.
 
-No hosted service. No account. No deployment. Your API keys stay on your machine and are used only to call the upstream services directly.
+No hosted service. No account. No deployment. Your API keys are supplied locally and used only to call the upstream services directly.
 
 ## Why OpenAnalysis
 
@@ -37,7 +37,38 @@ Requirements:
 - an OpenRouter API key
 - an MCP-capable chat client such as Hermes Desktop, Claude Code, Cursor, or VS Code/Copilot
 
-### Windows
+OpenAnalysis is published on npm as:
+
+```text
+@agentic.artists/openanalysis
+```
+
+### Fastest install: run from npm
+
+Most stdio MCP hosts can launch OpenAnalysis directly with `npx`.
+
+```json
+{
+  "mcpServers": {
+    "openanalysis": {
+      "command": "npx",
+      "args": ["-y", "@agentic.artists/openanalysis"],
+      "env": {
+        "ARTIFICIAL_ANALYSIS_API_KEY": "YOUR_KEY",
+        "OPENROUTER_API_KEY": "YOUR_KEY"
+      }
+    }
+  }
+}
+```
+
+On Windows GUI clients where `npx` is not available on the app's PATH, use the full path to `npx.cmd` or use the local-clone setup below.
+
+### Local clone + gitignored `.env.local`
+
+This option keeps the API keys in a local gitignored file and generates client config with absolute Node/server paths.
+
+#### Windows
 
 ```powershell
 git clone https://github.com/AgenticArtists/OpenAnalysis.git
@@ -46,17 +77,7 @@ npm.cmd install
 npm.cmd run setup
 ```
 
-`npm.cmd run setup`:
-
-- asks for your two API keys with masked input
-- stores them only in the gitignored `.env.local`
-- prints a ready-to-paste Hermes Desktop / Cursor MCP config using your actual local paths
-- uses the exact Node executable that ran setup, avoiding GUI-client PATH issues
-- also prints the VS Code / Copilot MCP format
-
-If PowerShell blocks `npm.ps1`, use `npm.cmd` as shown above. You do not need to change your execution policy.
-
-### macOS / Linux
+#### macOS / Linux
 
 ```bash
 git clone https://github.com/AgenticArtists/OpenAnalysis.git
@@ -65,11 +86,18 @@ npm install
 npm run setup
 ```
 
-The same setup command generates absolute Node and server paths for the machine it runs on.
+The setup command:
+
+- asks for your two API keys with masked input
+- stores them only in the gitignored `.env.local`
+- prints ready-to-paste Hermes Desktop / Cursor and VS Code / Copilot MCP configs
+- uses the exact Node executable that ran setup, avoiding GUI-client PATH issues
+
+If PowerShell blocks `npm.ps1`, use `npm.cmd`; you do not need to change your execution policy.
 
 ## Hermes Desktop
 
-After running setup, copy the **Hermes Desktop / Cursor MCP config** it prints.
+Either use the npm config above or run the local setup command and paste the generated **Hermes Desktop / Cursor MCP config**.
 
 In Hermes Desktop, open **Skills & Tools → MCP**, import the JSON, and save it. Hermes should discover three tools:
 
@@ -156,7 +184,7 @@ See [ATTRIBUTION.md](./ATTRIBUTION.md) for more detail.
 
 ## Privacy and security
 
-- `.env.local` is gitignored.
+- `.env.local` is gitignored for the clone-based setup.
 - API keys are loaded locally by the MCP process.
 - The setup command masks API-key input.
 - OpenAnalysis does not operate a hosted backend.
@@ -166,24 +194,6 @@ See [ATTRIBUTION.md](./ATTRIBUTION.md) for more detail.
 
 If you discover a security issue, see [SECURITY.md](./SECURITY.md).
 
-## Manual setup
-
-If you prefer not to use the setup script:
-
-```powershell
-Copy-Item .env.local.example .env.local
-notepad .env.local
-```
-
-Add:
-
-```text
-ARTIFICIAL_ANALYSIS_API_KEY=your_key_here
-OPENROUTER_API_KEY=your_key_here
-```
-
-Then use one of the MCP configurations in [LOCAL_MCP.md](./LOCAL_MCP.md).
-
 ## Development
 
 Install dependencies and run validation:
@@ -192,6 +202,7 @@ Install dependencies and run validation:
 npm.cmd install
 npm.cmd test
 npm.cmd run check
+npm.cmd run pack:check
 ```
 
 Test the MCP process manually:
