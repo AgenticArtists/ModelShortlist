@@ -1,10 +1,10 @@
 # Attribution and upstream data
 
-OpenAnalysis is open-source software. It does not bundle or redistribute the underlying datasets it queries.
+ModelShortlist is open-source software. It does not bundle or redistribute the underlying datasets it queries.
 
 ## Artificial Analysis
 
-OpenAnalysis uses Artificial Analysis API data for model benchmarks, pricing, and performance information.
+ModelShortlist uses Artificial Analysis API data for model benchmarks, pricing, and performance information.
 
 Artificial Analysis: https://artificialanalysis.ai/
 
@@ -12,7 +12,7 @@ Users supply their own Artificial Analysis API key and are responsible for compl
 
 ## OpenRouter
 
-OpenAnalysis uses OpenRouter's ZDR endpoint API for current endpoint eligibility, provider information, context limits, supported parameters, pricing, latency, throughput, and uptime.
+ModelShortlist uses OpenRouter's ZDR endpoint API for current endpoint eligibility, provider information, context limits, supported parameters, pricing, latency, throughput, and uptime.
 
 OpenRouter: https://openrouter.ai/
 
@@ -20,6 +20,6 @@ Users supply their own OpenRouter API key and are responsible for complying with
 
 ## Project relationship
 
-OpenAnalysis is not affiliated with, sponsored by, or endorsed by Artificial Analysis or OpenRouter.
+ModelShortlist is not affiliated with, sponsored by, or endorsed by Artificial Analysis or OpenRouter.
 
-The MIT License applies only to the OpenAnalysis source code. It does not grant rights to third-party data, APIs, trademarks, or services.
+The MIT License applies only to the ModelShortlist source code. It does not grant rights to third-party data, APIs, trademarks, or services.
