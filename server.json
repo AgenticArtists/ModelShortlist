@@ -1,0 +1,38 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.AgenticArtists/openanalysis",
+  "title": "OpenAnalysis",
+  "description": "Local BYOK MCP for workload-specific AI model recommendations using OpenRouter ZDR and Artificial Analysis.",
+  "version": "0.2.0",
+  "websiteUrl": "https://github.com/AgenticArtists/OpenAnalysis",
+  "repository": {
+    "url": "https://github.com/AgenticArtists/OpenAnalysis",
+    "source": "github"
+  },
+  "packages": [
+    {
+      "registryType": "npm",
+      "registryBaseUrl": "https://registry.npmjs.org",
+      "identifier": "@agentic.artists/openanalysis",
+      "version": "0.2.0",
+      "runtimeHint": "npx",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "ARTIFICIAL_ANALYSIS_API_KEY",
+          "description": "Artificial Analysis API key used to fetch benchmark and model-performance data.",
+          "isRequired": true,
+          "isSecret": true
+        },
+        {
+          "name": "OPENROUTER_API_KEY",
+          "description": "OpenRouter API key used to fetch current Zero Data Retention endpoint data.",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}
