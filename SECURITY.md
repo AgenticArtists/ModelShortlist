@@ -8,7 +8,7 @@ Instead, use GitHub's private vulnerability reporting for this repository if it 
 
 ## Secrets
 
-OpenAnalysis is designed for bring-your-own-key local use.
+ModelShortlist is designed for bring-your-own-key local use.
 
 - Store real credentials only in `.env.local` or your MCP host's secret environment configuration.
 - Never commit real API keys.
