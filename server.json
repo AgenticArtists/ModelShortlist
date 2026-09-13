@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.AgenticArtists/modelshortlist",
   "title": "ModelShortlist",
-  "description": "Local BYOK MCP for AI model shortlisting with OpenRouter ZDR + Artificial Analysis.",
+  "description": "Local BYOK MCP for AI model shortlisting using OpenRouter + Artificial Analysis.",
   "version": "0.2.1",
   "websiteUrl": "https://modelshortlist.com",
   "repository": {
@@ -28,7 +28,7 @@
         },
         {
           "name": "OPENROUTER_API_KEY",
-          "description": "OpenRouter API key used to fetch current Zero Data Retention endpoint data.",
+          "description": "OpenRouter API key used to fetch model catalog and optional ZDR endpoint data.",
           "isRequired": true,
           "isSecret": true
         }
