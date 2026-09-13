@@ -12,7 +12,7 @@ Users supply their own Artificial Analysis API key and are responsible for compl
 
 ## OpenRouter
 
-ModelShortlist uses OpenRouter's ZDR endpoint API for current endpoint eligibility, provider information, context limits, supported parameters, pricing, latency, throughput, and uptime.
+ModelShortlist uses OpenRouter's model catalog API for current model availability, capabilities, context limits, and pricing. It also uses OpenRouter's ZDR endpoint API to identify current Zero Data Retention options and endpoint-level provider/performance information when ZDR is relevant to the user's request.
 
 OpenRouter: https://openrouter.ai/
 
