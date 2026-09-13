@@ -4,7 +4,7 @@
 
 **Stop guessing which AI model to use.**
 
-ModelShortlist is a local, bring-your-own-key MCP server that gives your AI assistant current model-selection context from **OpenRouter Zero Data Retention endpoints** and **Artificial Analysis benchmarks**.
+ModelShortlist is a local, bring-your-own-key MCP server that gives your AI assistant current model-selection context from the **full OpenRouter model catalog** plus **Artificial Analysis benchmarks**. Zero Data Retention (ZDR) is available as an optional hard constraint when you explicitly require it.
 
 No hosted service. No account. No deployment. Your API keys are supplied locally and used only to call the upstream services directly.
 
@@ -12,21 +12,22 @@ Website: [modelshortlist.com](https://modelshortlist.com)
 
 ## Why ModelShortlist
 
-Model choice is no longer just "which model has the highest benchmark score?" The right answer depends on the workload and the endpoint you can actually use.
+Model choice is no longer just "which model has the highest benchmark score?" The right answer depends on the workload, capabilities, cost, context, and any privacy requirements you actually have.
 
 ModelShortlist helps your chat agent reason over:
 
-- current OpenRouter ZDR endpoint availability
+- the current OpenRouter model catalog
 - tool/function-calling support
 - context and completion limits
-- endpoint-level input/output pricing
-- latency, throughput, and uptime
+- OpenRouter input/output pricing
+- current ZDR endpoint availability when privacy requires it
+- ZDR endpoint latency, throughput, uptime, and provider options when applicable
 - Artificial Analysis Intelligence Index
 - Artificial Analysis Coding Index
 - Artificial Analysis Agentic Index
 - Artificial Analysis pricing and median performance
 
-Hard constraints are checked against a **single real ZDR endpoint**. A model does not qualify for tool use plus 100k context unless at least one current ZDR endpoint satisfies both.
+By default, **ZDR is not an eligibility requirement**. ModelShortlist considers the full OpenRouter catalog. If you explicitly require ZDR, the tool switches to current OpenRouter ZDR endpoint data and requires all hard constraints to be satisfied by the same real ZDR endpoint.
 
 The chat model makes the final recommendation based on your use case. ModelShortlist deliberately does not impose one universal ranking formula.
 
@@ -109,13 +110,19 @@ In Hermes Desktop, open **Skills & Tools → MCP**, import the JSON, and save it
 
 Then start a normal chat and ask something like:
 
-> I need a model for a long-running autonomous coding agent. ZDR is mandatory, tool calling is required, and I need at least 100k context. Quality matters more than cost, but I care about value. What should I use?
+> I need the best-value model for a long-running autonomous coding agent. Tool calling is required and I need at least 100k context. Quality matters more than cost, but I care about value. What should I use?
+
+If privacy matters, say so explicitly:
+
+> Same workload, but ZDR is mandatory.
 
 More client setup examples and manual configuration are in [LOCAL_MCP.md](./LOCAL_MCP.md).
 
 ## Example prompts
 
-> What's the cheapest model I'd trust with repetitive coding subagents? ZDR and tool use are required.
+> What's the cheapest model I'd trust with repetitive coding subagents? Tool use is required.
+
+> I need 200k context and tool use. What are my best current options?
 
 > I need 200k context, tool use, and ZDR. What are my best current options?
 
@@ -131,20 +138,21 @@ More client setup examples and manual configuration are in [LOCAL_MCP.md](./LOCA
 
 The primary tool. It accepts a workload plus hard constraints such as:
 
+- ZDR required or not required
 - tool calling required
 - minimum context
 - maximum input/output price
 - creator/model filter
 
-It returns current candidates that are both ZDR-eligible and confidently matched to Artificial Analysis data. The host model then makes the recommendation.
+When ZDR is not required, it considers the full OpenRouter catalog. When ZDR is explicitly required, it filters against current ZDR endpoints and verifies hard constraints against the same endpoint. Artificial Analysis benchmark data is attached only when the model can be confidently reconciled; models without a confident benchmark match remain eligible with missing benchmark fields rather than being silently removed.
 
 ### `compare_models`
 
-Returns current Artificial Analysis benchmark information and OpenRouter ZDR endpoint information for a specific shortlist of OpenRouter model IDs.
+Returns current OpenRouter catalog information, ZDR availability, and Artificial Analysis benchmark information when available for a specific shortlist of OpenRouter model IDs. ZDR is not assumed to be required.
 
 ### `modelshortlist_status`
 
-Shows match coverage, ambiguous/unmatched records, cache state, and Artificial Analysis rate-limit metadata.
+Shows OpenRouter catalog coverage, ZDR coverage, model matching coverage, ambiguous/unmatched records, cache state, and Artificial Analysis rate-limit metadata.
 
 ## How matching works
 
@@ -152,15 +160,17 @@ The Artificial Analysis Free API does not expose an OpenRouter model ID. ModelSh
 
 1. manually verified aliases
 2. exact normalized name matches
-3. otherwise the model remains unmatched
+3. otherwise the Artificial Analysis benchmark match remains unavailable
 
-ModelShortlist does **not** fuzzy-match uncertain model variants. This is intentional: a missing candidate is better than attaching benchmark data to the wrong model.
+ModelShortlist does **not** fuzzy-match uncertain model variants. A missing benchmark is better than attaching benchmark data to the wrong model. An unmatched OpenRouter model can still be considered; it simply carries no Artificial Analysis metrics.
 
 Verified aliases live in [`config/aliases.json`](./config/aliases.json).
 
-## ZDR is enforced at selection time, not inference time
+## ZDR is optional
 
-ModelShortlist identifies models with current ZDR-capable OpenRouter endpoints. If you later call a selected model through OpenRouter, enforce ZDR again in the actual inference request:
+ModelShortlist tracks which models have current ZDR-capable OpenRouter endpoints, but it does **not** filter to them unless the user explicitly requires Zero Data Retention.
+
+When ZDR is required, ModelShortlist checks current endpoint-level eligibility and hard constraints. If you later call the selected model through OpenRouter, enforce ZDR again in the actual inference request:
 
 ```json
 {
@@ -171,12 +181,14 @@ ModelShortlist identifies models with current ZDR-capable OpenRouter endpoints. 
 }
 ```
 
+When ZDR is not required, do not add `provider.zdr=true` merely because a model happens to support it.
+
 ## Data sources and attribution
 
 ModelShortlist uses data accessed with **your own API credentials**.
 
+- Model catalog, capabilities, pricing, context, and ZDR endpoint metadata: [OpenRouter](https://openrouter.ai/)
 - Benchmark and model-performance data: [Artificial Analysis](https://artificialanalysis.ai/)
-- ZDR eligibility, providers, pricing, context, supported parameters, latency, throughput, and uptime: [OpenRouter](https://openrouter.ai/)
 
 ModelShortlist is not affiliated with or endorsed by Artificial Analysis or OpenRouter.
 
