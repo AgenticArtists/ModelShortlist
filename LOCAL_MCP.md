@@ -2,7 +2,7 @@
 
 ModelShortlist runs locally as an MCP server. Nothing needs to be deployed.
 
-Your MCP client launches `mcp/server.js`; ModelShortlist fetches current OpenRouter ZDR endpoint data and Artificial Analysis data using your own API keys. The host chat model uses those facts to recommend a model for your workload.
+Your MCP client launches `mcp/server.js`; ModelShortlist fetches the current OpenRouter model catalog, current ZDR endpoint metadata, and Artificial Analysis data using your own API keys. The host chat model uses those facts to recommend a model for your workload. ZDR is only used as an eligibility filter when you explicitly require it.
 
 ## Recommended setup
 
@@ -49,7 +49,11 @@ Hermes should discover:
 
 Then ask normally:
 
-> I need a model for a long-running autonomous coding loop. ZDR is mandatory. It needs tool calling and at least 100k context. Quality matters more than cost, but I care about value. What should I use?
+> I need a model for a long-running autonomous coding loop. It needs tool calling and at least 100k context. Quality matters more than cost, but I care about value. What should I use?
+
+If you need Zero Data Retention, state it explicitly:
+
+> Same workload, but ZDR is mandatory.
 
 ## Claude Code
 
@@ -135,15 +139,15 @@ OPENROUTER_API_KEY=your_key_here
 
 ### `recommend_models`
 
-Returns current candidate models that satisfy the requested hard constraints and are confidently reconciled between OpenRouter ZDR data and Artificial Analysis data. The host model makes the final recommendation.
+Returns current candidates from the full OpenRouter catalog that satisfy the requested hard constraints. Artificial Analysis metrics are attached when the model can be confidently matched. If the user explicitly requires ZDR, ModelShortlist switches to current ZDR endpoint-level filtering and requires all hard constraints to be satisfied on the same eligible endpoint.
 
 ### `compare_models`
 
-Returns current data for a shortlist of specific OpenRouter model IDs.
+Returns current OpenRouter catalog data, ZDR availability, and Artificial Analysis benchmark data when available for a shortlist of specific OpenRouter model IDs.
 
 ### `modelshortlist_status`
 
-Shows match coverage, ambiguous/unmatched records, cache state, and Artificial Analysis rate-limit metadata.
+Shows OpenRouter catalog coverage, ZDR coverage, model matching coverage, cache state, and Artificial Analysis rate-limit metadata.
 
 ## Manual process test
 
