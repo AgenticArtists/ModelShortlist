@@ -1,6 +1,69 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { endpointSatisfies, groupZdrEndpointsByModel } from '../lib/openrouter.js'
+import {
+  buildOpenRouterCatalog,
+  endpointSatisfies,
+  groupZdrEndpointsByModel,
+  modelCatalogSatisfies,
+} from '../lib/openrouter.js'
+
+test('full OpenRouter catalog keeps models without ZDR endpoints', () => {
+  const models = buildOpenRouterCatalog([
+    {
+      id: 'vendor/model-a',
+      name: 'Model A',
+      context_length: 128000,
+      supported_parameters: ['temperature', 'tools'],
+      pricing: { prompt: '0.000001', completion: '0.000003' },
+      top_provider: { context_length: 128000, max_completion_tokens: 16000 },
+    },
+    {
+      id: 'vendor/model-b',
+      name: 'Model B',
+      context_length: 64000,
+      supported_parameters: ['temperature'],
+      pricing: { prompt: '0.0000005', completion: '0.000001' },
+      top_provider: { context_length: 64000, max_completion_tokens: 8000 },
+    },
+  ], [
+    {
+      model_id: 'vendor/model-a',
+      model_name: 'Model A',
+      provider_name: 'Private Provider',
+      context_length: 128000,
+      supported_parameters: ['tools'],
+      pricing: { prompt: '0.000001', completion: '0.000003' },
+    },
+  ])
+
+  assert.equal(models.length, 2)
+  assert.equal(models[0].zdr, true)
+  assert.equal(models[1].zdr, false)
+  assert.equal(models[1].zdr_endpoint_options.length, 0)
+})
+
+test('general constraints do not require ZDR', () => {
+  const [model] = buildOpenRouterCatalog([
+    {
+      id: 'vendor/model-no-zdr',
+      name: 'Model No ZDR',
+      supported_parameters: ['tools'],
+      pricing: { prompt: '0.000002', completion: '0.000004' },
+      top_provider: { context_length: 200000, max_completion_tokens: 16000 },
+    },
+  ])
+
+  assert.equal(model.zdr, false)
+  assert.equal(
+    modelCatalogSatisfies(model, {
+      tools: true,
+      minContext: 100000,
+      maxInputPrice: 3,
+      maxOutputPrice: 5,
+    }),
+    true,
+  )
+})
 
 test('groups ZDR endpoints and exposes operational constraints', () => {
   const result = groupZdrEndpointsByModel([
@@ -43,7 +106,7 @@ test('groups ZDR endpoints and exposes operational constraints', () => {
   assert.equal(model.openrouter_zdr_performance.best_throughput_p50_tokens_per_second, 120)
 })
 
-test('hard constraints must be satisfied by the same endpoint', () => {
+test('ZDR hard constraints must be satisfied by the same endpoint', () => {
   const models = groupZdrEndpointsByModel([
     {
       model_id: 'vendor/model-b',
@@ -72,16 +135,17 @@ test('hard constraints must be satisfied by the same endpoint', () => {
   )
 })
 
-test('OpenRouter price constraint uses the actual ZDR endpoint price', () => {
+test('ZDR price constraints use the actual endpoint price', () => {
   const endpoint = {
     supports_tools: true,
     context_length: 128000,
-    pricing_usd_per_1m_tokens: { output: 12 },
+    pricing_usd_per_1m_tokens: { input: 2, output: 12 },
   }
   assert.equal(
     endpointSatisfies(endpoint, {
       tools: true,
       minContext: 100000,
+      maxInputPrice: 3,
       maxOutputPrice: 10,
     }),
     false,
