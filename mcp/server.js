@@ -189,7 +189,7 @@ const recommendationSchema = z.object({
 function createServer() {
   const server = new McpServer({
     name: 'modelshortlist',
-    version: '0.2.1',
+    version: '0.2.2',
   })
 
   server.registerTool(
