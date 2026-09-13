@@ -6,18 +6,21 @@ ModelShortlist is public-source software being prepared for npm and Official MCP
 
 **One-liner**
 
-ModelShortlist is a local BYOK MCP server that helps your AI assistant choose the right model for a workload using live OpenRouter ZDR endpoint data plus Artificial Analysis benchmarks.
+ModelShortlist is a local BYOK MCP server that helps your AI assistant choose the right model for a workload using the live OpenRouter model catalog plus Artificial Analysis benchmarks, with optional ZDR filtering when privacy requires it.
 
 **Short description**
 
-Stop guessing which model to use. ModelShortlist lets an MCP-capable assistant reason over current ZDR availability, tool support, context, price, latency, throughput, uptime, and Artificial Analysis benchmark data for the specific workload you describe.
+Stop guessing which model to use. ModelShortlist lets an MCP-capable assistant reason over current model availability, tool support, context, price, benchmark data, and optional Zero Data Retention requirements for the specific workload you describe.
 
 **Core differentiators**
 
 - workload-specific recommendations instead of a static leaderboard
-- checks hard constraints against one real OpenRouter ZDR endpoint
+- full OpenRouter catalog by default instead of a ZDR-only subset
+- optional ZDR hard filtering when the user explicitly requires it
+- current ZDR endpoint-level validation when ZDR is required
 - local/BYOK architecture with no hosted ModelShortlist backend
-- conservative model reconciliation instead of fuzzy benchmark matching
+- conservative Artificial Analysis reconciliation instead of fuzzy benchmark matching
+- unmatched OpenRouter models remain eligible without invented benchmark data
 - works as a read-only MCP tool inside existing chat/agent clients
 
 ## Launch order
@@ -36,7 +39,7 @@ Repository metadata should use:
 
 **Description**
 
-> Local MCP for workload-specific AI model recommendations using OpenRouter ZDR + Artificial Analysis.
+> Local MCP for workload-specific AI model recommendations using OpenRouter + Artificial Analysis.
 
 **Topics**
 
@@ -107,7 +110,7 @@ After the package/Registry listing is stable, submit to established MCP awesome 
 
 **Body**
 
-> I built ModelShortlist because choosing an LLM has become a workload-specific decision rather than a leaderboard question. It runs locally as an MCP server and combines current OpenRouter ZDR endpoint constraints (tools, context, price, latency, throughput, uptime) with Artificial Analysis benchmark data. You describe the job and your host model uses the current evidence to recommend a model. It is local, BYOK, read-only, MIT licensed, and has no hosted backend. Feedback on the recommendation surface and matching approach would be useful.
+> I built ModelShortlist because choosing an LLM has become a workload-specific decision rather than a leaderboard question. It runs locally as an MCP server and combines the current OpenRouter model catalog (tools, context, price, capabilities) with Artificial Analysis benchmark data. You describe the job and your host model uses the current evidence to recommend a model. If you explicitly require Zero Data Retention, it filters against current OpenRouter ZDR endpoints and verifies the hard constraints there. It is local, BYOK, read-only, MIT licensed, and has no hosted backend. Feedback on the recommendation surface and matching approach would be useful.
 
 ### Reddit / MCP communities
 
@@ -117,7 +120,7 @@ After the package/Registry listing is stable, submit to established MCP awesome 
 
 **Body**
 
-> ModelShortlist is a local BYOK MCP server that combines live OpenRouter ZDR endpoint data with Artificial Analysis benchmarks. Instead of showing another leaderboard, it lets your existing AI assistant evaluate the actual workload and hard constraints: tool calling, context, price, latency, throughput, uptime, coding/agentic benchmarks, etc. It is MIT licensed and there is no hosted backend. I am looking for early users who regularly switch between models and can tell me where the recommendation logic falls short.
+> ModelShortlist is a local BYOK MCP server that combines the current OpenRouter model catalog with Artificial Analysis benchmarks. Instead of showing another leaderboard, it lets your existing AI assistant evaluate the actual workload and hard constraints: tool calling, context, price, coding/agentic benchmarks, etc. ZDR is optional: if you explicitly require it, ModelShortlist checks the current ZDR endpoint set rather than restricting everyone by default. It is MIT licensed and there is no hosted backend. I am looking for early users who regularly switch between models and can tell me where the recommendation logic falls short.
 
 ## What not to build before feedback
 
@@ -137,7 +140,7 @@ The first validation question is simpler: **do people who regularly use multiple
 
 When users open issues, prioritize patterns around:
 
-1. important models missing because reconciliation failed
+1. important models missing benchmark matches or useful metadata
 2. constraints users repeatedly want but the tool cannot express
 3. recommendation data that users find misleading or irrelevant
 4. MCP clients where installation is unnecessarily difficult
