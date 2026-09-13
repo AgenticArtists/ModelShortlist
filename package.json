@@ -1,7 +1,7 @@
 {
   "name": "@agentic.artists/modelshortlist",
   "version": "0.2.1",
-  "description": "A local BYOK MCP server that helps AI assistants shortlist models using OpenRouter ZDR endpoint data and Artificial Analysis benchmarks.",
+  "description": "A local BYOK MCP server that helps AI assistants shortlist models using OpenRouter catalog data and Artificial Analysis benchmarks, with optional ZDR filtering.",
   "type": "module",
   "license": "MIT",
   "mcpName": "io.github.AgenticArtists/modelshortlist",
