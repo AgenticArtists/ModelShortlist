@@ -125,13 +125,13 @@ function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-blue-500/15 bg-background/90 backdrop-blur-xl supports-[backdrop-filter]:bg-background/72">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
-        <a href="#top" className="group rounded-md" aria-label="ModelShortlist home">
+        <a href="/" className="group rounded-md" aria-label="ModelShortlist home">
           <Logo className="transition-transform duration-300 group-hover:scale-[1.02]" />
         </a>
         <nav className="hidden items-center gap-1 md:flex" aria-label="Primary navigation">
-          <a href="#how-it-works" className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground">How it works</a>
-          <a href="#examples" className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground">Examples</a>
-          <a href="#install" className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground">Install</a>
+          <a href="/#how-it-works" className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground">How it works</a>
+          <a href="/#examples" className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground">Examples</a>
+          <a href="/install" className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground">Install</a>
         </nav>
         <div className="flex items-center gap-2">
           <ThemeToggle />
@@ -144,7 +144,7 @@ function SiteHeader() {
             <Github className="h-4 w-4" aria-hidden="true" />
             <span className="hidden sm:inline">GitHub</span>
           </a>
-          <a href="#install" className="brand-gradient-bg inline-flex h-9 items-center rounded-lg px-3.5 text-sm font-semibold text-white">Install</a>
+          <a href="/install" className="brand-gradient-bg inline-flex h-9 items-center rounded-lg px-3.5 text-sm font-semibold text-white">Install</a>
         </div>
       </div>
     </header>
@@ -157,14 +157,15 @@ function SiteFooter() {
       <div className="mx-auto max-w-7xl px-6 py-12">
         <div className="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
           <div className="max-w-md">
-            <a href="#top" className="inline-flex rounded-md" aria-label="ModelShortlist home"><Logo /></a>
+            <a href="/" className="inline-flex rounded-md" aria-label="ModelShortlist home"><Logo /></a>
             <p className="mt-4 text-sm leading-6 text-muted-foreground">
               Open-source model-selection context for AI assistants. Local, BYOK, and built by AgenticArtists.
             </p>
           </div>
           <div className="grid grid-cols-2 gap-x-12 gap-y-3 text-sm">
-            <a href={GITHUB_URL} target="_blank" rel="noreferrer" className="text-muted-foreground transition-colors hover:text-foreground">GitHub</a>
+            <a href="/install" className="text-muted-foreground transition-colors hover:text-foreground">Install</a>
             <a href={NPM_URL} target="_blank" rel="noreferrer" className="text-muted-foreground transition-colors hover:text-foreground">npm</a>
+            <a href={GITHUB_URL} target="_blank" rel="noreferrer" className="text-muted-foreground transition-colors hover:text-foreground">GitHub</a>
             <a href="https://github.com/AgenticArtists/ModelShortlist/blob/main/README.md" target="_blank" rel="noreferrer" className="text-muted-foreground transition-colors hover:text-foreground">Docs</a>
             <a href="https://www.agenticartists.com" target="_blank" rel="noreferrer" className="text-muted-foreground transition-colors hover:text-foreground">AgenticArtists</a>
             <a href="https://github.com/AgenticArtists/ModelShortlist/blob/main/LICENSE" target="_blank" rel="noreferrer" className="text-muted-foreground transition-colors hover:text-foreground">MIT License</a>
