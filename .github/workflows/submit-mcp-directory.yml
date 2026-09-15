@@ -21,7 +21,7 @@ jobs:
           HTTP_CODE="$(curl -sS -o "$RESPONSE_FILE" -w '%{http_code}' \
             -X POST 'https://mcp.directory/api/submit-server' \
             -H 'Content-Type: application/json' \
-            --data '{"githubUrl":"https://github.com/AgenticArtists/ModelShortlist","description":"Workload-specific AI model shortlisting using current OpenRouter catalog data and Artificial Analysis benchmarks.","email":"agenticartists@gmail.com"}')"
+            --data '{"githubUrl":"https://github.com/AgenticArtists/ModelShortlist","description":"Workload-specific AI model selection using OpenRouter data and Artificial Analysis benchmarks.","email":"agenticartists@gmail.com"}')"
           cat "$RESPONSE_FILE"
           echo
           echo "HTTP $HTTP_CODE"
