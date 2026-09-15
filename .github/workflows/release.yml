@@ -12,7 +12,7 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -23,15 +23,33 @@ jobs:
           node-version: 24
           registry-url: https://registry.npmjs.org
 
+      - name: Pin npm CLI for trusted publishing
+        run: npm install --global npm@11.15.0
+
       - name: Install dependencies
         run: npm ci
 
-      - name: Verify tag matches package version
+      - name: Verify tag and distribution versions match
         shell: bash
         run: |
           VERSION="$(node -p "require('./package.json').version")"
+          LOCK_VERSION="$(node -p "require('./package-lock.json').version")"
+          REGISTRY_VERSION="$(node -p "require('./server.json').version")"
+          REGISTRY_PACKAGE_VERSION="$(node -e "const s=require('./server.json'); process.stdout.write(s.packages[0].version)")"
           test "v$VERSION" = "$GITHUB_REF_NAME" || {
             echo "Tag $GITHUB_REF_NAME does not match package version v$VERSION"
+            exit 1
+          }
+          test "$LOCK_VERSION" = "$VERSION" || {
+            echo "package-lock.json version $LOCK_VERSION does not match package.json $VERSION"
+            exit 1
+          }
+          test "$REGISTRY_VERSION" = "$VERSION" || {
+            echo "server.json version $REGISTRY_VERSION does not match package.json $VERSION"
+            exit 1
+          }
+          test "$REGISTRY_PACKAGE_VERSION" = "$VERSION" || {
+            echo "server.json package version $REGISTRY_PACKAGE_VERSION does not match package.json $VERSION"
             exit 1
           }
 
@@ -60,6 +78,21 @@ jobs:
           else
             npm publish --access public
           fi
+
+      - name: Install verified MCP Registry publisher
+        shell: bash
+        run: |
+          URL="https://github.com/modelcontextprotocol/registry/releases/download/v1.8.1/mcp-publisher_linux_amd64.tar.gz"
+          curl --fail --location --silent --show-error "$URL" --output mcp-publisher.tar.gz
+          echo "a06c9096dcb9727c13555b6be26c7effa707b01f06a4c561ba7a3635443cf2cc  mcp-publisher.tar.gz" | sha256sum --check --strict
+          tar xzf mcp-publisher.tar.gz mcp-publisher
+          ./mcp-publisher --help >/dev/null
+
+      - name: Publish Official MCP Registry metadata
+        shell: bash
+        run: |
+          ./mcp-publisher login github-oidc
+          ./mcp-publisher publish
 
       - name: Publish GitHub Release
         env:
