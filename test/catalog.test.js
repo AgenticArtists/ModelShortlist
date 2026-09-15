@@ -131,6 +131,29 @@ test('falls back to explicitly stale per-source data after a successful refresh'
   assert.equal(result.models[0].zdr, true)
 })
 
+test('an empty refresh preserves the previous good OpenRouter catalog as stale', async () => {
+  resetCatalogCacheForTests()
+  await getMergedCatalog({
+    forceRefresh: true,
+    fetchers: fetchers(),
+    now: 25_000,
+  })
+
+  const result = await getMergedCatalog({
+    forceRefresh: true,
+    fetchers: fetchers({ openRouterModels: async () => [] }),
+    now: 30_000,
+  })
+
+  assert.equal(result.freshness.sources.openrouter_models.status, 'stale')
+  assert.match(
+    result.freshness.sources.openrouter_models.error.message,
+    /OpenRouter model catalog is empty/,
+  )
+  assert.equal(result.models.length, 1)
+  assert.equal(result.models[0].model_id, 'vendor/model-a')
+})
+
 test('fails closed when the OpenRouter catalog is unavailable with no cache', async () => {
   resetCatalogCacheForTests()
   await assert.rejects(
@@ -143,13 +166,13 @@ test('fails closed when the OpenRouter catalog is unavailable with no cache', as
           throw error
         },
       }),
-      now: 30_000,
+      now: 35_000,
     }),
     /OpenRouter model catalog is unavailable and no cached copy exists: upstream service error \(HTTP 503\)/,
   )
 })
 
-test('refuses an empty OpenRouter catalog', async () => {
+test('refuses an empty OpenRouter catalog when no cached copy exists', async () => {
   resetCatalogCacheForTests()
   await assert.rejects(
     getMergedCatalog({
