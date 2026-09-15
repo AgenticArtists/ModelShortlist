@@ -1,18 +1,25 @@
 # ModelShortlist
 
 [![CI](https://github.com/AgenticArtists/ModelShortlist/actions/workflows/ci.yml/badge.svg)](https://github.com/AgenticArtists/ModelShortlist/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/@agentic.artists/modelshortlist.svg)](https://www.npmjs.com/package/@agentic.artists/modelshortlist)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+[![Official MCP Registry](https://img.shields.io/badge/Official%20MCP%20Registry-published-5b5bd6.svg)](https://registry.modelcontextprotocol.io/?q=io.github.AgenticArtists%2Fmodelshortlist)
 
 **Stop guessing which AI model to use.**
 
 ModelShortlist is a local, bring-your-own-key MCP server that gives your AI assistant current model-selection context from the **full OpenRouter model catalog** plus **Artificial Analysis benchmarks**. Zero Data Retention (ZDR) is available as an optional hard constraint when you explicitly require it.
 
-No hosted service. No account. No deployment. Your API keys are supplied locally and used only to call the upstream services directly.
+No hosted ModelShortlist backend. No account. No telemetry in the MCP. Your API keys stay with the local MCP process and are used to call the upstream services directly.
 
-Website: [modelshortlist.com](https://modelshortlist.com)
+- Website: [modelshortlist.com](https://modelshortlist.com)
+- Fast install configurator: [modelshortlist.com/install](https://modelshortlist.com/install)
+- npm: [`@agentic.artists/modelshortlist`](https://www.npmjs.com/package/@agentic.artists/modelshortlist)
+- Official MCP Registry: `io.github.AgenticArtists/modelshortlist`
+- License: MIT
 
 ## Why ModelShortlist
 
-Model choice is no longer just "which model has the highest benchmark score?" The right answer depends on the workload, capabilities, cost, context, and any privacy requirements you actually have.
+Model choice is no longer just "which model has the highest benchmark score?" The right answer depends on the workload, capabilities, cost, context, and privacy requirements you actually have.
 
 ModelShortlist helps your chat agent reason over:
 
@@ -27,28 +34,35 @@ ModelShortlist helps your chat agent reason over:
 - Artificial Analysis Agentic Index
 - Artificial Analysis pricing and median performance
 
-By default, **ZDR is not an eligibility requirement**. ModelShortlist considers the full OpenRouter catalog. If you explicitly require ZDR, the tool switches to current OpenRouter ZDR endpoint data and requires all hard constraints to be satisfied by the same real ZDR endpoint.
+By default, **ZDR is not an eligibility requirement**. ModelShortlist considers the full OpenRouter catalog. If you explicitly require ZDR, it switches to current OpenRouter ZDR endpoint data and requires the hard constraints to be satisfied by the same real ZDR endpoint.
 
-The chat model makes the final recommendation based on your use case. ModelShortlist deliberately does not impose one universal ranking formula.
+The host AI makes the final recommendation based on your use case. ModelShortlist deliberately does **not** impose one universal ranking formula.
 
-## Quick start
+## Fastest install
+
+Use the browser-only configurator:
+
+**[Install ModelShortlist →](https://modelshortlist.com/install)**
+
+It generates client-specific config or commands for:
+
+- Hermes Desktop
+- Cursor
+- Claude Code
+- VS Code / Copilot
+
+You paste your own Artificial Analysis and OpenRouter keys into the configurator. They are used only in your browser to generate the config text and are not sent to ModelShortlist.
 
 Requirements:
 
 - Node.js 20+
 - an Artificial Analysis API key
 - an OpenRouter API key
-- an MCP-capable chat client such as Hermes Desktop, Claude Code, Cursor, or VS Code/Copilot
+- an MCP-capable client
 
-The npm package is:
+## Generic npm config
 
-```text
-@agentic.artists/modelshortlist
-```
-
-### Fastest install: run from npm
-
-Most stdio MCP hosts can launch ModelShortlist directly with `npx`.
+Most local stdio MCP clients can launch ModelShortlist directly with `npx`:
 
 ```json
 {
@@ -65,13 +79,13 @@ Most stdio MCP hosts can launch ModelShortlist directly with `npx`.
 }
 ```
 
-On Windows GUI clients where `npx` is not available on the app's PATH, use the full path to `npx.cmd` or use the local-clone setup below.
+On Windows GUI clients where `npx` is not available on the app's PATH, use `npx.cmd` or use the guided clone setup below.
 
-### Local clone + gitignored `.env.local`
+## Guided local setup
 
-This option keeps the API keys in a local gitignored file and generates client config with absolute Node/server paths.
+This option stores API keys in a local gitignored `.env.local` file and prints ready-to-paste MCP config using absolute executable paths.
 
-#### Windows
+### Windows
 
 ```powershell
 git clone https://github.com/AgenticArtists/ModelShortlist.git
@@ -80,7 +94,7 @@ npm.cmd install
 npm.cmd run setup
 ```
 
-#### macOS / Linux
+### macOS / Linux
 
 ```bash
 git clone https://github.com/AgenticArtists/ModelShortlist.git
@@ -91,32 +105,14 @@ npm run setup
 
 The setup command:
 
-- asks for your two API keys with masked input
+- asks for both API keys with masked input
 - stores them only in the gitignored `.env.local`
 - prints ready-to-paste Hermes Desktop / Cursor and VS Code / Copilot MCP configs
-- uses the exact Node executable that ran setup, avoiding GUI-client PATH issues
+- uses the exact Node executable that ran setup, avoiding many GUI-client PATH problems
 
 If PowerShell blocks `npm.ps1`, use `npm.cmd`; you do not need to change your execution policy.
 
-## Hermes Desktop
-
-Either use the npm config above or run the local setup command and paste the generated **Hermes Desktop / Cursor MCP config**.
-
-In Hermes Desktop, open **Skills & Tools → MCP**, import the JSON, and save it. Hermes should discover three tools:
-
-- `recommend_models`
-- `compare_models`
-- `modelshortlist_status`
-
-Then start a normal chat and ask something like:
-
-> I need the best-value model for a long-running autonomous coding agent. Tool calling is required and I need at least 100k context. Quality matters more than cost, but I care about value. What should I use?
-
-If privacy matters, say so explicitly:
-
-> Same workload, but ZDR is mandatory.
-
-More client setup examples and manual configuration are in [LOCAL_MCP.md](./LOCAL_MCP.md).
+More setup details are in [LOCAL_MCP.md](./LOCAL_MCP.md).
 
 ## Example prompts
 
@@ -136,7 +132,7 @@ More client setup examples and manual configuration are in [LOCAL_MCP.md](./LOCA
 
 ### `recommend_models`
 
-The primary tool. It accepts a workload plus hard constraints such as:
+The primary workload-specific recommendation tool. It accepts hard constraints such as:
 
 - ZDR required or not required
 - tool calling required
@@ -144,11 +140,13 @@ The primary tool. It accepts a workload plus hard constraints such as:
 - maximum input/output price
 - creator/model filter
 
-When ZDR is not required, it considers the full OpenRouter catalog. When ZDR is explicitly required, it filters against current ZDR endpoints and verifies hard constraints against the same endpoint. Artificial Analysis benchmark data is attached only when the model can be confidently reconciled; models without a confident benchmark match remain eligible with missing benchmark fields rather than being silently removed.
+When ZDR is not required, it considers the full OpenRouter catalog. When ZDR is explicitly required, it filters against current ZDR endpoints and verifies hard constraints against the same endpoint.
+
+Artificial Analysis benchmark data is attached only when the model can be confidently reconciled. Models without a confident benchmark match remain eligible with missing benchmark fields rather than being silently removed.
 
 ### `compare_models`
 
-Returns current OpenRouter catalog information, ZDR availability, and Artificial Analysis benchmark information when available for a specific shortlist of OpenRouter model IDs. ZDR is not assumed to be required.
+Returns current OpenRouter catalog information, ZDR availability, and Artificial Analysis benchmark information when available for a specified shortlist of OpenRouter model IDs.
 
 ### `modelshortlist_status`
 
@@ -156,7 +154,7 @@ Shows OpenRouter catalog coverage, ZDR coverage, model matching coverage, ambigu
 
 ## How matching works
 
-The Artificial Analysis Free API does not expose an OpenRouter model ID. ModelShortlist therefore reconciles models conservatively:
+The Artificial Analysis Free API does not expose an OpenRouter model ID. ModelShortlist reconciles models conservatively:
 
 1. manually verified aliases
 2. exact normalized name matches
@@ -192,21 +190,26 @@ ModelShortlist uses data accessed with **your own API credentials**.
 
 ModelShortlist is not affiliated with or endorsed by Artificial Analysis or OpenRouter.
 
-The ModelShortlist source code is licensed under the MIT License. Upstream data and APIs remain subject to their respective terms. In particular, Artificial Analysis API access may have restrictions on external use and redistribution. ModelShortlist does not bundle or host their dataset; each user accesses upstream data with their own credentials and is responsible for complying with the applicable terms.
+The ModelShortlist source code is licensed under the MIT License. Upstream data and APIs remain subject to their respective terms. ModelShortlist does not bundle or host the Artificial Analysis dataset; each user accesses upstream data with their own credentials and is responsible for complying with applicable terms.
 
 See [ATTRIBUTION.md](./ATTRIBUTION.md) for more detail.
 
 ## Privacy and security
 
-- `.env.local` is gitignored for the clone-based setup.
+- `.env.local` is gitignored for clone-based setup.
 - API keys are loaded locally by the MCP process.
-- The setup command masks API-key input.
+- the setup command masks API-key input.
 - ModelShortlist does not operate a hosted backend.
 - MCP tools are read-only.
-- The server writes protocol traffic to stdout and diagnostic messages to stderr.
-- No telemetry is built into ModelShortlist.
+- no telemetry is built into ModelShortlist.
 
 If you discover a security issue, see [SECURITY.md](./SECURITY.md).
+
+## Discovery and directory maintainers
+
+ModelShortlist is already published to the Official MCP Registry. Reusable directory metadata and canonical listing copy live in [docs/DIRECTORY_SUBMISSIONS.md](./docs/DIRECTORY_SUBMISSIONS.md).
+
+The repository also includes [`glama.json`](./glama.json) for Glama ownership verification of this organization-hosted repository.
 
 ## Development
 
