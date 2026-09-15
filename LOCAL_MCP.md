@@ -4,6 +4,8 @@ ModelShortlist runs locally as an MCP server. Nothing needs to be deployed.
 
 Your MCP client launches `mcp/server.js`; ModelShortlist fetches the current OpenRouter model catalog, current ZDR endpoint metadata, and Artificial Analysis data using your own API keys. The host chat model uses those facts to recommend a model for your workload. ZDR is only used as an eligibility filter when you explicitly require it.
 
+For the fastest client-specific setup, use the browser-only configurator at https://modelshortlist.com/install.
+
 ## Recommended setup
 
 ### Windows
@@ -24,7 +26,7 @@ npm install
 npm run setup
 ```
 
-The setup command masks API-key input, writes the keys only to the gitignored `.env.local`, and prints ready-to-paste MCP JSON for Hermes Desktop / Cursor and VS Code / Copilot.
+The setup command masks API-key input, writes the keys only to the gitignored `.env.local`, and prints ready-to-paste MCP JSON for Claude Desktop / Hermes Desktop / Cursor and VS Code / Copilot.
 
 If PowerShell blocks `npm.ps1`, use `npm.cmd`; you do not need to change your execution policy.
 
@@ -35,9 +37,25 @@ npm.cmd test
 npm.cmd run check
 ```
 
+## Claude Desktop
+
+The same `mcpServers` configuration used by Hermes Desktop and Cursor is compatible with Claude Desktop.
+
+The easiest path is https://modelshortlist.com/install: choose **Claude Desktop**, paste your two upstream API keys, enable the Windows toggle if applicable, then copy the generated configuration.
+
+In Claude Desktop, open **Settings → Developer → Edit Config** and add the `modelshortlist` entry to `claude_desktop_config.json`, then restart Claude Desktop.
+
+For a clone-based setup, run `npm run setup` and copy the **Claude Desktop / Hermes Desktop / Cursor MCP config** that it prints. That version uses an absolute Node executable and server path, which avoids many GUI PATH problems.
+
+Claude Desktop should discover:
+
+- `recommend_models`
+- `compare_models`
+- `modelshortlist_status`
+
 ## Hermes Desktop
 
-Run `npm.cmd run setup` and copy the **Hermes Desktop / Cursor MCP config** that it prints.
+Run `npm.cmd run setup` and copy the **Claude Desktop / Hermes Desktop / Cursor MCP config** that it prints.
 
 In Hermes Desktop, open **Skills & Tools → MCP**, import that JSON, and save it.
 
@@ -70,6 +88,8 @@ To register it at user scope from the ModelShortlist directory:
 ```powershell
 claude mcp add --transport stdio --scope user modelshortlist -- node "$PWD\mcp\server.js"
 ```
+
+The install configurator can also generate an npm-based `claude mcp add` command that does not require cloning the repository.
 
 ## Cursor
 
@@ -104,9 +124,30 @@ The setup command also prints the VS Code format. Or create/update `.vscode/mcp.
 
 Use Copilot Chat in an MCP/tool-capable agent mode.
 
-## Generic stdio MCP configuration
+## Generic npm stdio configuration
 
-Most local MCP hosts need only:
+Most local MCP hosts can launch the published package directly without cloning:
+
+```json
+{
+  "mcpServers": {
+    "modelshortlist": {
+      "command": "npx",
+      "args": ["-y", "@agentic.artists/modelshortlist"],
+      "env": {
+        "ARTIFICIAL_ANALYSIS_API_KEY": "YOUR_KEY",
+        "OPENROUTER_API_KEY": "YOUR_KEY"
+      }
+    }
+  }
+}
+```
+
+On Windows GUI clients, use `npx.cmd` if plain `npx` is not found.
+
+## Generic clone-based stdio configuration
+
+If you cloned the repository, most local MCP hosts need only:
 
 ```json
 {
