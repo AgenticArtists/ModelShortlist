@@ -1,3 +1,4 @@
+import type { LucideIcon } from 'lucide-react'
 import {
   ArrowRight,
   BadgeCheck,
@@ -8,11 +9,10 @@ import {
   Database,
   Github,
   KeyRound,
-  Layers3,
-  LockKeyhole,
   Network,
   PackageCheck,
   Radar,
+  RefreshCw,
   ShieldCheck,
   Sparkles,
   Terminal,
@@ -37,64 +37,65 @@ const mcpConfig = `{
   }
 }`
 
-const cloneInstall = `git clone https://github.com/AgenticArtists/ModelShortlist.git
-cd ModelShortlist
-npm install
-npm run setup`
-
 const examples = [
-  'What’s the cheapest model I’d trust with repetitive coding subagents? Tool use is required.',
-  'I need 200k context and tool use. What are my best current options?',
-  'I need 200k context, tool use, and ZDR. What are my best current options?',
-  'Is the premium frontier model actually worth the price for this coding workload?',
-  'Best model for extracting structured data from thousands of documents while keeping output cost low?',
-  'I need maximum autonomous coding performance under $10 per million output tokens. What should I use?',
+  'I need a long-running coding agent. Tool use is required, I need at least 100k context, and I care about quality-per-dollar.',
+  'What is the strongest current model under $10 per million output tokens for this workload?',
+  'I need strict structured output from long documents. Which current models are the best fit?',
+  'Compare these OpenRouter models and separate benchmark evidence from price, context, and provider facts.',
+  'I need 200k context and reliable tool use. What are my best current options?',
+  'Same workload, but ZDR is mandatory. Which real endpoints still satisfy every hard constraint?',
 ]
 
 const faqs = [
   {
     question: 'Does ModelShortlist choose one “best” model for everyone?',
     answer:
-      'No. The host AI weighs the evidence against your workload and constraints. ModelShortlist deliberately avoids one universal scoring formula because coding, extraction, reasoning, latency-sensitive work, and privacy-sensitive work have different tradeoffs.',
+      'No. The host AI weighs current evidence against your workload and constraints. Coding, extraction, long-context, latency-sensitive, budget-sensitive, and privacy-sensitive work can produce different shortlists.',
+  },
+  {
+    question: 'What does Artificial Analysis contribute?',
+    answer:
+      'Artificial Analysis supplies independent benchmark and performance evidence. ModelShortlist uses that evidence when it can confidently reconcile the exact model identity; it does not create or claim ownership of those benchmarks.',
+  },
+  {
+    question: 'What does OpenRouter contribute?',
+    answer:
+      'OpenRouter supplies the current model catalog plus operational facts such as context, supported parameters, pricing, providers, and ZDR endpoint information.',
+  },
+  {
+    question: 'What happens if upstream data is stale or unavailable?',
+    answer:
+      'ModelShortlist tracks source freshness separately. It can use explicitly stale last-known-good evidence where appropriate, marks unavailable sources, and fails closed when a required source or hard privacy constraint cannot be verified.',
   },
   {
     question: 'Does it only recommend ZDR models?',
     answer:
-      'No. The full OpenRouter catalog is considered by default. Zero Data Retention becomes a hard filter only when you explicitly require ZDR in the request.',
-  },
-  {
-    question: 'Where does the data come from?',
-    answer:
-      'OpenRouter supplies model catalog, capability, pricing, context, and ZDR endpoint information. Artificial Analysis supplies independent benchmark and performance data when ModelShortlist can confidently reconcile the model identity.',
-  },
-  {
-    question: 'What happens when a model has no Artificial Analysis match?',
-    answer:
-      'It stays eligible. ModelShortlist would rather show a missing benchmark than attach benchmark data to the wrong model. Matching is intentionally conservative.',
+      'No. The full OpenRouter catalog is considered by default. Zero Data Retention becomes a hard eligibility requirement only when you explicitly request ZDR.',
   },
   {
     question: 'Do my API keys go through a ModelShortlist server?',
     answer:
-      'No hosted ModelShortlist backend is involved. The MCP runs locally and uses the API credentials you provide to call the upstream services directly.',
-  },
-  {
-    question: 'Which clients can use it?',
-    answer:
-      'Any compatible client that can launch a local stdio MCP server can potentially use ModelShortlist. The repository includes setup guidance for Hermes Desktop, Claude Code, Cursor, and VS Code/Copilot.',
+      'No. ModelShortlist is a local stdio MCP server. Your local process uses the API credentials you provide to call the upstream services directly; there is no hosted ModelShortlist backend or MCP telemetry.',
   },
 ]
+
+type FreshnessCard = {
+  icon: LucideIcon
+  title: string
+  body: string
+}
 
 export default function HomePage() {
   return (
     <div id="top">
       <Hero />
-      <WhySection />
-      <HowItWorks />
+      <FreshnessSection />
       <EvidenceSection />
-      <ZdrSection />
+      <HowItWorks />
       <ExamplesSection />
+      <LearnSection />
       <InstallSection />
-      <OpenSourceSection />
+      <TrustSection />
       <FaqSection />
       <FinalCta />
     </div>
@@ -108,44 +109,40 @@ function Hero() {
       <div className="glow-orb glow-cyan -left-48 -top-48 h-[520px] w-[520px]" aria-hidden="true" />
       <div className="glow-orb glow-violet -right-40 top-12 h-[520px] w-[520px]" aria-hidden="true" />
 
-      <div className="relative mx-auto grid max-w-7xl gap-16 px-6 py-20 sm:py-28 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:py-36">
+      <div className="relative mx-auto grid max-w-7xl gap-14 px-6 py-20 sm:py-28 lg:grid-cols-[1.04fr_0.96fr] lg:items-center lg:py-32">
         <div className="max-w-3xl animate-fade-in-up">
           <div className="mb-6 inline-flex flex-wrap items-center gap-2 rounded-full border border-blue-500/25 bg-blue-500/10 px-3 py-1.5 text-xs font-semibold text-blue-700 dark:text-blue-300">
             <BadgeCheck className="h-3.5 w-3.5" aria-hidden="true" />
-            Published in the Official MCP Registry
+            Official MCP Registry
             <span className="text-blue-400/60">•</span>
-            v0.2.2
+            npm
+            <span className="text-blue-400/60">•</span>
+            v0.2.3
           </div>
 
           <h1 className="max-w-4xl text-5xl font-extrabold tracking-tight sm:text-6xl lg:text-7xl">
-            Describe the job. <span className="hero-gradient-text">Get the shortlist.</span>
+            Ask which model is best <span className="hero-gradient-text">right now.</span>
           </h1>
           <p className="mt-7 max-w-2xl text-lg leading-8 text-muted-foreground sm:text-xl">
-            ModelShortlist gives your AI assistant current model-selection context from the full OpenRouter catalog and Artificial Analysis benchmarks—then lets the assistant reason about what actually fits your workload.
+            ModelShortlist gives your AI assistant independent Artificial Analysis benchmark evidence plus current OpenRouter facts—price, context, capabilities, providers, and optional ZDR—so it can recommend the best fit for the workload you actually have.
           </p>
 
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-            <a href="#install" className="brand-gradient-bg inline-flex h-12 items-center justify-center gap-2 rounded-xl px-6 text-base font-semibold text-white">
+            <a href="/install" className="brand-gradient-bg inline-flex h-12 items-center justify-center gap-2 rounded-xl px-6 text-base font-semibold text-white">
               Install ModelShortlist
               <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </a>
-            <a
-              href={GITHUB_URL}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-blue-500/25 bg-card/50 px-6 text-base font-semibold transition-colors hover:border-blue-500/45 hover:bg-muted/60"
-            >
-              <Github className="h-4 w-4" aria-hidden="true" />
-              View source
+            <a href="/how-to-choose-an-ai-model" className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-blue-500/25 bg-card/50 px-6 text-base font-semibold transition-colors hover:border-blue-500/45 hover:bg-muted/60">
+              See the selection framework
             </a>
           </div>
 
           <div className="mt-9 grid max-w-2xl grid-cols-2 gap-x-5 gap-y-3 text-sm text-muted-foreground sm:grid-cols-4">
             {[
+              ['Current', 'Upstream evidence'],
               ['Local', 'Runs on your machine'],
               ['BYOK', 'Your API credentials'],
-              ['MIT', 'Open source'],
-              ['ZDR', 'Only when requested'],
+              ['Open source', 'MIT licensed'],
             ].map(([title, detail]) => (
               <div key={title} className="border-l border-border/70 pl-3">
                 <div className="font-semibold text-foreground">{title}</div>
@@ -177,51 +174,42 @@ function ProductPreview() {
           <div className="rounded-xl border border-border/60 bg-muted/35 p-4">
             <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground">
               <BrainCircuit className="h-3.5 w-3.5" aria-hidden="true" />
-              Your workload
+              Workload
             </div>
             <p className="text-sm leading-6">
-              “Long-running coding agent. Tool use required. At least 100k context. Quality matters most, but I care about value.”
+              “Long-running coding agent. Tools required. At least 100k context. Quality matters most, but I care about value.”
             </p>
           </div>
 
-          <div className="grid gap-2.5 sm:grid-cols-3">
-            {[
-              ['Catalog', 'Full OpenRouter set', Radar],
-              ['Benchmarks', 'Matched when verified', Database],
-              ['Constraints', 'Applied to the job', Wrench],
-            ].map(([title, detail, Icon]) => {
-              const Component = Icon as typeof Radar
-              return (
-                <div key={String(title)} className="rounded-xl border border-border/60 bg-background/55 p-3.5">
-                  <Component className="mb-2 h-4 w-4 text-blue-400" aria-hidden="true" />
-                  <div className="text-xs font-semibold">{String(title)}</div>
-                  <div className="mt-1 text-[11px] leading-4 text-muted-foreground">{String(detail)}</div>
-                </div>
-              )
-            })}
+          <div className="grid gap-2.5 sm:grid-cols-2">
+            <div className="rounded-xl border border-violet-500/20 bg-violet-500/[0.05] p-4">
+              <Database className="mb-2 h-4 w-4 text-violet-400" aria-hidden="true" />
+              <div className="text-xs font-semibold">Artificial Analysis</div>
+              <div className="mt-1 text-[11px] leading-4 text-muted-foreground">Independent benchmark + performance evidence</div>
+            </div>
+            <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/[0.05] p-4">
+              <Network className="mb-2 h-4 w-4 text-cyan-400" aria-hidden="true" />
+              <div className="text-xs font-semibold">OpenRouter</div>
+              <div className="mt-1 text-[11px] leading-4 text-muted-foreground">Current catalog + operational facts</div>
+            </div>
           </div>
 
-          <div>
-            <div className="mb-3 flex items-center justify-between">
-              <span className="text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground">Shortlist anatomy</span>
+          <div className="rounded-xl border border-border/60 bg-background/55 p-4">
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <span className="text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground">Decision structure</span>
               <span className="text-[11px] text-muted-foreground">No universal score</span>
             </div>
-            <div className="space-y-2.5">
-              {[
-                ['01', 'Best fit', 'Quality + workload fit + capabilities'],
-                ['02', 'Best value', 'Competitive fit at a lower effective cost'],
-                ['03', 'Constraint fit', 'Privacy, context, tools, or provider needs'],
-              ].map(([rank, label, note], index) => (
-                <div key={rank} className="flex items-start gap-3 rounded-xl border border-border/55 bg-background/55 p-3.5">
-                  <span className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md font-mono text-[10px] font-bold ${index === 0 ? 'bg-blue-500/15 text-blue-400' : 'bg-muted text-muted-foreground'}`}>{rank}</span>
-                  <div className="min-w-0">
-                    <div className="text-sm font-semibold">{label}</div>
-                    <div className="mt-0.5 text-xs leading-5 text-muted-foreground">{note}</div>
-                  </div>
-                  {index === 0 ? <Sparkles className="ml-auto h-4 w-4 shrink-0 text-violet-400" aria-hidden="true" /> : null}
-                </div>
-              ))}
+            <div className="space-y-3 text-sm">
+              <div className="flex gap-3"><Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" /><span>Apply hard constraints first</span></div>
+              <div className="flex gap-3"><Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" /><span>Compare quality and performance evidence</span></div>
+              <div className="flex gap-3"><Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" /><span>Weigh current price and operational fit</span></div>
+              <div className="flex gap-3"><Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" /><span>Explain best-fit and best-value tradeoffs</span></div>
             </div>
+          </div>
+
+          <div className="flex gap-3 rounded-xl border border-blue-500/20 bg-blue-500/[0.05] p-4 text-xs leading-5 text-muted-foreground">
+            <RefreshCw className="mt-0.5 h-4 w-4 shrink-0 text-blue-400" aria-hidden="true" />
+            Source freshness is part of the tool output, so degraded evidence can be qualified instead of silently presented as current.
           </div>
         </div>
       </div>
@@ -239,39 +227,113 @@ function SectionHeading({ eyebrow, title, body, centered = false }: { eyebrow: s
   )
 }
 
-function WhySection() {
-  const cards = [
-    {
-      icon: BrainCircuit,
-      title: 'The workload matters',
-      body: 'The best model for autonomous coding is not automatically the best model for cheap extraction, giant-context synthesis, or latency-sensitive tools.',
-    },
-    {
-      icon: Layers3,
-      title: 'Constraints change the answer',
-      body: 'Context, tool calling, input and output price, provider options, and privacy requirements can eliminate an otherwise impressive model.',
-    },
-    {
-      icon: Radar,
-      title: 'The market keeps moving',
-      body: 'Model catalogs, prices, endpoints, and capabilities change quickly. ModelShortlist pulls current upstream context instead of relying on a stale mental leaderboard.',
-    },
+function FreshnessSection() {
+  const cards: FreshnessCard[] = [
+    { icon: Sparkles, title: 'A new model launches', body: 'The competitive set can change immediately, even if your workload stays exactly the same.' },
+    { icon: CircleDollarSign, title: 'Pricing moves', body: 'A price cut can turn a previously expensive model into the best-value option.' },
+    { icon: Database, title: 'Benchmark evidence changes', body: 'Independent evaluations can change the quality picture as new results appear.' },
+    { icon: Wrench, title: 'Capabilities change', body: 'Tool support and other parameters can appear, disappear, or differ across model variants.' },
+    { icon: Network, title: 'Providers change', body: 'Endpoint availability and provider options move independently of a model’s benchmark quality.' },
+    { icon: ShieldCheck, title: 'ZDR availability changes', body: 'Privacy-sensitive workloads need current endpoint evidence, not assumptions about a model family.' },
   ]
 
   return (
     <section className="mx-auto max-w-7xl px-6 py-20 sm:py-28">
       <SectionHeading
-        eyebrow="Why it exists"
-        title="A benchmark table cannot understand your job."
-        body="Model selection is a multi-variable decision. ModelShortlist gives the AI already helping you enough current evidence to make that decision with context."
+        eyebrow="Why freshness matters"
+        title="Why yesterday’s model recommendation may be wrong today."
+        body="Static comparison content gets stale because the model market is not static. ModelShortlist is built to put current evidence inside the assistant that already understands your workload."
       />
-      <div className="mt-12 grid gap-5 md:grid-cols-3">
+      <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {cards.map(({ icon: Icon, title, body }) => (
-          <article key={title} className="group rounded-2xl border border-border/65 bg-card/60 p-6 transition-all hover:-translate-y-1 hover:border-blue-500/30 hover:shadow-xl hover:shadow-blue-500/5">
-            <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-xl border border-blue-500/20 bg-blue-500/10">
-              <Icon className="h-5 w-5 text-blue-400" aria-hidden="true" />
+          <article key={title} className="rounded-2xl border border-border/60 bg-card/55 p-5">
+            <Icon className="h-5 w-5 text-blue-400" aria-hidden="true" />
+            <h3 className="mt-4 font-bold">{title}</h3>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">{body}</p>
+          </article>
+        ))}
+      </div>
+      <a href="/how-model-recommendations-stay-current" className="mt-7 inline-flex items-center gap-2 text-sm font-semibold text-blue-500">
+        See how ModelShortlist handles freshness and degraded upstreams <ArrowRight className="h-4 w-4" aria-hidden="true" />
+      </a>
+    </section>
+  )
+}
+
+function EvidenceSection() {
+  return (
+    <section className="border-y border-border/50 bg-muted/10">
+      <div className="mx-auto max-w-7xl px-6 py-20 sm:py-28">
+        <SectionHeading
+          eyebrow="Evidence, with clear attribution"
+          title="Benchmarks tell you how models perform. Current operational facts tell you what fits."
+          body="ModelShortlist keeps those evidence types conceptually separate, then lets the host AI reason across them for the workload you described."
+        />
+
+        <div className="mt-12 grid gap-5 lg:grid-cols-2">
+          <article className="rounded-2xl border border-violet-500/20 bg-violet-500/[0.045] p-6 sm:p-8">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-violet-500/20 bg-violet-500/10">
+              <Database className="h-5 w-5 text-violet-400" aria-hidden="true" />
             </div>
-            <h3 className="text-xl font-bold">{title}</h3>
+            <p className="mt-5 text-xs font-semibold uppercase tracking-[0.16em] text-violet-500">Independent performance evidence</p>
+            <h3 className="mt-2 text-2xl font-extrabold">Artificial Analysis</h3>
+            <p className="mt-3 text-sm leading-6 text-muted-foreground">
+              Artificial Analysis supplies the independent benchmark and performance evidence. ModelShortlist does not create those benchmarks and only attaches them when it can confidently reconcile the exact model identity.
+            </p>
+            <ul className="mt-5 space-y-3 text-sm text-muted-foreground">
+              {['Intelligence, coding, and agentic evaluation context', 'Performance and pricing fields exposed by the upstream API', 'Conservative matching: missing evidence is preferred over a wrong match'].map((item) => (
+                <li key={item} className="flex gap-2.5"><Check className="mt-0.5 h-4 w-4 shrink-0 text-violet-400" />{item}</li>
+              ))}
+            </ul>
+            <a href="/artificial-analysis" className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-violet-500">How Artificial Analysis contributes <ArrowRight className="h-4 w-4" /></a>
+          </article>
+
+          <article className="rounded-2xl border border-cyan-500/20 bg-cyan-500/[0.045] p-6 sm:p-8">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-cyan-500/20 bg-cyan-500/10">
+              <Network className="h-5 w-5 text-cyan-400" aria-hidden="true" />
+            </div>
+            <p className="mt-5 text-xs font-semibold uppercase tracking-[0.16em] text-cyan-500">Current operational facts</p>
+            <h3 className="mt-2 text-2xl font-extrabold">OpenRouter</h3>
+            <p className="mt-3 text-sm leading-6 text-muted-foreground">
+              OpenRouter supplies the current catalog and deployment-relevant facts that can make a benchmark-strong model the wrong operational choice for a specific job.
+            </p>
+            <ul className="mt-5 space-y-3 text-sm text-muted-foreground">
+              {['Model availability, context, and supported parameters', 'Current input/output and tiered pricing evidence', 'Provider and ZDR endpoint facts when privacy is explicitly required'].map((item) => (
+                <li key={item} className="flex gap-2.5"><Check className="mt-0.5 h-4 w-4 shrink-0 text-cyan-400" />{item}</li>
+              ))}
+            </ul>
+            <a href="/openrouter-model-comparison" className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-cyan-500">Compare OpenRouter models by workload <ArrowRight className="h-4 w-4" /></a>
+          </article>
+        </div>
+
+        <div className="mt-5 rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.05] p-5 text-sm leading-6 text-muted-foreground">
+          <span className="font-semibold text-emerald-500">The judgment stays workload-specific.</span> ModelShortlist retrieves and normalizes evidence; the AI in your MCP client weighs that evidence against the task. There is no permanent global score pretending one model is best for every job.
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function HowItWorks() {
+  const steps = [
+    ['01', 'Describe the workload', 'State what you are building, what matters, and any hard constraints such as tools, context, budget, creator, or ZDR.'],
+    ['02', 'Build the eligible set', 'ModelShortlist starts from the current OpenRouter catalog and applies explicit hard constraints rather than a hand-picked leaderboard.'],
+    ['03', 'Attach current evidence', 'Operational facts are combined with Artificial Analysis evidence when the exact model identity can be matched confidently.'],
+    ['04', 'Reason to a shortlist', 'Your host AI explains best-fit, best-value, and constraint-driven tradeoffs using the evidence returned by the MCP.'],
+  ]
+
+  return (
+    <section id="how-it-works" className="scroll-mt-24 mx-auto max-w-7xl px-6 py-20 sm:py-28">
+      <SectionHeading
+        eyebrow="How it works"
+        title="Current evidence in. Workload-specific reasoning out."
+        body="ModelShortlist is a read-only context layer, not a model router. It retrieves evidence; your AI assistant makes the recommendation."
+      />
+      <div className="mt-12 grid gap-4 lg:grid-cols-4">
+        {steps.map(([number, title, body]) => (
+          <article key={number} className="rounded-2xl border border-border/60 bg-card/55 p-6">
+            <div className="font-mono text-sm font-bold text-blue-400">{number}</div>
+            <h3 className="mt-6 text-lg font-bold">{title}</h3>
             <p className="mt-3 text-sm leading-6 text-muted-foreground">{body}</p>
           </article>
         ))}
@@ -280,28 +342,24 @@ function WhySection() {
   )
 }
 
-function HowItWorks() {
-  const steps = [
-    ['01', 'Describe the workload', 'Ask naturally. State what you are building, what matters most, and any non-negotiable constraints.'],
-    ['02', 'Build the candidate set', 'ModelShortlist starts with the full OpenRouter catalog instead of silently limiting the search to a hand-picked leaderboard.'],
-    ['03', 'Attach evidence', 'Capabilities, context, price, and provider data are combined with Artificial Analysis metrics when the model identity can be reconciled confidently.'],
-    ['04', 'Reason to a shortlist', 'Your host AI weighs those facts for the workload and explains tradeoffs rather than returning an unexplained universal score.'],
-  ]
-
+function ExamplesSection() {
   return (
-    <section id="how-it-works" className="scroll-mt-24 border-y border-border/50 bg-muted/10">
+    <section id="examples" className="scroll-mt-24 border-y border-border/50 bg-muted/10">
       <div className="mx-auto max-w-7xl px-6 py-20 sm:py-28">
         <SectionHeading
-          eyebrow="How it works"
-          title="Model context in. Workload-specific reasoning out."
-          body="ModelShortlist is a read-only MCP context layer. It gathers the evidence; the AI in your client does the judgment."
+          eyebrow="Ask naturally"
+          title="Start with the decision you actually need to make."
+          body="No special prompt syntax is required. Be explicit about hard constraints; let the assistant reason about everything else."
+          centered
         />
-        <div className="mt-14 grid gap-4 lg:grid-cols-4">
-          {steps.map(([number, title, body]) => (
-            <article key={number} className="relative rounded-2xl border border-border/60 bg-background/65 p-6">
-              <div className="mb-7 font-mono text-sm font-bold text-blue-400">{number}</div>
-              <h3 className="text-lg font-bold">{title}</h3>
-              <p className="mt-3 text-sm leading-6 text-muted-foreground">{body}</p>
+        <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {examples.map((example, index) => (
+            <article key={example} className="group flex min-h-44 flex-col rounded-2xl border border-border/60 bg-background/65 p-5 transition-all hover:border-blue-500/30">
+              <div className="mb-5 flex items-center justify-between">
+                <span className="font-mono text-[11px] text-muted-foreground">PROMPT {String(index + 1).padStart(2, '0')}</span>
+                <Sparkles className="h-4 w-4 text-violet-400 opacity-70" aria-hidden="true" />
+              </div>
+              <p className="mt-auto text-sm font-medium leading-6">“{example}”</p>
             </article>
           ))}
         </div>
@@ -310,110 +368,33 @@ function HowItWorks() {
   )
 }
 
-function EvidenceSection() {
+function LearnSection() {
+  const links = [
+    ['/how-to-choose-an-ai-model', 'How to choose an AI model', 'A practical framework for hard constraints, quality evidence, economics, and current operational fit.'],
+    ['/coding-agents', 'Best models for coding agents', 'Tool use, context, coding and agentic evidence, and long-running token economics.'],
+    ['/document-extraction-models', 'Models for document extraction', 'Extraction reliability, structured output, context, and high-volume cost tradeoffs.'],
+    ['/models-under-10-per-million-output', 'Models under $10 / 1M output', 'Apply a hard price ceiling, then compare the strongest capable models that remain.'],
+    ['/modelshortlist-vs-static-leaderboards', 'ModelShortlist vs leaderboards', 'Why independent benchmarks are important evidence but not the whole deployment decision.'],
+    ['/modelshortlist-vs-model-routers', 'ModelShortlist vs model routers', 'Recommendation and runtime inference routing solve different problems.'],
+  ]
+
   return (
     <section className="mx-auto max-w-7xl px-6 py-20 sm:py-28">
-      <div className="grid gap-14 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
-        <div>
-          <SectionHeading
-            eyebrow="Evidence layer"
-            title="Two sources. Different jobs."
-            body="Operational catalog data and independent performance evidence are kept conceptually separate, so the assistant can reason about both without pretending they measure the same thing."
-          />
-          <div className="mt-7 rounded-xl border border-emerald-500/20 bg-emerald-500/[0.06] p-4 text-sm leading-6 text-muted-foreground">
-            <span className="font-semibold text-emerald-500">Conservative by design.</span> If Artificial Analysis cannot be matched confidently to an OpenRouter model, the benchmark fields stay empty. The model remains eligible.
-          </div>
-        </div>
-
-        <div className="grid gap-5 sm:grid-cols-2">
-          <article className="rounded-2xl border border-border/65 bg-card/60 p-6 sm:p-7">
-            <div className="mb-5 flex items-center justify-between gap-4">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-cyan-500/20 bg-cyan-500/10">
-                <Network className="h-5 w-5 text-cyan-400" aria-hidden="true" />
-              </div>
-              <span className="rounded-full border border-border/70 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">Catalog + routing</span>
-            </div>
-            <h3 className="text-xl font-bold">OpenRouter</h3>
-            <ul className="mt-5 space-y-3 text-sm text-muted-foreground">
-              {['Full model catalog', 'Tool/function support', 'Context and completion limits', 'Input/output pricing', 'ZDR endpoint availability when requested', 'Endpoint/provider details for ZDR workloads'].map((item) => (
-                <li key={item} className="flex gap-2.5"><Check className="mt-0.5 h-4 w-4 shrink-0 text-cyan-400" aria-hidden="true" />{item}</li>
-              ))}
-            </ul>
-          </article>
-
-          <article className="rounded-2xl border border-border/65 bg-card/60 p-6 sm:p-7">
-            <div className="mb-5 flex items-center justify-between gap-4">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-violet-500/20 bg-violet-500/10">
-                <Database className="h-5 w-5 text-violet-400" aria-hidden="true" />
-              </div>
-              <span className="rounded-full border border-border/70 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">Performance</span>
-            </div>
-            <h3 className="text-xl font-bold">Artificial Analysis</h3>
-            <ul className="mt-5 space-y-3 text-sm text-muted-foreground">
-              {['Intelligence Index', 'Coding Index', 'Agentic Index', 'Independent pricing context', 'Median performance data', 'Attached only on confident model matches'].map((item) => (
-                <li key={item} className="flex gap-2.5"><Check className="mt-0.5 h-4 w-4 shrink-0 text-violet-400" aria-hidden="true" />{item}</li>
-              ))}
-            </ul>
-          </article>
-        </div>
+      <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+        <SectionHeading
+          eyebrow="Guides"
+          title="Learn the decision, not a temporary top-10 list."
+          body="The guides explain what criteria matter and how to ask for a current answer without hard-coding today’s model ranking into tomorrow’s advice."
+        />
+        <a href="/guides" className="inline-flex shrink-0 items-center gap-2 text-sm font-semibold text-blue-500">Browse all guides <ArrowRight className="h-4 w-4" /></a>
       </div>
-    </section>
-  )
-}
-
-function ZdrSection() {
-  return (
-    <section className="border-y border-border/50 bg-muted/10">
-      <div className="mx-auto max-w-7xl px-6 py-20 sm:py-24">
-        <div className="overflow-hidden rounded-2xl border border-blue-500/20 bg-gradient-to-br from-blue-500/[0.08] via-violet-500/[0.05] to-transparent">
-          <div className="grid gap-10 p-7 sm:p-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-center lg:p-12">
-            <div>
-              <div className="mb-5 inline-flex h-11 w-11 items-center justify-center rounded-xl border border-blue-500/20 bg-blue-500/10">
-                <LockKeyhole className="h-5 w-5 text-blue-400" aria-hidden="true" />
-              </div>
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-500">Privacy is a constraint, not a default filter</p>
-              <h2 className="mt-3 text-3xl font-extrabold sm:text-4xl">ZDR when you ask for ZDR.</h2>
-              <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground">
-                ModelShortlist considers the full OpenRouter catalog by default. If Zero Data Retention is mandatory, say so. Only then does ZDR become a hard eligibility requirement, with constraints checked against the same real endpoint.
-              </p>
-            </div>
-            <div className="space-y-3">
-              <div className="rounded-xl border border-border/65 bg-background/65 p-5">
-                <div className="mb-2 text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground">Normal request</div>
-                <p className="text-sm leading-6">“Best value coding model with tools and at least 100k context.”</p>
-                <div className="mt-3 inline-flex items-center gap-2 text-xs font-semibold text-emerald-500"><Check className="h-3.5 w-3.5" />Full catalog considered</div>
-              </div>
-              <div className="rounded-xl border border-blue-500/25 bg-blue-500/[0.07] p-5">
-                <div className="mb-2 text-xs font-semibold uppercase tracking-[0.15em] text-blue-400">Privacy-sensitive request</div>
-                <p className="text-sm leading-6">“Same workload, but ZDR is mandatory.”</p>
-                <div className="mt-3 inline-flex items-center gap-2 text-xs font-semibold text-blue-400"><ShieldCheck className="h-3.5 w-3.5" />ZDR becomes a hard constraint</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  )
-}
-
-function ExamplesSection() {
-  return (
-    <section id="examples" className="scroll-mt-24 mx-auto max-w-7xl px-6 py-20 sm:py-28">
-      <SectionHeading
-        eyebrow="Ask it naturally"
-        title="Start with the decision you actually need to make."
-        body="No special prompt language is required. Be explicit about hard constraints; let the assistant reason about everything else."
-        centered
-      />
-      <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {examples.map((example, index) => (
-          <article key={example} className="group flex min-h-44 flex-col rounded-2xl border border-border/60 bg-card/55 p-5 transition-all hover:border-blue-500/30 hover:bg-card/80">
-            <div className="mb-5 flex items-center justify-between">
-              <span className="font-mono text-[11px] text-muted-foreground">PROMPT {String(index + 1).padStart(2, '0')}</span>
-              <Sparkles className="h-4 w-4 text-violet-400 opacity-60 transition-opacity group-hover:opacity-100" aria-hidden="true" />
-            </div>
-            <p className="mt-auto text-sm font-medium leading-6">“{example}”</p>
-          </article>
+      <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {links.map(([href, title, body]) => (
+          <a key={href} href={href} className="group rounded-2xl border border-border/60 bg-card/55 p-5 transition-all hover:-translate-y-1 hover:border-blue-500/30">
+            <h3 className="font-bold">{title}</h3>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">{body}</p>
+            <span className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-blue-500">Read guide <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></span>
+          </a>
         ))}
       </div>
     </section>
@@ -427,17 +408,17 @@ function InstallSection() {
         <SectionHeading
           eyebrow="Install"
           title="Bring two keys. Keep them local."
-          body="ModelShortlist is a local stdio MCP server. You supply your own Artificial Analysis and OpenRouter credentials; there is no ModelShortlist account or hosted key vault in the middle."
+          body="ModelShortlist is a local stdio MCP server. You supply Artificial Analysis and OpenRouter credentials; there is no ModelShortlist account or hosted key vault in the middle."
         />
 
         <div className="mt-12 grid gap-7 lg:grid-cols-[0.82fr_1.18fr]">
           <div className="space-y-4">
             {[
-              [KeyRound, '1. Get upstream API keys', 'You need an Artificial Analysis API key and an OpenRouter API key. ModelShortlist does not issue or proxy either credential.'],
-              [Terminal, '2. Add the MCP server', 'Use the npm package directly in your MCP client, or clone the repository and run the guided local setup.'],
-              [BrainCircuit, '3. Ask your assistant', 'Once the tools are discovered, describe the workload in a normal chat. The assistant can call ModelShortlist when model selection is relevant.'],
+              [KeyRound, '1. Get upstream API keys', 'Use your own Artificial Analysis and OpenRouter API keys. ModelShortlist does not issue or proxy either credential.'],
+              [Terminal, '2. Add the local MCP server', 'Use the npm package directly in your MCP client or follow the guided install page for client-specific config.'],
+              [BrainCircuit, '3. Ask the real model-selection question', 'Describe the workload, hard constraints, and what you value. Your assistant can call ModelShortlist when it needs current evidence.'],
             ].map(([Icon, title, body]) => {
-              const Component = Icon as typeof KeyRound
+              const Component = Icon as LucideIcon
               return (
                 <div key={String(title)} className="flex gap-4 rounded-xl border border-border/60 bg-background/60 p-5">
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-500/10"><Component className="h-4 w-4 text-blue-400" /></div>
@@ -448,36 +429,21 @@ function InstallSection() {
                 </div>
               )
             })}
-
-            <div className="rounded-xl border border-amber-500/20 bg-amber-500/[0.05] p-4 text-xs leading-5 text-muted-foreground">
-              <span className="font-semibold text-amber-500">Windows note:</span> some GUI clients do not expose <code className="font-mono">npx</code> on PATH. The repository’s guided setup prints absolute executable paths to avoid that problem.
-            </div>
           </div>
 
           <div className="space-y-5">
             <CodeBlock code={mcpConfig} label="MCP config · npm" />
-            <CodeBlock code={cloneInstall} label="Local clone · macOS / Linux" />
             <div className="flex flex-wrap gap-3 text-sm">
+              <a href="/install" className="brand-gradient-bg inline-flex items-center gap-2 rounded-lg px-4 py-2.5 font-semibold text-white">
+                <Wrench className="h-4 w-4" />Client-specific configurator
+              </a>
               <a href={NPM_URL} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-lg border border-border/70 bg-card/55 px-4 py-2.5 font-semibold transition-colors hover:border-blue-500/35">
                 <PackageCheck className="h-4 w-4 text-blue-400" />npm package
               </a>
-              <a href={`${GITHUB_URL}#quick-start`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-lg border border-border/70 bg-card/55 px-4 py-2.5 font-semibold transition-colors hover:border-blue-500/35">
-                <Code2 className="h-4 w-4 text-violet-400" />Full setup docs
-              </a>
             </div>
-          </div>
-        </div>
-
-        <div className="mt-12 rounded-2xl border border-border/60 bg-card/45 p-6 sm:p-8">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Designed for MCP-capable clients</p>
-              <h3 className="mt-2 text-xl font-bold">Hermes Desktop · Claude Code · Cursor · VS Code / Copilot</h3>
-              <p className="mt-2 text-sm text-muted-foreground">Any compatible client that can launch a local stdio MCP server can potentially use ModelShortlist.</p>
-            </div>
-            <div className="inline-flex shrink-0 items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/[0.07] px-4 py-2 text-sm font-semibold text-emerald-500">
-              <Zap className="h-4 w-4" />3 MCP tools
-            </div>
+            <p className="text-xs leading-5 text-muted-foreground">
+              Supported setup guidance includes Claude Desktop, Claude Code, Cursor, Hermes Desktop, and VS Code / Copilot. Windows configurations use <code className="font-mono">npx.cmd</code> where appropriate.
+            </p>
           </div>
         </div>
       </div>
@@ -485,27 +451,30 @@ function InstallSection() {
   )
 }
 
-function OpenSourceSection() {
+function TrustSection() {
   const principles = [
-    [ShieldCheck, 'No hosted ModelShortlist backend', 'Your local process calls the upstream APIs with the credentials you provide.'],
-    [KeyRound, 'No bundled data resale', 'ModelShortlist does not package or redistribute the Artificial Analysis dataset.'],
-    [Code2, 'MIT licensed source', 'Inspect it, fork it, contribute to it, or audit exactly what the MCP process does.'],
-    [CircleDollarSign, 'Free software', 'There is no ModelShortlist subscription. Upstream API access remains subject to each provider’s terms and pricing.'],
+    [ShieldCheck, 'No hosted ModelShortlist backend', 'Your local MCP process calls upstream APIs directly.'],
+    [KeyRound, 'No MCP telemetry', 'ModelShortlist does not add product telemetry to the local MCP runtime.'],
+    [Code2, 'MIT licensed source', 'Inspect the code, package contents, matching logic, and release workflow yourself.'],
+    [Zap, 'Read-only MCP tools', 'The MCP retrieves and compares evidence; it does not place model calls or mutate external systems.'],
   ]
 
   return (
     <section className="mx-auto max-w-7xl px-6 py-20 sm:py-28">
-      <div className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
-        <SectionHeading
-          eyebrow="Local + open source"
-          title="The model selector should be inspectable too."
-          body="ModelShortlist’s architecture is intentionally boring where trust matters: local process, read-only tools, explicit upstream sources, and no hidden ranking engine."
-        />
+      <div className="grid gap-12 lg:grid-cols-[0.75fr_1.25fr] lg:items-start">
+        <div>
+          <SectionHeading
+            eyebrow="Local + open source"
+            title="Model selection evidence without another hosted account."
+            body="The project is intentionally a local BYOK context layer. It stays out of the inference path and keeps the architecture inspectable."
+          />
+          <a href={GITHUB_URL} target="_blank" rel="noreferrer" className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-blue-500"><Github className="h-4 w-4" />View the source on GitHub</a>
+        </div>
         <div className="grid gap-4 sm:grid-cols-2">
           {principles.map(([Icon, title, body]) => {
-            const Component = Icon as typeof ShieldCheck
+            const Component = Icon as LucideIcon
             return (
-              <article key={String(title)} className="rounded-2xl border border-border/60 bg-card/50 p-5">
+              <article key={String(title)} className="rounded-2xl border border-border/60 bg-card/55 p-5">
                 <Component className="h-5 w-5 text-blue-400" aria-hidden="true" />
                 <h3 className="mt-4 font-bold">{String(title)}</h3>
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">{String(body)}</p>
@@ -521,21 +490,17 @@ function OpenSourceSection() {
 function FaqSection() {
   return (
     <section className="border-y border-border/50 bg-muted/10">
-      <div className="mx-auto max-w-4xl px-6 py-20 sm:py-28">
+      <div className="mx-auto max-w-5xl px-6 py-20 sm:py-28">
         <SectionHeading
           eyebrow="FAQ"
-          title="The important implementation details."
-          body="The short version: current evidence, conservative matching, local keys, and workload-specific reasoning."
-          centered
+          title="What ModelShortlist is—and what it is not."
+          body="A local evidence layer for model selection, with explicit attribution and current operational context."
         />
-        <div className="mt-10 divide-y divide-border/60 rounded-2xl border border-border/60 bg-background/60 px-5 sm:px-7">
-          {faqs.map(({ question, answer }) => (
-            <details key={question} className="group py-1">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-5 py-5 font-semibold">
-                <span>{question}</span>
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-border/70 text-muted-foreground transition-transform group-open:rotate-45" aria-hidden="true">+</span>
-              </summary>
-              <p className="max-w-3xl pb-5 pr-9 text-sm leading-6 text-muted-foreground">{answer}</p>
+        <div className="mt-10 divide-y divide-border/60 rounded-2xl border border-border/60 bg-background/65 px-5 sm:px-7">
+          {faqs.map((faq) => (
+            <details key={faq.question} className="group py-5">
+              <summary className="cursor-pointer list-none pr-8 font-semibold marker:hidden">{faq.question}</summary>
+              <p className="mt-3 max-w-3xl text-sm leading-6 text-muted-foreground">{faq.answer}</p>
             </details>
           ))}
         </div>
@@ -548,21 +513,15 @@ function FinalCta() {
   return (
     <section className="relative overflow-hidden">
       <div className="dot-grid absolute inset-0 opacity-30" aria-hidden="true" />
-      <div className="relative mx-auto max-w-5xl px-6 py-24 text-center sm:py-32">
-        <div className="mx-auto mb-6 flex h-12 w-12 items-center justify-center rounded-2xl border border-violet-500/20 bg-violet-500/10">
-          <Sparkles className="h-5 w-5 text-violet-400" aria-hidden="true" />
-        </div>
-        <h2 className="text-4xl font-extrabold tracking-tight sm:text-5xl">Stop picking models from memory.</h2>
-        <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-muted-foreground">
-          Put current catalog, pricing, capability, privacy, and benchmark evidence inside the AI assistant already helping you build.
+      <div className="relative mx-auto max-w-4xl px-6 py-20 text-center sm:py-28">
+        <Radar className="mx-auto h-9 w-9 text-blue-400" aria-hidden="true" />
+        <h2 className="mt-5 text-3xl font-extrabold tracking-tight sm:text-4xl">Ask the current model market, not yesterday’s recommendation.</h2>
+        <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-muted-foreground">
+          Install the local MCP, add your Artificial Analysis and OpenRouter keys, and let your assistant reason from current evidence for the workload in front of you.
         </p>
-        <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
-          <a href="#install" className="brand-gradient-bg inline-flex h-12 items-center justify-center gap-2 rounded-xl px-6 font-semibold text-white">
-            Install ModelShortlist <ArrowRight className="h-4 w-4" />
-          </a>
-          <a href={GITHUB_URL} target="_blank" rel="noreferrer" className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-border/70 bg-card/55 px-6 font-semibold transition-colors hover:border-blue-500/35">
-            <Github className="h-4 w-4" />Star / fork on GitHub
-          </a>
+        <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+          <a href="/install" className="brand-gradient-bg inline-flex h-12 items-center justify-center gap-2 rounded-xl px-6 font-semibold text-white">Install ModelShortlist <ArrowRight className="h-4 w-4" /></a>
+          <a href="/guides" className="inline-flex h-12 items-center justify-center rounded-xl border border-border/70 bg-card/55 px-6 font-semibold transition-colors hover:border-blue-500/35">Browse guides</a>
         </div>
       </div>
     </section>
