@@ -14,6 +14,19 @@ This file is the reusable source of truth for submitting ModelShortlist to MCP d
 - Transport: local stdio MCP
 - Maintainer: AgenticArtists
 
+## Distribution status
+
+| Surface | Status | Notes |
+| --- | --- | --- |
+| Official MCP Registry | Published | `io.github.AgenticArtists/modelshortlist` v0.2.2 |
+| npm | Published | `@agentic.artists/modelshortlist` v0.2.2 |
+| Website | Live | `modelshortlist.com` + browser-only install configurator |
+| Glama | Repo ready | Root `glama.json` added; GitHub-authenticated Add/Claim step remains |
+| PulseMCP | Submitted for indexing | Official Registry is an upstream source; direct indexing request also sent |
+| Smithery | Bundle ready | Validated MCPB is built in CI; Smithery authentication/publish remains |
+| mcp.so | Submission prepared | Their submission is a GitHub issue; current GitHub integration cannot create issues in `chatmcp/mcpso` |
+| MCP.Directory | Registry/form discovery pending | Public submission form can ingest the GitHub repo/npm metadata |
+
 ## One-line description
 
 Workload-specific AI model shortlisting using current OpenRouter catalog data and Artificial Analysis benchmarks.
@@ -59,7 +72,7 @@ Do not categorize ModelShortlist as a hosted inference provider or model gateway
 - No telemetry in the MCP
 - Read-only MCP tools
 - ZDR is optional unless explicitly required
-- CI includes tests, syntax/package validation, Linux package smoke testing, Windows package smoke testing, and website type-check/build validation
+- CI includes tests, syntax/package validation, Linux package smoke testing, Windows package smoke testing, website type-check/build validation, and MCPB validation/packaging
 
 ## MCP tools
 
@@ -122,11 +135,11 @@ MODEL_SELECTOR_CACHE_TTL_MS
 
 ModelShortlist is not affiliated with or endorsed by OpenRouter or Artificial Analysis. Users access upstream APIs with their own credentials and remain responsible for the applicable upstream terms.
 
-## Glama submission
+## Glama
 
 The repository root contains `glama.json` using Glama's server schema and the `AgenticArtists` GitHub maintainer. Because the repository is under a GitHub organization, this file is the ownership/claim mechanism Glama documents for organization-hosted MCP servers.
 
-When submitting:
+Remaining authenticated steps:
 
 1. Choose **Add MCP Server** on Glama.
 2. Supply `https://github.com/AgenticArtists/ModelShortlist`.
@@ -135,8 +148,84 @@ When submitting:
 5. After indexing, authenticate with GitHub and use the Claim ownership flow so Glama re-reads `glama.json`.
 6. Review Glama's generated install instructions and tool scan against the canonical information in this file.
 
-## Other directory submissions
+## PulseMCP
 
-For Smithery, PulseMCP, mcp.so, or other directories, reuse the canonical identity, short description, extended description, tags, trust points, and install URL above. If a directory asks for a server command, use the generic npm stdio command. If it asks for environment variables, list the two required keys without example secrets.
+PulseMCP consumes the Official MCP Registry as one of its upstream sources. ModelShortlist is already published there. A direct indexing request has also been sent with the Registry name, version, GitHub URL, website, install URL, npm package, and short description.
+
+No code changes are required for PulseMCP indexing.
+
+## Smithery
+
+Smithery's current local/stdio publishing path accepts a pre-built MCPB bundle rather than a URL unless the MCP is actually hosted over Streamable HTTP.
+
+ModelShortlist now builds a validated MCPB in CI. See [`MCPB_DISTRIBUTION.md`](./MCPB_DISTRIBUTION.md).
+
+After Smithery authentication:
+
+```bash
+npm install -g smithery@latest
+smithery auth login
+npm run mcpb:build
+smithery mcp publish ./dist/modelshortlist-0.2.2.mcpb -n agenticartists/modelshortlist
+```
+
+Do **not** submit `https://modelshortlist.com` as a URL-based MCP server. It is the website/install surface, not a Streamable HTTP MCP endpoint.
+
+## mcp.so
+
+mcp.so accepts server submissions as GitHub issues in `chatmcp/mcpso`.
+
+Suggested issue title:
+
+```text
+[Submit] ModelShortlist — workload-specific AI model selection MCP
+```
+
+Suggested submission body:
+
+```markdown
+## MCP Server Submission: ModelShortlist
+
+Description: Local BYOK MCP for workload-specific AI model shortlisting using current OpenRouter catalog data and Artificial Analysis benchmarks.
+
+Website: https://modelshortlist.com
+Install: https://modelshortlist.com/install
+Repository: https://github.com/AgenticArtists/ModelShortlist
+npm: https://www.npmjs.com/package/@agentic.artists/modelshortlist
+Official MCP Registry: `io.github.AgenticArtists/modelshortlist`
+Transport: local stdio
+Runtime: Node.js 20+
+License: MIT
+
+Tools:
+- `recommend_models`
+- `compare_models`
+- `modelshortlist_status`
+
+Generic install:
+`npx -y @agentic.artists/modelshortlist`
+
+Required local configuration:
+- `ARTIFICIAL_ANALYSIS_API_KEY`
+- `OPENROUTER_API_KEY`
+
+ZDR is optional unless explicitly requested. No hosted ModelShortlist backend or telemetry is involved.
+```
+
+## MCP.Directory
+
+MCP.Directory's public submission flow accepts the GitHub repository URL, optional npm package, and short description, then auto-detects repository metadata and tools.
+
+Use:
+
+- GitHub: `https://github.com/AgenticArtists/ModelShortlist`
+- npm: `@agentic.artists/modelshortlist`
+- Short description: `Workload-specific AI model shortlisting using current OpenRouter catalog data and Artificial Analysis benchmarks.`
+
+It may also discover ModelShortlist from the Official MCP Registry without a manual submission.
+
+## Submission rule
+
+For any other directory, reuse the canonical identity, short description, extended description, tags, trust points, and install URL above. If a directory asks for a server command, use the generic npm stdio command. If it asks for environment variables, list the two required keys without example secrets.
 
 Do not advertise ModelShortlist as a remote/hosted MCP endpoint unless a separate hosted product is actually launched.
