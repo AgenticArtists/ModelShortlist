@@ -4,3 +4,5 @@ node_modules/
 !.env.local.example
 .DS_Store
 npm-debug.log*
+.mcpb-build/
+dist/
