@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og'
 
-export const alt = 'ModelShortlist — describe the job, get the shortlist'
+export const alt = 'ModelShortlist — ask which AI model is best right now'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
@@ -28,16 +28,16 @@ export default function Image() {
               <span>Model</span><span style={{ color: '#8b5cf6' }}>Shortlist</span>
             </div>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', maxWidth: 940 }}>
-            <div style={{ display: 'flex', fontSize: 68, lineHeight: 1.06, fontWeight: 800, letterSpacing: '-3px' }}>
-              Describe the job. Get the shortlist.
+          <div style={{ display: 'flex', flexDirection: 'column', maxWidth: 980 }}>
+            <div style={{ display: 'flex', fontSize: 67, lineHeight: 1.06, fontWeight: 800, letterSpacing: '-3px' }}>
+              Ask which model is best right now.
             </div>
             <div style={{ display: 'flex', marginTop: 28, fontSize: 27, lineHeight: 1.45, color: '#94a3b8' }}>
-              Evidence-backed AI model selection using OpenRouter catalog data and Artificial Analysis benchmarks.
+              Artificial Analysis benchmark evidence + current OpenRouter price, context, capability, and provider facts.
             </div>
           </div>
           <div style={{ display: 'flex', gap: 14, fontSize: 20, color: '#cbd5e1' }}>
-            <span>Local</span><span style={{ color: '#475569' }}>•</span><span>BYOK</span><span style={{ color: '#475569' }}>•</span><span>Open source</span><span style={{ color: '#475569' }}>•</span><span>ZDR when required</span>
+            <span>Workload-specific</span><span style={{ color: '#475569' }}>•</span><span>Local</span><span style={{ color: '#475569' }}>•</span><span>BYOK</span><span style={{ color: '#475569' }}>•</span><span>Open source</span>
           </div>
         </div>
       </div>
