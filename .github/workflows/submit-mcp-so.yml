@@ -1,0 +1,28 @@
+name: Submit ModelShortlist to mcp.so
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  submit:
+    if: github.event.head_commit.message == 'Submit ModelShortlist to mcp.so directory'
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Submit repository to mcp.so intake API
+        shell: bash
+        run: |
+          set -euo pipefail
+          RESPONSE_FILE="$(mktemp)"
+          HTTP_CODE="$(curl -sS -o "$RESPONSE_FILE" -w '%{http_code}' \
+            -X POST 'https://mcp.so/api/submit-project' \
+            -H 'Content-Type: application/json' \
+            --data '{"url":"https://github.com/AgenticArtists/ModelShortlist","avatar_url":""}')"
+          cat "$RESPONSE_FILE"
+          echo
+          echo "HTTP $HTTP_CODE"
+          test "$HTTP_CODE" -ge 200 -a "$HTTP_CODE" -lt 300
