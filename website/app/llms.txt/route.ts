@@ -60,6 +60,7 @@ The full OpenRouter catalog is considered by default. ZDR is only a hard constra
 - Why ModelShortlist: https://modelshortlist.com/why-modelshortlist
 - How recommendations stay current: https://modelshortlist.com/how-model-recommendations-stay-current
 - Artificial Analysis in ModelShortlist: https://modelshortlist.com/artificial-analysis
+- Artificial Analysis model comparison: https://modelshortlist.com/artificial-analysis-model-comparison
 - OpenRouter model comparison: https://modelshortlist.com/openrouter-model-comparison
 - ModelShortlist vs static leaderboards: https://modelshortlist.com/modelshortlist-vs-static-leaderboards
 - ModelShortlist vs model routers: https://modelshortlist.com/modelshortlist-vs-model-routers
