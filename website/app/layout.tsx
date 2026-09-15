@@ -17,22 +17,23 @@ const NPM_URL = 'https://www.npmjs.com/package/@agentic.artists/modelshortlist'
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: 'ModelShortlist — Pick the right AI model for the job',
+    default: 'ModelShortlist — Which AI Model Is Best Right Now?',
     template: '%s | ModelShortlist',
   },
   description:
-    'A local, open-source MCP server that helps AI assistants shortlist models using the full OpenRouter catalog and Artificial Analysis benchmarks, with ZDR only when you require it.',
+    'Local open-source MCP for workload-specific AI model selection using independent Artificial Analysis benchmark evidence plus current OpenRouter pricing, context, capabilities, providers, and optional ZDR facts.',
   keywords: [
     'AI model selection',
     'LLM model selection',
+    'OpenRouter model comparison',
+    'Artificial Analysis',
+    'AI model benchmarks',
+    'AI coding models',
+    'tool calling models',
+    'long context models',
+    'structured output models',
     'MCP server',
     'Model Context Protocol',
-    'OpenRouter',
-    'Artificial Analysis',
-    'LLM benchmarks',
-    'AI coding models',
-    'ZDR',
-    'Zero Data Retention',
   ],
   authors: [{ name: 'AgenticArtists', url: 'https://www.agenticartists.com' }],
   creator: 'AgenticArtists',
@@ -43,14 +44,14 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: SITE_URL,
     siteName: 'ModelShortlist',
-    title: 'ModelShortlist — Pick the right AI model for the job',
-    description: 'Describe the workload. Get an evidence-backed model shortlist inside your AI assistant.',
-    images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'ModelShortlist — describe the job, get the shortlist' }],
+    title: 'Ask which AI model is best right now | ModelShortlist',
+    description: 'Workload-specific model recommendations using Artificial Analysis benchmark evidence plus current OpenRouter operational facts.',
+    images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'ModelShortlist — ask which AI model is best right now' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'ModelShortlist — Pick the right AI model for the job',
-    description: 'Describe the workload. Get an evidence-backed model shortlist inside your AI assistant.',
+    title: 'Ask which AI model is best right now | ModelShortlist',
+    description: 'Artificial Analysis benchmark evidence + current OpenRouter facts, reasoned against your actual workload.',
     images: ['/opengraph-image'],
   },
   robots: {
@@ -75,37 +76,60 @@ export const viewport: Viewport = {
   colorScheme: 'light dark',
 }
 
-const softwareJsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'SoftwareApplication',
-  name: 'ModelShortlist',
-  applicationCategory: 'DeveloperApplication',
-  operatingSystem: 'Cross-platform',
-  url: SITE_URL,
-  codeRepository: GITHUB_URL,
-  downloadUrl: NPM_URL,
-  softwareVersion: '0.2.2',
-  license: 'https://opensource.org/license/mit',
-  isAccessibleForFree: true,
-  offers: {
-    '@type': 'Offer',
-    price: '0',
-    priceCurrency: 'USD',
+const structuredData = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'ModelShortlist',
+    applicationCategory: 'DeveloperApplication',
+    operatingSystem: 'Cross-platform',
+    url: SITE_URL,
+    codeRepository: GITHUB_URL,
+    downloadUrl: NPM_URL,
+    softwareVersion: '0.2.3',
+    license: 'https://opensource.org/license/mit',
+    isAccessibleForFree: true,
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'USD',
+    },
+    description:
+      'Local BYOK MCP server for workload-specific AI model selection using Artificial Analysis benchmark evidence and current OpenRouter operational data.',
+    featureList: [
+      'Workload-specific AI model shortlisting',
+      'Artificial Analysis benchmark evidence',
+      'OpenRouter model catalog and pricing evidence',
+      'Context and tool capability filtering',
+      'Optional Zero Data Retention endpoint filtering',
+      'Local bring-your-own-key architecture',
+    ],
+    author: {
+      '@type': 'Organization',
+      name: 'AgenticArtists',
+      url: 'https://www.agenticartists.com',
+    },
   },
-  description:
-    'Local BYOK MCP server for workload-specific AI model selection using OpenRouter catalog data and Artificial Analysis benchmarks.',
-  author: {
-    '@type': 'Organization',
-    name: 'AgenticArtists',
-    url: 'https://www.agenticartists.com',
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'ModelShortlist',
+    url: SITE_URL,
+    description:
+      'Guides and an open-source MCP for choosing AI models using current workload-specific benchmark, pricing, context, capability, and provider evidence.',
+    publisher: {
+      '@type': 'Organization',
+      name: 'AgenticArtists',
+      url: 'https://www.agenticartists.com',
+    },
   },
-}
+]
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning className={`${inter.variable} ${sora.variable} ${geistMono.variable}`}>
       <head>
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareJsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
       </head>
       <body>
         <a href="#main-content" className="skip-to-content">Skip to content</a>
@@ -130,7 +154,7 @@ function SiteHeader() {
         </a>
         <nav className="hidden items-center gap-1 md:flex" aria-label="Primary navigation">
           <a href="/#how-it-works" className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground">How it works</a>
-          <a href="/#examples" className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground">Examples</a>
+          <a href="/why-modelshortlist" className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground">Why ModelShortlist</a>
           <a href="/guides" className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground">Guides</a>
           <a href="/install" className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground">Install</a>
         </nav>
@@ -160,18 +184,19 @@ function SiteFooter() {
           <div className="max-w-md">
             <a href="/" className="inline-flex rounded-md" aria-label="ModelShortlist home"><Logo /></a>
             <p className="mt-4 text-sm leading-6 text-muted-foreground">
-              Open-source model-selection context for AI assistants. Local, BYOK, and built by AgenticArtists.
+              Current model-selection evidence for AI assistants. Artificial Analysis benchmarks + OpenRouter operational facts, reasoned against the workload you actually have.
             </p>
           </div>
 
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground">Guides</p>
             <div className="mt-4 grid gap-3 text-sm">
-              <a href="/guides" className="text-muted-foreground transition-colors hover:text-foreground">All guides</a>
+              <a href="/how-to-choose-an-ai-model" className="text-muted-foreground transition-colors hover:text-foreground">How to choose a model</a>
               <a href="/coding-agents" className="text-muted-foreground transition-colors hover:text-foreground">Coding agents</a>
-              <a href="/cheap-tool-calling-models" className="text-muted-foreground transition-colors hover:text-foreground">Tool calling</a>
-              <a href="/large-context-models" className="text-muted-foreground transition-colors hover:text-foreground">Large context</a>
-              <a href="/zdr-models" className="text-muted-foreground transition-colors hover:text-foreground">ZDR models</a>
+              <a href="/document-extraction-models" className="text-muted-foreground transition-colors hover:text-foreground">Document extraction</a>
+              <a href="/openrouter-model-comparison" className="text-muted-foreground transition-colors hover:text-foreground">OpenRouter comparison</a>
+              <a href="/artificial-analysis" className="text-muted-foreground transition-colors hover:text-foreground">Artificial Analysis</a>
+              <a href="/guides" className="text-muted-foreground transition-colors hover:text-foreground">All guides</a>
             </div>
           </div>
 
@@ -179,17 +204,17 @@ function SiteFooter() {
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground">Project</p>
             <div className="mt-4 grid gap-3 text-sm">
               <a href="/install" className="text-muted-foreground transition-colors hover:text-foreground">Install</a>
+              <a href="/why-modelshortlist" className="text-muted-foreground transition-colors hover:text-foreground">Why ModelShortlist</a>
+              <a href="/how-model-recommendations-stay-current" className="text-muted-foreground transition-colors hover:text-foreground">Freshness</a>
               <a href={NPM_URL} target="_blank" rel="noreferrer" className="text-muted-foreground transition-colors hover:text-foreground">npm</a>
               <a href={GITHUB_URL} target="_blank" rel="noreferrer" className="text-muted-foreground transition-colors hover:text-foreground">GitHub</a>
-              <a href="https://github.com/AgenticArtists/ModelShortlist/blob/main/README.md" target="_blank" rel="noreferrer" className="text-muted-foreground transition-colors hover:text-foreground">Docs</a>
               <a href="/llms.txt" className="text-muted-foreground transition-colors hover:text-foreground">llms.txt</a>
-              <a href="https://github.com/AgenticArtists/ModelShortlist/blob/main/LICENSE" target="_blank" rel="noreferrer" className="text-muted-foreground transition-colors hover:text-foreground">MIT License</a>
             </div>
           </div>
         </div>
         <div className="mt-10 flex flex-col gap-3 border-t border-border/60 pt-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} AgenticArtists. ModelShortlist is MIT licensed.</p>
-          <p>OpenRouter and Artificial Analysis are independent upstream data providers.</p>
+          <p>OpenRouter and Artificial Analysis are independent upstream data providers; no affiliation or endorsement is implied.</p>
         </div>
       </div>
     </footer>
