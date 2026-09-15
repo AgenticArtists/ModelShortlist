@@ -121,7 +121,7 @@ jobs:
       - name: Smoke test latest published Windows executable
         shell: pwsh
         run: |
-          $publishedVersion = npm view @agentic.artists/modelshortlist version
+          $publishedVersion = npm view "@agentic.artists/modelshortlist" version
           if (-not $publishedVersion) { throw "Could not resolve published ModelShortlist version." }
           Write-Host "Validating published @agentic.artists/modelshortlist@$publishedVersion"
           $tempDir = Join-Path $env:RUNNER_TEMP "modelshortlist-published-test"
