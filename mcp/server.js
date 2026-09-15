@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url'
 import { McpServer } from '@modelcontextprotocol/server'
 import { serveStdio } from '@modelcontextprotocol/server/stdio'
 import * as z from 'zod/v4'
+import packageJson from '../package.json' with { type: 'json' }
 import { getMergedCatalog } from '../lib/catalog.js'
 import { endpointSatisfies, modelCatalogSatisfies } from '../lib/openrouter.js'
 
@@ -39,7 +40,7 @@ function requireLocalSecrets() {
 
   if (missing.length) {
     throw new Error(
-      `Missing ${missing.join(', ')}. Create ${path.join(ROOT, '.env.local')} from .env.local.example.`,
+      `Missing ${missing.join(', ')}. Configure these environment variables in your MCP client. Clone-based installs may instead create ${path.join(ROOT, '.env.local')} from .env.local.example.`,
     )
   }
 }
@@ -159,6 +160,44 @@ function filterCandidates(models, args) {
   return results.sort((a, b) => a.model_id.localeCompare(b.model_id))
 }
 
+function assertZdrEvidenceAvailable(catalog) {
+  const status = catalog.freshness?.sources?.openrouter_zdr?.status
+  if (status === 'unavailable') {
+    throw new Error(
+      'Current OpenRouter ZDR endpoint data is unavailable and no cached copy exists; cannot safely evaluate a ZDR-required request.',
+    )
+  }
+}
+
+function freshnessInstructions(catalog, { requiresZdr = false } = {}) {
+  const sources = catalog.freshness?.sources ?? {}
+  const instructions = []
+
+  if (sources.openrouter_models?.status === 'stale') {
+    instructions.push(
+      'OpenRouter model catalog metadata is stale because the latest refresh failed. Do not describe pricing, context, capabilities, or availability as current without this caveat.',
+    )
+  }
+
+  if (sources.artificial_analysis?.status === 'stale') {
+    instructions.push(
+      'Artificial Analysis benchmark/performance evidence is stale because the latest refresh failed. State that limitation when relying on those metrics.',
+    )
+  } else if (sources.artificial_analysis?.status === 'unavailable') {
+    instructions.push(
+      'Artificial Analysis evidence is unavailable for this refresh. Missing benchmark fields are missing evidence, not evidence of poor model quality.',
+    )
+  }
+
+  if (requiresZdr && sources.openrouter_zdr?.status === 'stale') {
+    instructions.push(
+      'ZDR endpoint eligibility is based on stale cached OpenRouter endpoint metadata because the latest refresh failed. Revalidate ZDR at inference time and disclose this freshness limitation.',
+    )
+  }
+
+  return instructions
+}
+
 const recommendationSchema = z.object({
   use_case: z.string().min(3).describe(
     'What the user needs the model to do. Preserve their actual workload and priorities in detail.',
@@ -189,7 +228,7 @@ const recommendationSchema = z.object({
 function createServer() {
   const server = new McpServer({
     name: 'modelshortlist',
-    version: '0.2.2',
+    version: packageJson.version,
   })
 
   server.registerTool(
@@ -197,7 +236,7 @@ function createServer() {
     {
       title: 'Recommend AI models',
       description:
-        'Use this whenever the user asks which AI model to use for a workload. It considers the full current OpenRouter model catalog and adds Artificial Analysis benchmark data when confidently matched. Zero Data Retention is optional and must only be enforced when the user explicitly requires ZDR. After calling this tool, YOU must make the recommendation based on the user use case; do not simply pick the first model or a single benchmark winner. Clearly attribute Artificial Analysis benchmark metrics and OpenRouter catalog/endpoint data.',
+        'Use this whenever the user asks which AI model to use for a workload. It considers the OpenRouter model catalog and adds Artificial Analysis benchmark data when confidently matched, while returning explicit source freshness metadata if a refresh is degraded. Zero Data Retention is optional and must only be enforced when the user explicitly requires ZDR. After calling this tool, YOU must make the recommendation based on the user use case; do not simply pick the first model or a single benchmark winner. Clearly attribute Artificial Analysis benchmark metrics and OpenRouter catalog/endpoint data.',
       inputSchema: recommendationSchema,
       annotations: {
         readOnlyHint: true,
@@ -209,12 +248,14 @@ function createServer() {
       try {
         requireLocalSecrets()
         const catalog = await getMergedCatalog({ forceRefresh: args.force_refresh })
-        const candidates = filterCandidates(catalog.models, args).slice(0, args.limit)
         const requiresZdr = args.requires_zdr === true
+        if (requiresZdr) assertZdrEvidenceAvailable(catalog)
 
+        const candidates = filterCandidates(catalog.models, args).slice(0, args.limit)
         const selectionInstructions = [
+          ...freshnessInstructions(catalog, { requiresZdr }),
           requiresZdr
-            ? 'ZDR is an explicit hard requirement. Only recommend candidates with a current ZDR endpoint that satisfies all hard constraints on that same endpoint.'
+            ? 'ZDR is an explicit hard requirement. Only recommend candidates with a reported ZDR endpoint that satisfies all hard constraints on that same endpoint.'
             : 'ZDR is not a requirement for this request. Do not exclude a model because it lacks a ZDR endpoint; treat ZDR availability as optional metadata only.',
           requiresZdr
             ? 'If the selected model is called through OpenRouter, enforce provider.zdr=true in the actual inference request.'
@@ -232,10 +273,12 @@ function createServer() {
           use_case: args.use_case,
           zdr_required: requiresZdr,
           constraint_basis: requiresZdr
-            ? 'current OpenRouter ZDR endpoints; hard constraints must be satisfied by the same endpoint'
-            : 'current OpenRouter model catalog; ZDR is not used as an eligibility filter',
+            ? 'OpenRouter ZDR endpoint evidence; hard constraints must be satisfied by the same endpoint. Check freshness before describing the evidence as current.'
+            : 'OpenRouter model catalog evidence; ZDR is not used as an eligibility filter. Check freshness before describing the evidence as current.',
           selection_instructions: selectionInstructions,
           generated_at: catalog.generated_at,
+          freshness: catalog.freshness,
+          cache: catalog.cache,
           candidate_count: candidates.length,
           candidates,
           diagnostics: {
@@ -269,7 +312,7 @@ function createServer() {
     {
       title: 'Compare specific AI models',
       description:
-        'Use this after model discovery for a focused comparison of specific OpenRouter model IDs. It returns general OpenRouter catalog data, current ZDR availability, and Artificial Analysis metrics when confidently matched. ZDR is not assumed to be required.',
+        'Use this after model discovery for a focused comparison of specific OpenRouter model IDs. It returns OpenRouter catalog data, ZDR availability, Artificial Analysis metrics when confidently matched, and explicit source freshness metadata. ZDR is not assumed to be required.',
       inputSchema: z.object({
         model_ids: z.array(z.string()).min(2).max(12),
         requires_zdr: z.boolean().default(false).describe(
@@ -287,11 +330,14 @@ function createServer() {
       try {
         requireLocalSecrets()
         const catalog = await getMergedCatalog({ forceRefresh: force_refresh })
+        const requiresZdr = requires_zdr === true
+        if (requiresZdr) assertZdrEvidenceAvailable(catalog)
+
         const wanted = new Set(model_ids)
         const models = catalog.models
           .filter((model) => wanted.has(model.model_id))
           .map((model) => compactCandidate(model, {
-            requiresZdr: requires_zdr === true,
+            requiresZdr,
             eligibleZdrEndpoints: model.zdr_endpoint_options ?? [],
           }))
         const found = new Set(models.map((model) => model.model_id))
@@ -302,11 +348,16 @@ function createServer() {
             type: 'text',
             text: JSON.stringify({
               generated_at: catalog.generated_at,
-              zdr_required: requires_zdr === true,
+              freshness: catalog.freshness,
+              cache: catalog.cache,
+              zdr_required: requiresZdr,
               models,
               missing_model_ids: missing,
-              response_instruction:
-                'Attribute Artificial Analysis benchmark/performance metrics to Artificial Analysis and OpenRouter catalog/endpoint data to OpenRouter. Do not treat ZDR as required unless zdr_required is true.',
+              response_instructions: [
+                ...freshnessInstructions(catalog, { requiresZdr }),
+                'Attribute Artificial Analysis benchmark/performance metrics to Artificial Analysis and OpenRouter catalog/endpoint data to OpenRouter.',
+                'Do not treat ZDR as required unless zdr_required is true.',
+              ],
               attribution: {
                 artificial_analysis: 'https://artificialanalysis.ai/',
                 openrouter: 'https://openrouter.ai/',
@@ -328,7 +379,7 @@ function createServer() {
     {
       title: 'Check ModelShortlist status',
       description:
-        'Use this to diagnose OpenRouter catalog coverage, model matching coverage, ZDR availability, or Artificial Analysis quota state.',
+        'Use this to diagnose source freshness, OpenRouter catalog coverage, model matching coverage, ZDR availability, or Artificial Analysis quota state.',
       inputSchema: z.object({
         include_unmatched: z.boolean().default(false),
         force_refresh: z.boolean().default(false),
@@ -345,6 +396,7 @@ function createServer() {
         const catalog = await getMergedCatalog({ forceRefresh: force_refresh })
         const payload = {
           generated_at: catalog.generated_at,
+          freshness: catalog.freshness,
           diagnostics: catalog.diagnostics,
           unmatched: include_unmatched ? catalog.unmatched : undefined,
           ambiguous: include_unmatched ? catalog.ambiguous : undefined,
