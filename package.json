@@ -45,8 +45,9 @@
   "scripts": {
     "setup": "node scripts/setup.js",
     "test": "node --test",
-    "check": "node --check bin/modelshortlist.js && node --check lib/artificial-analysis.js && node --check lib/openrouter.js && node --check lib/match.js && node --check lib/catalog.js && node --check lib/http.js && node --check mcp/server.js && node --check scripts/setup.js",
+    "check": "node --check bin/modelshortlist.js && node --check lib/artificial-analysis.js && node --check lib/openrouter.js && node --check lib/match.js && node --check lib/catalog.js && node --check lib/http.js && node --check mcp/server.js && node --check scripts/setup.js && node --check scripts/build-mcpb.js",
     "pack:check": "npm pack --dry-run",
+    "mcpb:build": "node scripts/build-mcpb.js",
     "mcp": "node mcp/server.js"
   },
   "dependencies": {
