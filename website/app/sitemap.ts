@@ -10,6 +10,7 @@ const routes = [
   ['/why-modelshortlist', 'monthly', 0.85],
   ['/how-model-recommendations-stay-current', 'monthly', 0.85],
   ['/artificial-analysis', 'monthly', 0.85],
+  ['/artificial-analysis-model-comparison', 'monthly', 0.85],
   ['/openrouter-model-comparison', 'monthly', 0.85],
   ['/modelshortlist-vs-static-leaderboards', 'monthly', 0.8],
   ['/modelshortlist-vs-model-routers', 'monthly', 0.8],
