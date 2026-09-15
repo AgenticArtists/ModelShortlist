@@ -131,6 +131,7 @@ function SiteHeader() {
         <nav className="hidden items-center gap-1 md:flex" aria-label="Primary navigation">
           <a href="/#how-it-works" className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground">How it works</a>
           <a href="/#examples" className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground">Examples</a>
+          <a href="/guides" className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground">Guides</a>
           <a href="/install" className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground">Install</a>
         </nav>
         <div className="flex items-center gap-2">
@@ -155,21 +156,35 @@ function SiteFooter() {
   return (
     <footer className="border-t border-blue-500/15 bg-card/30">
       <div className="mx-auto max-w-7xl px-6 py-12">
-        <div className="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
+        <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr_0.8fr]">
           <div className="max-w-md">
             <a href="/" className="inline-flex rounded-md" aria-label="ModelShortlist home"><Logo /></a>
             <p className="mt-4 text-sm leading-6 text-muted-foreground">
               Open-source model-selection context for AI assistants. Local, BYOK, and built by AgenticArtists.
             </p>
           </div>
-          <div className="grid grid-cols-2 gap-x-12 gap-y-3 text-sm">
-            <a href="/install" className="text-muted-foreground transition-colors hover:text-foreground">Install</a>
-            <a href={NPM_URL} target="_blank" rel="noreferrer" className="text-muted-foreground transition-colors hover:text-foreground">npm</a>
-            <a href={GITHUB_URL} target="_blank" rel="noreferrer" className="text-muted-foreground transition-colors hover:text-foreground">GitHub</a>
-            <a href="https://github.com/AgenticArtists/ModelShortlist/blob/main/README.md" target="_blank" rel="noreferrer" className="text-muted-foreground transition-colors hover:text-foreground">Docs</a>
-            <a href="https://www.agenticartists.com" target="_blank" rel="noreferrer" className="text-muted-foreground transition-colors hover:text-foreground">AgenticArtists</a>
-            <a href="https://github.com/AgenticArtists/ModelShortlist/blob/main/LICENSE" target="_blank" rel="noreferrer" className="text-muted-foreground transition-colors hover:text-foreground">MIT License</a>
-            <a href="https://github.com/AgenticArtists/ModelShortlist/blob/main/SECURITY.md" target="_blank" rel="noreferrer" className="text-muted-foreground transition-colors hover:text-foreground">Security</a>
+
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground">Guides</p>
+            <div className="mt-4 grid gap-3 text-sm">
+              <a href="/guides" className="text-muted-foreground transition-colors hover:text-foreground">All guides</a>
+              <a href="/coding-agents" className="text-muted-foreground transition-colors hover:text-foreground">Coding agents</a>
+              <a href="/cheap-tool-calling-models" className="text-muted-foreground transition-colors hover:text-foreground">Tool calling</a>
+              <a href="/large-context-models" className="text-muted-foreground transition-colors hover:text-foreground">Large context</a>
+              <a href="/zdr-models" className="text-muted-foreground transition-colors hover:text-foreground">ZDR models</a>
+            </div>
+          </div>
+
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground">Project</p>
+            <div className="mt-4 grid gap-3 text-sm">
+              <a href="/install" className="text-muted-foreground transition-colors hover:text-foreground">Install</a>
+              <a href={NPM_URL} target="_blank" rel="noreferrer" className="text-muted-foreground transition-colors hover:text-foreground">npm</a>
+              <a href={GITHUB_URL} target="_blank" rel="noreferrer" className="text-muted-foreground transition-colors hover:text-foreground">GitHub</a>
+              <a href="https://github.com/AgenticArtists/ModelShortlist/blob/main/README.md" target="_blank" rel="noreferrer" className="text-muted-foreground transition-colors hover:text-foreground">Docs</a>
+              <a href="/llms.txt" className="text-muted-foreground transition-colors hover:text-foreground">llms.txt</a>
+              <a href="https://github.com/AgenticArtists/ModelShortlist/blob/main/LICENSE" target="_blank" rel="noreferrer" className="text-muted-foreground transition-colors hover:text-foreground">MIT License</a>
+            </div>
           </div>
         </div>
         <div className="mt-10 flex flex-col gap-3 border-t border-border/60 pt-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
