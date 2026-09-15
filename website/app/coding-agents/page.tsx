@@ -4,13 +4,13 @@ import UseCaseLanding from '@/components/UseCaseLanding'
 const URL = 'https://modelshortlist.com/coding-agents'
 
 export const metadata: Metadata = {
-  title: 'Best AI Models for Coding Agents',
-  description: 'Choose AI models for coding agents using current context, tool-calling, pricing, and benchmark evidence instead of a static leaderboard.',
+  title: 'Best AI & OpenRouter Models for Coding Agents',
+  description: 'Choose current AI and OpenRouter models for coding agents using tool calling, context, pricing, and Artificial Analysis coding and agentic benchmark evidence.',
   alternates: { canonical: URL },
   openGraph: {
     url: URL,
-    title: 'Best AI Models for Coding Agents | ModelShortlist',
-    description: 'Use workload-specific evidence to shortlist models for autonomous and agentic coding work.',
+    title: 'Best AI & OpenRouter Models for Coding Agents | ModelShortlist',
+    description: 'Use current workload-specific evidence to shortlist models for autonomous, agentic, and long-running coding work.',
   },
 }
 
@@ -30,7 +30,7 @@ export default function CodingAgentsPage() {
       ]}
       prompts={[
         'I need the best-value model for a long-running autonomous coding agent. Tool calling is required and I need at least 100k context.',
-        'What is the cheapest model I would trust with repetitive coding subagents while preserving reliable tool use?',
+        'What is the cheapest OpenRouter model I would trust with repetitive coding subagents while preserving reliable tool use?',
         'Quality matters more than cost for this repository refactor, but I still want to know whether the frontier premium is justified.',
       ]}
       whyModelShortlist={[
