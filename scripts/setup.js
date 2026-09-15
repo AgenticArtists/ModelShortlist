@@ -127,7 +127,7 @@ function printClientConfig() {
     },
   }
 
-  console.log('\nHermes Desktop / Cursor MCP config:')
+  console.log('\nClaude Desktop / Hermes Desktop / Cursor MCP config:')
   console.log(JSON.stringify(standardConfig, null, 2))
   console.log('\nVS Code / Copilot MCP config:')
   console.log(JSON.stringify(vscodeConfig, null, 2))
