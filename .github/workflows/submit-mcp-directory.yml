@@ -1,0 +1,28 @@
+name: Submit ModelShortlist to MCP.Directory
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  submit:
+    if: github.event.head_commit.message == 'Submit ModelShortlist to MCP.Directory'
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Submit repository to MCP.Directory
+        shell: bash
+        run: |
+          set -euo pipefail
+          RESPONSE_FILE="$(mktemp)"
+          HTTP_CODE="$(curl -sS -o "$RESPONSE_FILE" -w '%{http_code}' \
+            -X POST 'https://mcp.directory/api/submit-server' \
+            -H 'Content-Type: application/json' \
+            --data '{"githubUrl":"https://github.com/AgenticArtists/ModelShortlist","description":"Workload-specific AI model shortlisting using current OpenRouter catalog data and Artificial Analysis benchmarks.","email":"agenticartists@gmail.com"}')"
+          cat "$RESPONSE_FILE"
+          echo
+          echo "HTTP $HTTP_CODE"
+          test "$HTTP_CODE" -ge 200 -a "$HTTP_CODE" -lt 300
