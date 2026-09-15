@@ -1,5 +1,6 @@
 'use client'
 
+import { track } from '@vercel/analytics'
 import { useMemo, useState } from 'react'
 import { Check, Copy, KeyRound, Laptop, ShieldCheck, Terminal } from 'lucide-react'
 
@@ -67,6 +68,16 @@ export default function InstallConfigurator() {
   async function copyOutput() {
     await navigator.clipboard.writeText(output)
     setCopied(true)
+
+    try {
+      track('Install Config Copied', {
+        client,
+        variant: `${windows ? 'windows' : 'other'}-${client === 'Claude Code' ? 'command' : 'json'}`,
+      })
+    } catch {
+      // Analytics must never interfere with a successful install-config copy.
+    }
+
     window.setTimeout(() => setCopied(false), 1600)
   }
 
