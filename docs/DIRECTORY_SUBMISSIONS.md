@@ -21,15 +21,23 @@ This file is the reusable source of truth for submitting ModelShortlist to MCP d
 | Official MCP Registry | Published | `io.github.AgenticArtists/modelshortlist` v0.2.2 |
 | npm | Published | `@agentic.artists/modelshortlist` v0.2.2 |
 | Website | Live | `modelshortlist.com` + browser-only install configurator |
+| MCP.Directory | Submitted | Public API accepted the repository for review on 2026-09-15 with HTTP 200 |
+| PulseMCP | Submitted for indexing | Official Registry is an upstream source; direct indexing request also emailed |
+| MCP Server Finder | Submitted | Listing request emailed to `info@mcpserverfinder.com` |
+| TrackMCP | Submitted | Listing request emailed to `support@trackmcp.com` |
+| LaunchMCP | Submitted | Listing request emailed to `hello@launchmcp.co` |
 | Glama | Repo ready | Root `glama.json` added; GitHub-authenticated Add/Claim step remains |
-| PulseMCP | Submitted for indexing | Official Registry is an upstream source; direct indexing request also sent |
 | Smithery | Bundle ready | Validated MCPB is built in CI; Smithery authentication/publish remains |
-| mcp.so | Submission prepared | Their submission is a GitHub issue; current GitHub integration cannot create issues in `chatmcp/mcpso` |
-| MCP.Directory | Registry/form discovery pending | Public submission form can ingest the GitHub repo/npm metadata |
+| mcp.so | Manual step remains | Public API is behind a Cloudflare managed challenge; GitHub issue/browser submission remains |
+| FindMCP | Form ready | Claude Desktop config and canonical listing copy are prepared below |
 
 ## One-line description
 
 Workload-specific AI model shortlisting using current OpenRouter catalog data and Artificial Analysis benchmarks.
+
+## Directory-safe short description (100 chars max)
+
+Workload-specific AI model selection using OpenRouter data and Artificial Analysis benchmarks.
 
 ## Short description
 
@@ -92,7 +100,7 @@ Reports catalog/ZDR/matching coverage, ambiguous or unmatched records, cache sta
 
 - "What's the cheapest model I'd trust with repetitive coding subagents? Tool use is required."
 - "I need 200k context and tool use. What are my best current options?"
-- "I need 200k context, tool use, and ZDR. What are my best current options?"
+- "I need 200k context and tool use, and ZDR is mandatory. What are my best current options?"
 - "Is the premium frontier model actually worth the price for this coding workload?"
 - "Best model for extracting structured data from thousands of documents while keeping output cost low?"
 - "I need maximum autonomous coding performance under $10 per million output tokens. What should I use?"
@@ -101,7 +109,7 @@ Reports catalog/ZDR/matching coverage, ambiguous or unmatched records, cache sta
 
 Preferred user path: https://modelshortlist.com/install
 
-The configurator generates client-specific config/commands for Hermes Desktop, Cursor, Claude Code, and VS Code/Copilot. It runs in the browser; entered API keys are used only to generate the text displayed to the user and are not sent to ModelShortlist.
+The configurator generates client-specific config/commands for Claude Desktop, Hermes Desktop, Cursor, Claude Code, and VS Code/Copilot. It runs in the browser; entered API keys are used only to generate the text displayed to the user and are not sent to ModelShortlist.
 
 Generic npm package:
 
@@ -156,9 +164,9 @@ No code changes are required for PulseMCP indexing.
 
 ## Smithery
 
-Smithery's current local/stdio publishing path accepts a pre-built MCPB bundle rather than a URL unless the MCP is actually hosted over Streamable HTTP.
+Smithery's local/stdio publishing path accepts a pre-built MCPB bundle rather than a URL unless the MCP is actually hosted over Streamable HTTP.
 
-ModelShortlist now builds a validated MCPB in CI. See [`MCPB_DISTRIBUTION.md`](./MCPB_DISTRIBUTION.md).
+ModelShortlist builds a validated MCPB in CI. See [`MCPB_DISTRIBUTION.md`](./MCPB_DISTRIBUTION.md).
 
 After Smithery authentication:
 
@@ -173,7 +181,7 @@ Do **not** submit `https://modelshortlist.com` as a URL-based MCP server. It is 
 
 ## mcp.so
 
-mcp.so accepts server submissions as GitHub issues in `chatmcp/mcpso`.
+mcp.so accepts server submissions through browser/GitHub-controlled flows. A direct POST to their historical `/api/submit-project` intake endpoint was tested from GitHub Actions on 2026-09-15 and blocked by a Cloudflare managed challenge with HTTP 403. The temporary workflow used for that test was removed immediately afterward.
 
 Suggested issue title:
 
@@ -214,15 +222,49 @@ ZDR is optional unless explicitly requested. No hosted ModelShortlist backend or
 
 ## MCP.Directory
 
-MCP.Directory's public submission flow accepts the GitHub repository URL, optional npm package, and short description, then auto-detects repository metadata and tools.
+Submitted successfully through the public JSON intake API on 2026-09-15. The response was:
 
-Use:
+```json
+{"ok":true,"message":"Server submitted for review!"}
+```
+
+The accepted payload used:
 
 - GitHub: `https://github.com/AgenticArtists/ModelShortlist`
-- npm: `@agentic.artists/modelshortlist`
-- Short description: `Workload-specific AI model shortlisting using current OpenRouter catalog data and Artificial Analysis benchmarks.`
+- Description: `Workload-specific AI model selection using OpenRouter data and Artificial Analysis benchmarks.`
+- Contact: `agenticartists@gmail.com`
 
-It may also discover ModelShortlist from the Official MCP Registry without a manual submission.
+The one-time submission workflow was removed after the successful response.
+
+## FindMCP
+
+Prepared values for the public submission form:
+
+- Server name: `ModelShortlist`
+- Repository URL: `https://github.com/AgenticArtists/ModelShortlist`
+- Description: `ModelShortlist is a local BYOK MCP server that gives AI assistants current OpenRouter catalog, pricing, capability, context, optional ZDR endpoint, and Artificial Analysis benchmark evidence for workload-specific model selection.`
+- Category: closest available to `Developer Tools`, `AI Agents`, or `Model Selection`
+- Transport: `stdio`
+- Contact email: `agenticartists@gmail.com`
+
+Claude Desktop installation JSON:
+
+```json
+{
+  "mcpServers": {
+    "modelshortlist": {
+      "command": "npx",
+      "args": ["-y", "@agentic.artists/modelshortlist"],
+      "env": {
+        "ARTIFICIAL_ANALYSIS_API_KEY": "YOUR_ARTIFICIAL_ANALYSIS_KEY",
+        "OPENROUTER_API_KEY": "YOUR_OPENROUTER_KEY"
+      }
+    }
+  }
+}
+```
+
+On Windows, the website install configurator generates the same config with `npx.cmd` to avoid common GUI PATH issues.
 
 ## Submission rule
 
