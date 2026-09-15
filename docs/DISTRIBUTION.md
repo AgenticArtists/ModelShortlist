@@ -20,18 +20,22 @@ ModelShortlist is the successor to the project originally released as OpenAnalys
 - `publishConfig.access` set to `public`
 - Linux and Windows smoke tests for both prospective and currently published npm packages
 - MCPB build and validation in CI
-- tagged-release workflow that validates the package and attaches the MCPB artifact to GitHub Releases
+- tagged-release workflow that validates the package, publishes npm through trusted publishing when needed, publishes Registry metadata through GitHub OIDC, and attaches the MCPB artifact to GitHub Releases
 - canonical website and install configurator
 
 The MCP itself has no hosted ModelShortlist backend and no telemetry. Users provide their own Artificial Analysis and OpenRouter credentials to the local MCP process.
 
 ## Release state
 
-The repository currently has release automation for future `v*` tags. A tag must match the version in `package.json`; the workflow then runs tests, syntax/package validation, builds and validates the MCPB artifact, and creates a GitHub Release with that artifact.
+The repository uses `v*` tags for releases. A tag must match `package.json`, `package-lock.json`, and both version fields in `server.json` before release work proceeds.
 
-The current public npm version is `0.2.2`. The Phase 1 CI gate validates that exact published package on Linux and Windows in addition to validating the prospective package from the repository.
+The release workflow then runs tests, syntax checks, a production dependency audit, npm-package validation, and MCPB validation. If the npm version is not already public, it publishes through npm trusted publishing/OIDC. It then authenticates to the Official MCP Registry through GitHub OIDC, publishes `server.json`, and finally creates a GitHub Release containing the validated MCPB bundle.
 
-GitHub Release history is tracked separately from npm publication. Do not infer that an npm version has a matching GitHub Release unless the release actually exists.
+The currently public npm version before the Phase 1 hardening release is `0.2.2`; the hardened prospective release is `0.2.3`. CI validates the current public package on Linux and Windows in addition to validating the prospective package from the repository.
+
+npm trusted publishing requires the npm package to trust `AgenticArtists/ModelShortlist` and `.github/workflows/release.yml`. The Registry GitHub-OIDC path does not require a long-lived Registry token.
+
+GitHub Release history is separate from npm publication. Do not infer that an npm version has a matching GitHub Release unless the release actually exists.
 
 ## Directory status
 
