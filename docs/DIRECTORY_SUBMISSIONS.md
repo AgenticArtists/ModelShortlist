@@ -1,6 +1,8 @@
-# ModelShortlist directory submission kit
+# ModelShortlist distribution and directory status
 
-This file is the reusable source of truth for submitting ModelShortlist to MCP directories and discovery services.
+Last verified: **2026-09-15**
+
+This file is the source of truth for third-party discovery/distribution status. Do not infer that a historical submission is public until the listing is actually discoverable.
 
 ## Canonical identity
 
@@ -9,245 +11,94 @@ This file is the reusable source of truth for submitting ModelShortlist to MCP d
 - Install configurator: https://modelshortlist.com/install
 - GitHub: https://github.com/AgenticArtists/ModelShortlist
 - npm: `@agentic.artists/modelshortlist`
-- Official MCP Registry name: `io.github.AgenticArtists/modelshortlist`
+- Official MCP Registry: `io.github.AgenticArtists/modelshortlist`
+- Current release: `0.2.3`
 - License: MIT
 - Transport: local stdio MCP
-- Maintainer: AgenticArtists
+- Runtime: Node.js 20+
+- Architecture: local/BYOK, read-only tools, no hosted ModelShortlist backend, no MCP telemetry
 
-## Distribution status
+Required upstream credentials:
 
-| Surface | Status | Notes |
+- `ARTIFICIAL_ANALYSIS_API_KEY`
+- `OPENROUTER_API_KEY`
+
+## Verified status
+
+| Surface | Status | Evidence / next step |
 | --- | --- | --- |
-| Official MCP Registry | Published | `io.github.AgenticArtists/modelshortlist` v0.2.2 |
-| npm | Published | `@agentic.artists/modelshortlist` v0.2.2 |
-| Website | Live | `modelshortlist.com` + browser-only install configurator |
-| MCP.Directory | Submitted | Public API accepted the repository for review on 2026-09-15 with HTTP 200 |
-| PulseMCP | Submitted for indexing | Official Registry is an upstream source; direct indexing request also emailed |
-| MCP Server Finder | Submitted | Listing request emailed to `info@mcpserverfinder.com` |
-| TrackMCP | Submitted | Listing request emailed to `support@trackmcp.com` |
-| LaunchMCP | Submitted | Listing request emailed to `hello@launchmcp.co` |
-| Glama | Repo ready | Root `glama.json` added; GitHub-authenticated Add/Claim step remains |
-| Smithery | Bundle ready | Validated MCPB is built in CI; Smithery authentication/publish remains |
-| mcp.so | Manual step remains | Public API is behind a Cloudflare managed challenge; GitHub issue/browser submission remains |
-| FindMCP | Form ready | Claude Desktop config and canonical listing copy are prepared below |
+| Official MCP Registry | **Published / active** | `io.github.AgenticArtists/modelshortlist` v0.2.3 was re-fetched from the Registry API on 2026-09-15; `isLatest: true`. |
+| npm | **Published** | `@agentic.artists/modelshortlist@0.2.3` was re-fetched from the npm registry on 2026-09-15; package includes provenance attestation and the `modelshortlist` executable. |
+| GitHub Release | **Published** | `v0.2.3` release exists with the validated MCPB asset. |
+| ModelShortlist website | **Live** | `modelshortlist.com`, `/install`, Guides, sitemap, robots, social metadata, and `llms.txt` are live on the production Vercel deployment. |
+| MCP.Directory | **Submitted / review or auto-discovery pending** | Public intake accepted the repository on 2026-09-15. MCP.Directory also states that it auto-discovers from the Official MCP Registry. No duplicate resubmission. |
+| AllMCPs | **Pending** | Submission API returned HTTP 409 on 2026-09-15 with `duplicate: true`, existing id `modelshortlist`, status `pending`. Do not resubmit. |
+| AgentNDX | **Submitted / pending review** | Public JSON intake accepted the submission with HTTP 201; submission id `9`. |
+| FindMCP | **Submitted / pending review** | Public intake accepted the submission with HTTP 200; submission id `78`, slug `modelshortlist`. |
+| PulseMCP | **Submitted / propagation pending** | Direct indexing email sent 2026-09-15; PulseMCP also consumes Official MCP Registry data. No public ModelShortlist result found during Phase 3 re-check. |
+| LaunchMCP | **Submitted by email** | Listing request emailed to `hello@launchmcp.co` on 2026-09-15; no reply as of the Phase 3 inbox re-check. |
+| MCP Surge | **Submitted by email** | Listing request emailed to `hello@mcpsurge.com` on 2026-09-15; no reply as of the Phase 3 inbox re-check. |
+| MCP Server Finder | **Submitted by email** | Listing request emailed to `info@mcpserverfinder.com` on 2026-09-15; no reply as of the Phase 3 inbox re-check. |
+| TrackMCP | **Submitted by email** | Listing request emailed to `support@trackmcp.com` on 2026-09-15; no reply as of the Phase 3 inbox re-check. |
+| Agent Switchboard | **Submitted by email** | Listing request emailed to maintainer `barnir@agentmail.to` on 2026-09-15. It is a curated, machine-readable agent/MCP directory with free inclusion. |
+| Glama | **Owner action required** | Current Glama docs accept open-source servers from GitHub. Repository already has `glama.json`; Add/Claim requires signing in with GitHub and, for organization ownership, approving the Glama GitHub App. |
+| Smithery | **Owner authentication required** | Current CLI supports `smithery mcp publish <bundle.mcpb> -n <namespace/server>`. The validated MCPB exists, but `smithery auth login` is required. |
+| mcp.so | **Owner/GitHub action required** | Current site documents GitHub issue submission. Attempts through the connected GitHub App fail with HTTP 403 because the external repository restricts integration issue/comment creation. |
+| MCP.Pub | **Browser-only submission remains** | Active directory with 6k+ servers and local stdio support. Its submit page needs only the GitHub URL and contact email, but GitHub Actions requests are blocked with HTTP 403. |
+| mcp-get (legacy) | **Do not pursue** | The established `michaellatman/mcp-get` project is archived and explicitly recommends Smithery. Homebrew marks the formula disabled. |
+| MCPHunt | **Do not pursue as a directory submission** | The current `MCPHunt` project is an MCP security/evaluation framework; the separate MCP Hunt site requires sign-in for community submission. |
+| mcpub.dev | **Not applicable** | Its publication model expects a reachable remote MCP endpoint / well-known manifest. ModelShortlist is intentionally local stdio; do not misrepresent the website as an MCP endpoint. |
 
-## One-line description
+## Remaining manual actions
 
-Workload-specific AI model shortlisting using current OpenRouter catalog data and Artificial Analysis benchmarks.
+These are the only worthwhile Phase 3 directory actions that could not be completed autonomously:
 
-## Directory-safe short description (100 chars max)
+1. **Glama** — sign in, choose Add MCP Server, submit `https://github.com/AgenticArtists/ModelShortlist`, then claim ownership with GitHub.
+2. **Smithery** — authenticate, then run the current MCPB publish flow for namespace `agenticartists/modelshortlist`.
+3. **mcp.so** — while signed into GitHub in a normal browser, use the site's Submit flow / `chatmcp/mcpso` submission issue route. The connected GitHub App cannot create the external issue.
+4. **MCP.Pub** — open `https://mcp.pub/submit/`, paste the public repository URL and contact email, and submit for review. Automation from GitHub Actions is blocked by HTTP 403.
 
-Workload-specific AI model selection using OpenRouter data and Artificial Analysis benchmarks.
+Do not add a hosted Streamable HTTP backend merely to satisfy a directory.
 
-## Short description
+## Submission copy
 
-ModelShortlist is a local BYOK MCP server that helps AI assistants choose models for a specific workload using current OpenRouter catalog, capability, context, pricing, and optional ZDR endpoint data plus Artificial Analysis benchmarks when confidently matched.
+### One-line description
 
-## Extended description
+Current workload-specific AI model selection using Artificial Analysis evidence plus live OpenRouter facts.
 
-ModelShortlist puts current model-selection evidence inside an MCP-capable AI assistant. Instead of imposing one universal model ranking, it gives the host AI a current candidate set and the evidence needed to reason about the user's actual workload: model capabilities, tool calling, context limits, OpenRouter pricing, provider information, optional Zero Data Retention requirements, and independent Artificial Analysis benchmark/performance data when the model identity can be reconciled confidently.
+### Short description
 
-The MCP runs locally and is bring-your-own-key. There is no ModelShortlist account, hosted backend, telemetry, or bundled upstream dataset. ZDR is not a default filter; it becomes a hard constraint only when the user explicitly requires it.
+ModelShortlist is a local BYOK MCP server that gives AI assistants current OpenRouter pricing, capability, context, provider, and optional ZDR information plus independent Artificial Analysis benchmark/performance evidence for workload-specific model selection.
 
-## Differentiator
+### Extended description
 
-**Current model evidence + workload-specific reasoning, not a static leaderboard or universal score.**
+ModelShortlist answers a moving-target question: **given what is true about the model market right now, which model is best for this workload?** It does not impose one permanent leaderboard. Artificial Analysis supplies independent quality/performance evidence when a model match is confident; OpenRouter supplies current operational facts such as model availability, context, tool support, pricing, providers, and optional ZDR endpoints; the host AI reasons over that evidence for the user's workload and hard constraints.
 
-## Suggested categories
+The MCP runs locally, is bring-your-own-key, MIT licensed, and read-only. There is no ModelShortlist account, hosted ModelShortlist backend, or MCP telemetry. ZDR is optional unless explicitly requested.
 
-Use the closest categories a directory offers to:
+### Suggested categories
 
 - AI / LLM tooling
 - Developer tools
-- Model selection / model routing
-- Productivity / agent infrastructure
+- Model selection
+- Agent infrastructure
+- Infrastructure / Ops
 
-Do not categorize ModelShortlist as a hosted inference provider or model gateway. It is a read-only local MCP context layer for model selection.
-
-## Suggested tags
+### Suggested tags
 
 `model-selection`, `llm`, `openrouter`, `artificial-analysis`, `benchmarks`, `coding-agents`, `tool-calling`, `context-window`, `zdr`, `privacy`, `cost-optimization`, `mcp`, `byok`, `open-source`
 
-## User-facing trust points
-
-- Published in the Official MCP Registry
-- Public npm package
-- MIT licensed
-- Local stdio process
-- Bring your own OpenRouter and Artificial Analysis API keys
-- No ModelShortlist account
-- No hosted ModelShortlist backend
-- No telemetry in the MCP
-- Read-only MCP tools
-- ZDR is optional unless explicitly required
-- CI includes tests, syntax/package validation, Linux package smoke testing, Windows package smoke testing, website type-check/build validation, and MCPB validation/packaging
-
-## MCP tools
-
-### `recommend_models`
-
-Primary workload-specific recommendation context. Supports hard constraints including tool calling, minimum context, pricing limits, creator/model filters, and optional ZDR.
-
-### `compare_models`
-
-Returns current evidence for a specified shortlist of OpenRouter model IDs, including ZDR availability and Artificial Analysis data when confidently matched.
-
-### `modelshortlist_status`
-
-Reports catalog/ZDR/matching coverage, ambiguous or unmatched records, cache state, and Artificial Analysis rate-limit metadata.
-
-## Example prompts
-
-- "What's the cheapest model I'd trust with repetitive coding subagents? Tool use is required."
-- "I need 200k context and tool use. What are my best current options?"
-- "I need 200k context and tool use, and ZDR is mandatory. What are my best current options?"
-- "Is the premium frontier model actually worth the price for this coding workload?"
-- "Best model for extracting structured data from thousands of documents while keeping output cost low?"
-- "I need maximum autonomous coding performance under $10 per million output tokens. What should I use?"
-
 ## Installation
 
-Preferred user path: https://modelshortlist.com/install
+Preferred path: https://modelshortlist.com/install
 
-The configurator generates client-specific config/commands for Claude Desktop, Hermes Desktop, Cursor, Claude Code, and VS Code/Copilot. It runs in the browser; entered API keys are used only to generate the text displayed to the user and are not sent to ModelShortlist.
-
-Generic npm package:
-
-```text
-@agentic.artists/modelshortlist
-```
-
-Generic stdio command:
+Generic npm command:
 
 ```text
 npx -y @agentic.artists/modelshortlist
 ```
 
-Required environment variables:
-
-```text
-ARTIFICIAL_ANALYSIS_API_KEY
-OPENROUTER_API_KEY
-```
-
-Optional environment variable:
-
-```text
-MODEL_SELECTOR_CACHE_TTL_MS
-```
-
-## Data attribution
-
-- OpenRouter: model catalog, capabilities, context, pricing, provider and ZDR endpoint metadata
-- Artificial Analysis: benchmark and model-performance data when a confident model match exists
-
-ModelShortlist is not affiliated with or endorsed by OpenRouter or Artificial Analysis. Users access upstream APIs with their own credentials and remain responsible for the applicable upstream terms.
-
-## Glama
-
-The repository root contains `glama.json` using Glama's server schema and the `AgenticArtists` GitHub maintainer. Because the repository is under a GitHub organization, this file is the ownership/claim mechanism Glama documents for organization-hosted MCP servers.
-
-Remaining authenticated steps:
-
-1. Choose **Add MCP Server** on Glama.
-2. Supply `https://github.com/AgenticArtists/ModelShortlist`.
-3. Use **ModelShortlist** as the display name.
-4. Use the short description above.
-5. After indexing, authenticate with GitHub and use the Claim ownership flow so Glama re-reads `glama.json`.
-6. Review Glama's generated install instructions and tool scan against the canonical information in this file.
-
-## PulseMCP
-
-PulseMCP consumes the Official MCP Registry as one of its upstream sources. ModelShortlist is already published there. A direct indexing request has also been sent with the Registry name, version, GitHub URL, website, install URL, npm package, and short description.
-
-No code changes are required for PulseMCP indexing.
-
-## Smithery
-
-Smithery's local/stdio publishing path accepts a pre-built MCPB bundle rather than a URL unless the MCP is actually hosted over Streamable HTTP.
-
-ModelShortlist builds a validated MCPB in CI. See [`MCPB_DISTRIBUTION.md`](./MCPB_DISTRIBUTION.md).
-
-After Smithery authentication:
-
-```bash
-npm install -g smithery@latest
-smithery auth login
-npm run mcpb:build
-smithery mcp publish ./dist/modelshortlist-0.2.2.mcpb -n agenticartists/modelshortlist
-```
-
-Do **not** submit `https://modelshortlist.com` as a URL-based MCP server. It is the website/install surface, not a Streamable HTTP MCP endpoint.
-
-## mcp.so
-
-mcp.so accepts server submissions through browser/GitHub-controlled flows. A direct POST to their historical `/api/submit-project` intake endpoint was tested from GitHub Actions on 2026-09-15 and blocked by a Cloudflare managed challenge with HTTP 403. The temporary workflow used for that test was removed immediately afterward.
-
-Suggested issue title:
-
-```text
-[Submit] ModelShortlist — workload-specific AI model selection MCP
-```
-
-Suggested submission body:
-
-```markdown
-## MCP Server Submission: ModelShortlist
-
-Description: Local BYOK MCP for workload-specific AI model shortlisting using current OpenRouter catalog data and Artificial Analysis benchmarks.
-
-Website: https://modelshortlist.com
-Install: https://modelshortlist.com/install
-Repository: https://github.com/AgenticArtists/ModelShortlist
-npm: https://www.npmjs.com/package/@agentic.artists/modelshortlist
-Official MCP Registry: `io.github.AgenticArtists/modelshortlist`
-Transport: local stdio
-Runtime: Node.js 20+
-License: MIT
-
-Tools:
-- `recommend_models`
-- `compare_models`
-- `modelshortlist_status`
-
-Generic install:
-`npx -y @agentic.artists/modelshortlist`
-
-Required local configuration:
-- `ARTIFICIAL_ANALYSIS_API_KEY`
-- `OPENROUTER_API_KEY`
-
-ZDR is optional unless explicitly requested. No hosted ModelShortlist backend or telemetry is involved.
-```
-
-## MCP.Directory
-
-Submitted successfully through the public JSON intake API on 2026-09-15. The response was:
-
-```json
-{"ok":true,"message":"Server submitted for review!"}
-```
-
-The accepted payload used:
-
-- GitHub: `https://github.com/AgenticArtists/ModelShortlist`
-- Description: `Workload-specific AI model selection using OpenRouter data and Artificial Analysis benchmarks.`
-- Contact: `agenticartists@gmail.com`
-
-The one-time submission workflow was removed after the successful response.
-
-## FindMCP
-
-Prepared values for the public submission form:
-
-- Server name: `ModelShortlist`
-- Repository URL: `https://github.com/AgenticArtists/ModelShortlist`
-- Description: `ModelShortlist is a local BYOK MCP server that gives AI assistants current OpenRouter catalog, pricing, capability, context, optional ZDR endpoint, and Artificial Analysis benchmark evidence for workload-specific model selection.`
-- Category: closest available to `Developer Tools`, `AI Agents`, or `Model Selection`
-- Transport: `stdio`
-- Contact email: `agenticartists@gmail.com`
-
-Claude Desktop installation JSON:
+Claude Desktop-style config:
 
 ```json
 {
@@ -264,10 +115,23 @@ Claude Desktop installation JSON:
 }
 ```
 
-On Windows, the website install configurator generates the same config with `npx.cmd` to avoid common GUI PATH issues.
+On Windows, use the install configurator's `npx.cmd` variant for GUI clients.
+
+## Data attribution
+
+- **Artificial Analysis:** independent benchmark/model-performance evidence when a confident model reconciliation exists.
+- **OpenRouter:** current model catalog, capabilities, context, pricing, provider, and ZDR endpoint metadata.
+
+ModelShortlist is not affiliated with or endorsed by Artificial Analysis or OpenRouter.
 
 ## Submission rule
 
-For any other directory, reuse the canonical identity, short description, extended description, tags, trust points, and install URL above. If a directory asks for a server command, use the generic npm stdio command. If it asks for environment variables, list the two required keys without example secrets.
+Before submitting anywhere new:
 
-Do not advertise ModelShortlist as a remote/hosted MCP endpoint unless a separate hosted product is actually launched.
+1. search for ModelShortlist first;
+2. confirm the directory is active and credible;
+3. confirm it accepts local stdio MCPs;
+4. use the GitHub/npm/Registry identity above;
+5. never submit `modelshortlist.com` as though it were a remote MCP endpoint;
+6. avoid low-quality directories whose only value is inflating listing count;
+7. record the result here.
