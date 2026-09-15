@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { Geist_Mono, Inter, Sora } from 'next/font/google'
+import { Analytics } from '@vercel/analytics/next'
 import { Github } from 'lucide-react'
 import Logo from '@/components/Logo'
 import ThemeProvider from '@/components/ThemeProvider'
@@ -140,6 +141,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <SiteFooter />
           </div>
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   )
