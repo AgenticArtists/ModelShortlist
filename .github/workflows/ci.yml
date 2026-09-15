@@ -55,13 +55,15 @@ jobs:
           test "$STATUS" -eq 0 -o "$STATUS" -eq 124
           echo "$OUTPUT" | grep -q "ModelShortlist MCP server running on stdio"
 
-      - name: Validate and smoke test published npm release
+      - name: Validate and smoke test latest published npm release
         shell: bash
         run: |
-          VERSION="$(node -p "require('./package.json').version")"
+          PUBLISHED_VERSION="$(npm view @agentic.artists/modelshortlist version)"
+          test -n "$PUBLISHED_VERSION"
+          echo "Validating published @agentic.artists/modelshortlist@$PUBLISHED_VERSION"
           TEMP_DIR="$(mktemp -d)"
           cd "$TEMP_DIR"
-          TARBALL="$(npm pack "@agentic.artists/modelshortlist@$VERSION" --silent)"
+          TARBALL="$(npm pack "@agentic.artists/modelshortlist@$PUBLISHED_VERSION" --silent)"
           tar -tf "$TARBALL" > package-files.txt
           grep -qx "package/package.json" package-files.txt
           grep -qx "package/bin/modelshortlist.js" package-files.txt
@@ -116,16 +118,17 @@ jobs:
             throw "Prospective packaged Windows executable did not start correctly."
           }
 
-      - name: Smoke test published Windows executable
+      - name: Smoke test latest published Windows executable
         shell: pwsh
         run: |
-          Set-Location $env:GITHUB_WORKSPACE
-          $version = node -p "require('./package.json').version"
+          $publishedVersion = npm view @agentic.artists/modelshortlist version
+          if (-not $publishedVersion) { throw "Could not resolve published ModelShortlist version." }
+          Write-Host "Validating published @agentic.artists/modelshortlist@$publishedVersion"
           $tempDir = Join-Path $env:RUNNER_TEMP "modelshortlist-published-test"
           New-Item -ItemType Directory -Force -Path $tempDir | Out-Null
           Set-Location $tempDir
           npm init -y | Out-Null
-          npm install "@agentic.artists/modelshortlist@$version" --no-audit --no-fund | Out-Null
+          npm install "@agentic.artists/modelshortlist@$publishedVersion" --no-audit --no-fund | Out-Null
           $output = cmd /c ".\node_modules\.bin\modelshortlist.cmd < NUL" 2>&1 | Out-String
           Write-Host $output
           if ($output -notmatch "ModelShortlist MCP server running on stdio") {
