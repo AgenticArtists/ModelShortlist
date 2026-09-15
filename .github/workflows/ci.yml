@@ -12,7 +12,7 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -26,16 +26,19 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high
+
       - name: Run tests
         run: npm test
 
       - name: Check syntax
         run: npm run check
 
-      - name: Validate npm package
+      - name: Validate prospective npm package
         run: npm run pack:check
 
-      - name: Smoke test packaged executable
+      - name: Smoke test prospective packaged executable
         shell: bash
         run: |
           PACKAGE_TARBALL="$(npm pack --silent)"
@@ -43,7 +46,36 @@ jobs:
           TEMP_DIR="$(mktemp -d)"
           cd "$TEMP_DIR"
           npm init -y >/dev/null 2>&1
-          npm install "$PACKAGE_PATH" >/dev/null 2>&1
+          npm install "$PACKAGE_PATH" --no-audit --no-fund >/dev/null 2>&1
+          set +e
+          OUTPUT="$(timeout 2s ./node_modules/.bin/modelshortlist 2>&1)"
+          STATUS=$?
+          set -e
+          echo "$OUTPUT"
+          test "$STATUS" -eq 0 -o "$STATUS" -eq 124
+          echo "$OUTPUT" | grep -q "ModelShortlist MCP server running on stdio"
+
+      - name: Validate and smoke test published npm release
+        shell: bash
+        run: |
+          VERSION="$(node -p "require('./package.json').version")"
+          TEMP_DIR="$(mktemp -d)"
+          cd "$TEMP_DIR"
+          TARBALL="$(npm pack "@agentic.artists/modelshortlist@$VERSION" --silent)"
+          tar -tf "$TARBALL" > package-files.txt
+          grep -qx "package/package.json" package-files.txt
+          grep -qx "package/bin/modelshortlist.js" package-files.txt
+          grep -qx "package/mcp/server.js" package-files.txt
+          grep -qx "package/lib/catalog.js" package-files.txt
+          grep -qx "package/lib/openrouter.js" package-files.txt
+          grep -qx "package/lib/artificial-analysis.js" package-files.txt
+          grep -qx "package/config/aliases.json" package-files.txt
+          ! grep -q '^package/website/' package-files.txt
+          ! grep -q '^package/test/' package-files.txt
+          ! grep -q '^package/.github/' package-files.txt
+          ! grep -q '^package/.env.local$' package-files.txt
+          npm init -y >/dev/null 2>&1
+          npm install "./$TARBALL" --no-audit --no-fund >/dev/null 2>&1
           set +e
           OUTPUT="$(timeout 2s ./node_modules/.bin/modelshortlist 2>&1)"
           STATUS=$?
@@ -54,7 +86,7 @@ jobs:
 
   windows-package:
     runs-on: windows-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -68,7 +100,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Pack and smoke test Windows executable
+      - name: Pack and smoke test prospective Windows executable
         shell: pwsh
         run: |
           $tarball = npm pack --silent
@@ -77,11 +109,27 @@ jobs:
           New-Item -ItemType Directory -Force -Path $tempDir | Out-Null
           Set-Location $tempDir
           npm init -y | Out-Null
-          npm install $packagePath | Out-Null
+          npm install $packagePath --no-audit --no-fund | Out-Null
           $output = cmd /c ".\node_modules\.bin\modelshortlist.cmd < NUL" 2>&1 | Out-String
           Write-Host $output
           if ($output -notmatch "ModelShortlist MCP server running on stdio") {
-            throw "Packaged Windows executable did not start correctly."
+            throw "Prospective packaged Windows executable did not start correctly."
+          }
+
+      - name: Smoke test published Windows executable
+        shell: pwsh
+        run: |
+          Set-Location $env:GITHUB_WORKSPACE
+          $version = node -p "require('./package.json').version"
+          $tempDir = Join-Path $env:RUNNER_TEMP "modelshortlist-published-test"
+          New-Item -ItemType Directory -Force -Path $tempDir | Out-Null
+          Set-Location $tempDir
+          npm init -y | Out-Null
+          npm install "@agentic.artists/modelshortlist@$version" --no-audit --no-fund | Out-Null
+          $output = cmd /c ".\node_modules\.bin\modelshortlist.cmd < NUL" 2>&1 | Out-String
+          Write-Host $output
+          if ($output -notmatch "ModelShortlist MCP server running on stdio") {
+            throw "Published Windows executable did not start correctly."
           }
 
   mcpb:
