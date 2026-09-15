@@ -13,6 +13,7 @@ No hosted ModelShortlist backend. No account. No telemetry in the MCP. Your API 
 
 - Website: [modelshortlist.com](https://modelshortlist.com)
 - Fast install configurator: [modelshortlist.com/install](https://modelshortlist.com/install)
+- Model-selection guides: [modelshortlist.com/guides](https://modelshortlist.com/guides)
 - npm: [`@agentic.artists/modelshortlist`](https://www.npmjs.com/package/@agentic.artists/modelshortlist)
 - Official MCP Registry: `io.github.AgenticArtists/modelshortlist`
 - License: MIT
@@ -46,6 +47,7 @@ Use the browser-only configurator:
 
 It generates client-specific config or commands for:
 
+- Claude Desktop
 - Hermes Desktop
 - Cursor
 - Claude Code
@@ -62,7 +64,7 @@ Requirements:
 
 ## Generic npm config
 
-Most local stdio MCP clients can launch ModelShortlist directly with `npx`:
+Most local stdio MCP clients, including Claude Desktop, Hermes Desktop, and Cursor, can launch ModelShortlist directly with `npx`:
 
 ```json
 {
@@ -107,7 +109,7 @@ The setup command:
 
 - asks for both API keys with masked input
 - stores them only in the gitignored `.env.local`
-- prints ready-to-paste Hermes Desktop / Cursor and VS Code / Copilot MCP configs
+- prints ready-to-paste Claude Desktop / Hermes Desktop / Cursor and VS Code / Copilot MCP configs
 - uses the exact Node executable that ran setup, avoiding many GUI-client PATH problems
 
 If PowerShell blocks `npm.ps1`, use `npm.cmd`; you do not need to change your execution policy.
@@ -204,6 +206,12 @@ See [ATTRIBUTION.md](./ATTRIBUTION.md) for more detail.
 - no telemetry is built into ModelShortlist.
 
 If you discover a security issue, see [SECURITY.md](./SECURITY.md).
+
+## MCPB distribution
+
+ModelShortlist also builds a validated `.mcpb` bundle for local-server distribution channels. CI validates and packs the bundle on `main`, and tagged releases are configured to attach the bundle automatically to GitHub Releases.
+
+See [docs/MCPB_DISTRIBUTION.md](./docs/MCPB_DISTRIBUTION.md).
 
 ## Discovery and directory maintainers
 
