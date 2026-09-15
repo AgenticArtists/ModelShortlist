@@ -98,6 +98,11 @@ const groups: Array<{ label: string; intro: string; guides: Guide[] }> = [
         description: 'How independent benchmark and performance evidence enters the shortlist with conservative identity matching.',
       },
       {
+        href: '/artificial-analysis-model-comparison',
+        title: 'Artificial Analysis model comparison',
+        description: 'Use independent benchmark evidence with current operational facts instead of treating a ranking as the entire deployment decision.',
+      },
+      {
         href: '/openrouter-model-comparison',
         title: 'OpenRouter model comparison',
         description: 'Compare current OpenRouter context, capabilities, pricing, providers, and optional ZDR facts by workload.',
