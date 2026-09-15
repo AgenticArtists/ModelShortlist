@@ -1,147 +1,180 @@
-# Launch plan
+# Launch content pack
 
-ModelShortlist is public-source software being prepared for npm and Official MCP Registry distribution. The goal of launch is adoption, not monetization.
+ModelShortlist is ready for public promotion. The product, package, Official MCP Registry listing, website, documentation, and hardened `0.2.3` release are live.
 
-## Positioning
+## Core message
 
-**One-liner**
+**Problem:** model selection changes too quickly for static recommendations.
 
-ModelShortlist is a local BYOK MCP server that helps your AI assistant choose the right model for a workload using the live OpenRouter model catalog plus Artificial Analysis benchmarks, with optional ZDR filtering when privacy requires it.
+**Answer:** ModelShortlist gives an MCP-capable AI assistant current evidence for choosing a model for a specific workload.
 
-**Short description**
+Artificial Analysis supplies independent benchmark/performance evidence when a model match is confident. OpenRouter supplies current operational facts such as price, context, tool support, providers, and optional ZDR endpoints. The host AI reasons over that evidence for the user's actual workload.
 
-Stop guessing which model to use. ModelShortlist lets an MCP-capable assistant reason over current model availability, tool support, context, price, benchmark data, and optional Zero Data Retention requirements for the specific workload you describe.
+Do not lead with “I made an MCP server.” Lead with the moving-target model-selection problem.
 
-**Core differentiators**
+## Trust points
 
-- workload-specific recommendations instead of a static leaderboard
-- full OpenRouter catalog by default instead of a ZDR-only subset
-- optional ZDR hard filtering when the user explicitly requires it
-- current ZDR endpoint-level validation when ZDR is required
-- local/BYOK architecture with no hosted ModelShortlist backend
-- conservative Artificial Analysis reconciliation instead of fuzzy benchmark matching
-- unmatched OpenRouter models remain eligible without invented benchmark data
-- works as a read-only MCP tool inside existing chat/agent clients
+- open source / MIT
+- local stdio MCP
+- bring your own Artificial Analysis and OpenRouter keys
+- no ModelShortlist account
+- no hosted ModelShortlist backend
+- no MCP telemetry
+- read-only MCP tools
+- Official MCP Registry: `io.github.AgenticArtists/modelshortlist`
+- npm: `@agentic.artists/modelshortlist`
+- current release: `0.2.3`
+- ZDR is optional unless explicitly required
 
-## Launch order
+## Primary call to action
 
-### 1. GitHub
+Website: https://modelshortlist.com
 
-Repository metadata should use:
+Install: https://modelshortlist.com/install
 
-**Repository**
+GitHub: https://github.com/AgenticArtists/ModelShortlist
 
-`https://github.com/AgenticArtists/ModelShortlist`
+## Demo
 
-**Website**
+Use `docs/DEMO.md` for the 60–90 second recording flow. Use live output at capture time; do not hard-code model names, prices, or benchmark values into launch copy.
 
-`https://modelshortlist.com`
+Recommended demo prompt:
 
-**Description**
+> I need a model for a long-running coding agent. Tool use is required, I need at least 100k context, and I care about quality-per-dollar. Which model should I use right now?
 
-> Local MCP for workload-specific AI model recommendations using OpenRouter + Artificial Analysis.
+## Show HN
 
-**Topics**
+### Title
 
-`mcp`, `model-context-protocol`, `openrouter`, `artificial-analysis`, `llm`, `model-selection`, `zdr`, `ai-tools`
+**Show HN: ModelShortlist – ask your AI which model is best right now**
 
-Before actively promoting, add one screenshot or short GIF showing a normal chat question and the resulting recommendation.
+### Body
 
-### 2. npm
+Model selection has become a moving target. New models launch constantly, prices change, tool support changes, context limits change, and benchmark rankings move. A blog post or static leaderboard can be useful for orientation, but it gets stale quickly and usually cannot account for the workload you actually have.
 
-Publish the final package as:
+I built ModelShortlist to put current model-selection evidence inside an MCP-capable assistant.
 
-`@agentic.artists/modelshortlist`
+It combines independent Artificial Analysis benchmark/performance evidence with current OpenRouter facts such as model availability, pricing, context, tool support, providers, and optional Zero Data Retention endpoints. The host AI then reasons over that evidence for the specific workload and hard constraints you describe.
 
-The executable is:
+It does not route inference or impose a universal score. It is a local stdio MCP, BYOK, MIT licensed, read-only, and has no hosted ModelShortlist backend or MCP telemetry.
 
-`modelshortlist`
+Example question:
 
-After verifying the new package, deprecate the historical `@agentic.artists/openanalysis` package with a migration message pointing to ModelShortlist.
+> I need a model for a long-running coding agent. Tool use is required, I need at least 100k context, and I care about quality-per-dollar. Which model should I use right now?
 
-### 3. Official MCP Registry
+Website: https://modelshortlist.com
+GitHub: https://github.com/AgenticArtists/ModelShortlist
+Install: https://modelshortlist.com/install
 
-This is the highest-priority structured listing once the ModelShortlist npm package exists. The Registry is the vendor-neutral source of truth and downstream directories can ingest it.
+I’d especially value feedback from people who regularly switch among OpenRouter models: what evidence do you actually want available when choosing a model, and where does this recommendation surface fall short?
 
-Stable Registry identity:
+## Reddit
 
-`io.github.AgenticArtists/modelshortlist`
+### r/mcp / r/modelcontextprotocol title
 
-Validate and publish `server.json` using `mcp-publisher` after the npm package is live.
+**I built a local MCP for answering “which model should I use for this workload right now?”**
 
-References:
+### Body
 
-- https://modelcontextprotocol.io/registry/quickstart
-- https://registry.modelcontextprotocol.io/
+ModelShortlist is an open-source local MCP that gives your existing AI assistant current evidence for model selection.
 
-### 4. Glama
+The main idea is that “best model” depends on the job and changes over time. Artificial Analysis contributes independent benchmark/performance evidence; OpenRouter contributes current price, context, capabilities, providers, and optional ZDR information; the host model reasons about the actual workload instead of relying on a permanent top-10 list.
 
-Glama accepts open-source MCP servers directly from a GitHub repository. Submission requires the repository URL, display name, and short description; Glama then runs automated quality/security/health checks.
+It is local/BYOK, read-only, MIT licensed, has no hosted backend, and includes no MCP telemetry. ZDR is not a default restriction—it only becomes a hard constraint if you ask for it.
 
-Use:
+Install: https://modelshortlist.com/install
+GitHub: https://github.com/AgenticArtists/ModelShortlist
 
-- Repository: `https://github.com/AgenticArtists/ModelShortlist`
-- Display name: `ModelShortlist`
-- Short description: the short description above
+I’m looking for early users who actually choose among several models and can point out missing constraints, bad model reconciliation, or evidence that is not useful in practice.
 
-Reference: https://glama.ai/mcp/faq
+### r/LocalLLaMA / model-selection communities angle
 
-### 5. Smithery
+**Static “best LLM” lists age fast, so I built a current model-selection evidence layer**
 
-Submit after the npm package/standard install command exists so the listing has a clean installation path. Do not convert ModelShortlist into a hosted service merely for directory compatibility; preserve local/BYOK stdio behavior.
+Focus the post on changing pricing/capability/benchmark evidence, not MCP itself. Explain that ModelShortlist does not host models or route requests; it only supplies current evidence to the user's existing assistant.
 
-Reference: https://smithery.ai/
+### Coding-agent communities angle
 
-### 6. PulseMCP and downstream directories
+**How I’m choosing models for coding agents without hard-coding one permanent winner**
 
-Prioritize the Official MCP Registry first because ecosystem directories increasingly ingest official Registry metadata. Check for propagation before creating duplicate submissions.
+Use the coding-agent demo prompt. Highlight tool support, context, output-price ceilings, coding/agentic evidence, and why the result can change when the market changes.
 
-### 7. Awesome lists / community directories
+## LinkedIn
 
-After the package/Registry listing is stable, submit to established MCP awesome lists and community directories. These are secondary to the Official Registry, Glama, and Smithery.
+Model selection is becoming a systems problem, not a leaderboard problem.
 
-## Community launch copy
+The “best” AI model can change because a new model launches, pricing drops, tool support changes, context availability changes, or benchmark evidence moves. And the best model for a coding agent may be a poor choice for document extraction or repetitive low-cost subagents.
 
-### Hacker News / technical communities
+I built **ModelShortlist** to make that decision more current and workload-specific.
 
-**Title**
+It gives an MCP-capable AI assistant:
 
-> Show HN: ModelShortlist – an MCP that helps your AI choose which model to use
+- independent Artificial Analysis benchmark/performance evidence
+- current OpenRouter pricing, context, capability and provider facts
+- optional ZDR endpoint constraints
+- enough structured evidence to reason about the workload you actually describe
 
-**Body**
+It does not route inference, host models, or impose one permanent ranking. It runs locally, is BYOK and open source, and includes no MCP telemetry.
 
-> I built ModelShortlist because choosing an LLM has become a workload-specific decision rather than a leaderboard question. It runs locally as an MCP server and combines the current OpenRouter model catalog (tools, context, price, capabilities) with Artificial Analysis benchmark data. You describe the job and your host model uses the current evidence to recommend a model. If you explicitly require Zero Data Retention, it filters against current OpenRouter ZDR endpoints and verifies the hard constraints there. It is local, BYOK, read-only, MIT licensed, and has no hosted backend. Feedback on the recommendation surface and matching approach would be useful.
+https://modelshortlist.com
 
-### Reddit / MCP communities
+## Short social post
 
-**Title**
+“Which AI model is best?” is usually the wrong question.
 
-> I built a free MCP that answers “which AI model should I use for this job?”
+Better: **given what is true about the market right now, which model is best for this workload?**
 
-**Body**
+ModelShortlist combines Artificial Analysis performance evidence with current OpenRouter price/capability/context/provider data and lets your existing AI reason over it.
 
-> ModelShortlist is a local BYOK MCP server that combines the current OpenRouter model catalog with Artificial Analysis benchmarks. Instead of showing another leaderboard, it lets your existing AI assistant evaluate the actual workload and hard constraints: tool calling, context, price, coding/agentic benchmarks, etc. ZDR is optional: if you explicitly require it, ModelShortlist checks the current ZDR endpoint set rather than restricting everyone by default. It is MIT licensed and there is no hosted backend. I am looking for early users who regularly switch between models and can tell me where the recommendation logic falls short.
+Local. BYOK. Open source. No MCP telemetry.
 
-## What not to build before feedback
+https://modelshortlist.com
 
-Do not add these merely to make launch feel larger:
+## OpenRouter-focused community copy
 
-- hosted accounts
-- billing
-- a web dashboard
-- telemetry
-- automatic model routing
-- a proprietary universal ranking score
-- dozens of client-specific integrations
+ModelShortlist uses the full current OpenRouter catalog by default and helps the host AI reason about model choice using price, context, supported parameters/capabilities, provider information, and independent Artificial Analysis evidence.
 
-The first validation question is simpler: **do people who regularly use multiple models keep ModelShortlist installed and ask it which model to use?**
+It is not a router and does not send inference through a ModelShortlist backend. Users keep their existing OpenRouter setup and credentials. ZDR is optional unless explicitly requested.
 
-## Early feedback to capture
+Install: https://modelshortlist.com/install
 
-When users open issues, prioritize patterns around:
+## AI/MCP community copy
 
-1. important models missing benchmark matches or useful metadata
-2. constraints users repeatedly want but the tool cannot express
-3. recommendation data that users find misleading or irrelevant
-4. MCP clients where installation is unnecessarily difficult
-5. repeated requests for routing/automation rather than recommendation only
+ModelShortlist is a read-only local MCP for model-selection evidence. It exposes `recommend_models`, `compare_models`, and `modelshortlist_status`, so a host assistant can reason about model fit without relying on a stale static ranking.
+
+Official MCP Registry: `io.github.AgenticArtists/modelshortlist`
+
+npm: `@agentic.artists/modelshortlist`
+
+## GitHub announcement / release note
+
+### ModelShortlist 0.2.3 — hardened public release
+
+ModelShortlist is now fully published under its final identity across npm, the Official MCP Registry, GitHub Releases, and modelshortlist.com.
+
+`0.2.3` adds stronger upstream resilience and freshness signaling, conservative model reconciliation, stricter tool/pricing semantics, safer degraded-source behavior, broader regression coverage, package validation on Linux and Windows, validated MCPB packaging, and automated npm + Official Registry release publication.
+
+The website now also includes workload and comparison guides built around current evidence rather than static model rankings.
+
+Install: `npx -y @agentic.artists/modelshortlist`
+
+## Posting sequence
+
+1. Record the demo using `docs/DEMO.md`.
+2. Publish Show HN when someone can monitor/respond for the first few hours.
+3. Post to one relevant MCP subreddit/community; do not shotgun identical text across many subreddits.
+4. Publish LinkedIn with the demo or one clean screenshot.
+5. Share the coding-agent angle in one relevant OpenRouter/coding-agent community.
+6. Watch installs/issues/questions before expanding to broader launch sites.
+
+## What not to do
+
+- do not spam dozens of directories or communities
+- do not imply affiliation or endorsement by Artificial Analysis or OpenRouter
+- do not claim a permanent “best model”
+- do not fabricate benchmark results in launch screenshots
+- do not turn ZDR into the main product identity
+- do not build a hosted backend simply to improve directory compatibility
+- do not add new product features merely to make launch look bigger
+
+The first validation question remains: **do people who regularly choose among multiple models keep ModelShortlist installed and use it before selecting a model?**
