@@ -84,6 +84,32 @@ jobs:
             throw "Packaged Windows executable did not start correctly."
           }
 
+  mcpb:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build and validate MCPB bundle
+        run: npm run mcpb:build
+
+      - name: Upload MCPB bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: modelshortlist-mcpb
+          path: dist/*.mcpb
+          if-no-files-found: error
+
   website:
     runs-on: ubuntu-latest
     timeout-minutes: 8
