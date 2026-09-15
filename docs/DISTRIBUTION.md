@@ -1,8 +1,8 @@
-# Distribution roadmap
+# Distribution architecture
 
-ModelShortlist is the successor name for the project originally released as OpenAnalysis. The old npm package was published before the rename; the Official MCP Registry was not.
+ModelShortlist is the successor to the project originally released as OpenAnalysis. The rename and primary package/registry migration are complete.
 
-## Final identities
+## Canonical identities
 
 - Website: `https://modelshortlist.com`
 - GitHub repository: `AgenticArtists/ModelShortlist`
@@ -10,41 +10,45 @@ ModelShortlist is the successor name for the project originally released as Open
 - npm executable: `modelshortlist`
 - Official MCP Registry name: `io.github.AgenticArtists/modelshortlist`
 
-## Completed
+## Current product distribution foundation
 
 - local/BYOK stdio MCP implementation
 - public GitHub repository and MIT license
-- scoped npm organization access
-- Windows and Linux packaged-executable smoke tests
-- ModelShortlist package metadata and executable entry point
-- ModelShortlist MCP server identity and client config naming
-- ModelShortlist Official MCP Registry manifest
+- public npm package
+- Official MCP Registry package metadata in `server.json`
 - controlled npm package file list
 - `publishConfig.access` set to `public`
-- CI validates the prospective npm package with `npm pack --dry-run`
-- `server.json` declares the npm package, stdio transport, required secrets, website, and repository
-- `modelshortlist.com` acquired as the canonical domain
+- Linux and Windows smoke tests for both prospective and currently published npm packages
+- MCPB build and validation in CI
+- tagged-release workflow that validates the package, publishes npm through trusted publishing when needed, publishes Registry metadata through GitHub OIDC, and attaches the MCPB artifact to GitHub Releases
+- canonical website and install configurator
 
-## Remaining migration/publication work
+The MCP itself has no hosted ModelShortlist backend and no telemetry. Users provide their own Artificial Analysis and OpenRouter credentials to the local MCP process.
 
-1. Rename the GitHub repository from `OpenAnalysis` to `ModelShortlist`.
-2. Pull the renamed repository locally and verify `npm.cmd ci`, tests, syntax checks, and `npm.cmd run pack:check`.
-3. Publish `@agentic.artists/modelshortlist@0.2.1` to npm.
-4. Verify the installed Windows executable with a clean local install and `modelshortlist.cmd`.
-5. Run `mcp-publisher validate` against the ModelShortlist `server.json`.
-6. Authenticate to the Official MCP Registry using the AgenticArtists GitHub identity.
-7. Publish `io.github.AgenticArtists/modelshortlist@0.2.1` to the Official MCP Registry.
-8. Verify the public Registry listing.
-9. Deprecate the historical `@agentic.artists/openanalysis` npm package with a message pointing users to `@agentic.artists/modelshortlist`.
-10. Configure npm trusted publishing using GitHub Actions/OIDC for future releases.
-11. Submit to downstream directories after the Official Registry listing exists.
+## Release state
+
+The repository uses `v*` tags for releases. A tag must match `package.json`, `package-lock.json`, and both version fields in `server.json` before release work proceeds.
+
+The release workflow then runs tests, syntax checks, a production dependency audit, npm-package validation, and MCPB validation. If the npm version is not already public, it publishes through npm trusted publishing/OIDC. It then authenticates to the Official MCP Registry through GitHub OIDC, publishes `server.json`, and finally creates a GitHub Release containing the validated MCPB bundle.
+
+The currently public npm version before the Phase 1 hardening release is `0.2.2`; the hardened prospective release is `0.2.3`. CI validates the current public package on Linux and Windows in addition to validating the prospective package from the repository.
+
+npm trusted publishing requires the npm package to trust `AgenticArtists/ModelShortlist` and `.github/workflows/release.yml`. The Registry GitHub-OIDC path does not require a long-lived Registry token.
+
+GitHub Release history is separate from npm publication. Do not infer that an npm version has a matching GitHub Release unless the release actually exists.
+
+## Directory status
+
+Directory/discovery status is intentionally maintained in `docs/DIRECTORY_SUBMISSIONS.md` and is re-verified during the distribution phase before any new submission. Historical statuses must not be treated as current without that verification.
 
 ## Required user-supplied secrets
 
 - `ARTIFICIAL_ANALYSIS_API_KEY`
 - `OPENROUTER_API_KEY`
 
-ModelShortlist remains local/BYOK. It does not operate a hosted proxy or bundle upstream data.
+Optional:
+
+- `MODEL_SELECTOR_CACHE_TTL_MS`
 
 ## Official documentation
 

@@ -7,7 +7,7 @@
 
 **Stop guessing which AI model to use.**
 
-ModelShortlist is a local, bring-your-own-key MCP server that gives your AI assistant current model-selection context from the **full OpenRouter model catalog** plus **Artificial Analysis benchmarks**. Zero Data Retention (ZDR) is available as an optional hard constraint when you explicitly require it.
+ModelShortlist is a local, bring-your-own-key MCP server that gives your AI assistant model-selection evidence from the **full OpenRouter model catalog** plus **Artificial Analysis benchmarks**. It refreshes upstream evidence on demand/cache expiry and explicitly reports when any source is stale or unavailable. Zero Data Retention (ZDR) is an optional hard constraint only when you explicitly require it.
 
 No hosted ModelShortlist backend. No account. No telemetry in the MCP. Your API keys stay with the local MCP process and are used to call the upstream services directly.
 
@@ -20,22 +20,23 @@ No hosted ModelShortlist backend. No account. No telemetry in the MCP. Your API 
 
 ## Why ModelShortlist
 
-Model choice is no longer just "which model has the highest benchmark score?" The right answer depends on the workload, capabilities, cost, context, and privacy requirements you actually have.
+Model choice is no longer just "which model has the highest benchmark score?" The right answer depends on the workload, capabilities, cost, context, availability, and privacy requirements you actually have.
 
 ModelShortlist helps your chat agent reason over:
 
-- the current OpenRouter model catalog
+- the OpenRouter model catalog
 - tool/function-calling support
 - context and completion limits
-- OpenRouter input/output pricing
-- current ZDR endpoint availability when privacy requires it
+- OpenRouter input/output pricing, including tiered pricing when OpenRouter publishes it
+- ZDR endpoint availability when privacy requires it
 - ZDR endpoint latency, throughput, uptime, and provider options when applicable
 - Artificial Analysis Intelligence Index
 - Artificial Analysis Coding Index
 - Artificial Analysis Agentic Index
 - Artificial Analysis pricing and median performance
+- explicit source freshness and degraded-state warnings
 
-By default, **ZDR is not an eligibility requirement**. ModelShortlist considers the full OpenRouter catalog. If you explicitly require ZDR, it switches to current OpenRouter ZDR endpoint data and requires the hard constraints to be satisfied by the same real ZDR endpoint.
+By default, **ZDR is not an eligibility requirement**. ModelShortlist considers the full OpenRouter catalog. If you explicitly require ZDR, it switches to OpenRouter ZDR endpoint evidence and requires hard constraints to be satisfied by the same real endpoint.
 
 The host AI makes the final recommendation based on your use case. ModelShortlist deliberately does **not** impose one universal ranking formula.
 
@@ -53,7 +54,7 @@ It generates client-specific config or commands for:
 - Claude Code
 - VS Code / Copilot
 
-You paste your own Artificial Analysis and OpenRouter keys into the configurator. They are used only in your browser to generate the config text and are not sent to ModelShortlist.
+You paste your own Artificial Analysis and OpenRouter keys into the configurator. They are used in your browser to generate configuration text and are not sent to ModelShortlist or a ModelShortlist backend.
 
 Requirements:
 
@@ -142,35 +143,55 @@ The primary workload-specific recommendation tool. It accepts hard constraints s
 - maximum input/output price
 - creator/model filter
 
-When ZDR is not required, it considers the full OpenRouter catalog. When ZDR is explicitly required, it filters against current ZDR endpoints and verifies hard constraints against the same endpoint.
+When ZDR is not required, it considers the full OpenRouter catalog. When ZDR is explicitly required, it filters against ZDR endpoint evidence and verifies hard constraints against the same endpoint.
 
 Artificial Analysis benchmark data is attached only when the model can be confidently reconciled. Models without a confident benchmark match remain eligible with missing benchmark fields rather than being silently removed.
 
+Strict price ceilings account conservatively for all pricing tiers that OpenRouter publishes for a model or endpoint rather than assuming the cheapest/base tier applies universally.
+
 ### `compare_models`
 
-Returns current OpenRouter catalog information, ZDR availability, and Artificial Analysis benchmark information when available for a specified shortlist of OpenRouter model IDs.
+Returns OpenRouter catalog information, ZDR availability, Artificial Analysis benchmark information when available, and source freshness for a specified shortlist of OpenRouter model IDs.
 
 ### `modelshortlist_status`
 
-Shows OpenRouter catalog coverage, ZDR coverage, model matching coverage, ambiguous/unmatched records, cache state, and Artificial Analysis rate-limit metadata.
+Shows source freshness, OpenRouter catalog coverage, ZDR coverage, model matching coverage, ambiguous/unmatched records, cache state, and Artificial Analysis rate-limit metadata.
+
+## Freshness and degraded operation
+
+ModelShortlist does not silently call stale evidence “current.” Tool responses expose source-level status:
+
+- `fresh`: the latest attempted refresh succeeded.
+- `stale`: the latest refresh failed and an earlier in-process copy is being used with a warning.
+- `unavailable`: the source failed and there is no cached copy in the current process.
+
+Artificial Analysis can fail independently without removing OpenRouter models; benchmark fields remain missing rather than being treated as zero or poor performance. OpenRouter ZDR metadata can also be unavailable for ordinary requests because ZDR is optional.
+
+The OpenRouter model catalog is foundational. If it is unavailable with no cached copy, or returns an empty catalog and no earlier good copy exists, ModelShortlist refuses to produce a shortlist.
+
+For a ZDR-required request, unavailable ZDR endpoint evidence fails closed rather than being interpreted as “no models qualify.” If cached ZDR evidence is stale, that limitation is surfaced and ZDR must still be enforced/revalidated on the actual OpenRouter inference request.
+
+See [docs/TROUBLESHOOTING.md](./docs/TROUBLESHOOTING.md) for failure modes and client diagnostics.
 
 ## How matching works
 
 The Artificial Analysis Free API does not expose an OpenRouter model ID. ModelShortlist reconciles models conservatively:
 
 1. manually verified aliases
-2. exact normalized name matches
-3. otherwise the Artificial Analysis benchmark match remains unavailable
+2. exact normalized name/slug matches
+3. ambiguous or unmatched records remain without Artificial Analysis metrics
 
 ModelShortlist does **not** fuzzy-match uncertain model variants. A missing benchmark is better than attaching benchmark data to the wrong model. An unmatched OpenRouter model can still be considered; it simply carries no Artificial Analysis metrics.
+
+Regression coverage explicitly protects mini/base, pro/small/thinking, preview/stable, dated-release, duplicate-name, and broken-alias cases.
 
 Verified aliases live in [`config/aliases.json`](./config/aliases.json).
 
 ## ZDR is optional
 
-ModelShortlist tracks which models have current ZDR-capable OpenRouter endpoints, but it does **not** filter to them unless the user explicitly requires Zero Data Retention.
+ModelShortlist tracks which models have ZDR-capable OpenRouter endpoints, but it does **not** filter to them unless the user explicitly requires Zero Data Retention.
 
-When ZDR is required, ModelShortlist checks current endpoint-level eligibility and hard constraints. If you later call the selected model through OpenRouter, enforce ZDR again in the actual inference request:
+When ZDR is required, ModelShortlist checks endpoint-level eligibility and hard constraints. If you later call the selected model through OpenRouter, enforce ZDR again in the actual inference request:
 
 ```json
 {
@@ -182,6 +203,28 @@ When ZDR is required, ModelShortlist checks current endpoint-level eligibility a
 ```
 
 When ZDR is not required, do not add `provider.zdr=true` merely because a model happens to support it.
+
+## Data flow
+
+```text
+Your MCP client
+      |
+      | local stdio
+      v
+ModelShortlist MCP
+   |          |
+   |          +--> OpenRouter model + endpoint metadata
+   |
+   +-------------> Artificial Analysis benchmark/performance evidence
+      |
+      v
+structured evidence + freshness metadata
+      |
+      v
+Your host AI reasons about the workload and recommends a fit
+```
+
+ModelShortlist recommends; it does not route inference or host models.
 
 ## Data sources and attribution
 
@@ -201,21 +244,24 @@ See [ATTRIBUTION.md](./ATTRIBUTION.md) for more detail.
 - `.env.local` is gitignored for clone-based setup.
 - API keys are loaded locally by the MCP process.
 - the setup command masks API-key input.
+- the browser install configurator does not send entered keys to a ModelShortlist backend.
 - ModelShortlist does not operate a hosted backend.
 - MCP tools are read-only.
-- no telemetry is built into ModelShortlist.
+- no telemetry is built into the MCP.
+- CI audits production MCP and website dependencies for high-severity vulnerabilities.
+- CI verifies that the npm tarball does not include `.env.local`, website source, tests, or GitHub workflow files.
 
 If you discover a security issue, see [SECURITY.md](./SECURITY.md).
 
-## MCPB distribution
+## MCPB and releases
 
-ModelShortlist also builds a validated `.mcpb` bundle for local-server distribution channels. CI validates and packs the bundle on `main`, and tagged releases are configured to attach the bundle automatically to GitHub Releases.
+ModelShortlist builds a validated `.mcpb` bundle for local-server distribution channels. CI validates and packs the bundle. Tagged releases are configured to validate the package, run security checks, publish an unpublished npm version through npm trusted publishing, and attach the validated MCPB bundle to a GitHub Release.
 
-See [docs/MCPB_DISTRIBUTION.md](./docs/MCPB_DISTRIBUTION.md).
+See [docs/MCPB_DISTRIBUTION.md](./docs/MCPB_DISTRIBUTION.md) and [docs/DISTRIBUTION.md](./docs/DISTRIBUTION.md).
 
 ## Discovery and directory maintainers
 
-ModelShortlist is already published to the Official MCP Registry. Reusable directory metadata and canonical listing copy live in [docs/DIRECTORY_SUBMISSIONS.md](./docs/DIRECTORY_SUBMISSIONS.md).
+ModelShortlist is published to the Official MCP Registry. Reusable directory metadata and canonical listing copy live in [docs/DIRECTORY_SUBMISSIONS.md](./docs/DIRECTORY_SUBMISSIONS.md).
 
 The repository also includes [`glama.json`](./glama.json) for Glama ownership verification of this organization-hosted repository.
 

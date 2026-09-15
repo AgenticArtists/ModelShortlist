@@ -51,33 +51,31 @@ The main CI workflow builds and validates the MCPB on every push to `main` and u
 
 This catches bundle-schema, packaging, and dependency errors before a release.
 
-## GitHub Releases
+## Tagged releases
 
-Pushing a version tag matching `package.json` automatically creates a GitHub Release and attaches the validated `.mcpb` file.
+A `v*` tag matching `package.json` triggers the release workflow. Before publication it runs tests, syntax checks, a production dependency audit, npm-package validation, and MCPB validation.
 
-Example for version `0.3.0`:
+If that package version does not already exist on npm, the workflow publishes it through npm trusted publishing. It then creates the matching GitHub Release and attaches the validated `.mcpb` file. If the npm version already exists, npm publication is skipped rather than attempting to overwrite an immutable release.
+
+The npm package must have this repository/workflow configured as a trusted publisher before the first automated publish.
+
+Example release sequence after the version files are committed to `main`:
 
 ```bash
-npm version 0.3.0
-git push origin main
-git push origin v0.3.0
+git pull --ff-only
+git tag vX.Y.Z
+git push origin vX.Y.Z
 ```
 
-The release workflow refuses to publish when the tag does not match the package version.
+The workflow refuses to release when the tag does not match the package version.
 
 ## Smithery
 
-Smithery's current local/stdio publishing path accepts a pre-built MCPB bundle.
-
-After authenticating with Smithery:
+Smithery's local/stdio publishing path accepts a pre-built MCPB bundle. After authenticating with Smithery, publish the bundle generated for the current version, for example:
 
 ```bash
-npm install -g smithery@latest
-smithery auth login
-smithery mcp publish ./dist/modelshortlist-0.2.2.mcpb -n agenticartists/modelshortlist
+smithery mcp publish ./dist/modelshortlist-X.Y.Z.mcpb -n agenticartists/modelshortlist
 ```
-
-For future versions, substitute the current package version in the bundle filename.
 
 ModelShortlist should remain a **local** MCP in Smithery. Do not publish `https://modelshortlist.com` as a URL-based MCP server: the website is the product/install site, not a Streamable HTTP MCP endpoint.
 

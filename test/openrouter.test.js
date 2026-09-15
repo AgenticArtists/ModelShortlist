@@ -65,6 +65,72 @@ test('general constraints do not require ZDR', () => {
   )
 })
 
+test('tool_choice alone is not treated as proof of tool calling support', () => {
+  const models = buildOpenRouterCatalog([
+    {
+      id: 'vendor/model-choice-only',
+      name: 'Choice Only',
+      supported_parameters: ['tool_choice'],
+      pricing: { prompt: '0.000001', completion: '0.000002' },
+      top_provider: { context_length: 128000 },
+    },
+    {
+      id: 'vendor/model-tools',
+      name: 'Tools',
+      supported_parameters: ['tools', 'tool_choice'],
+      pricing: { prompt: '0.000001', completion: '0.000002' },
+      top_provider: { context_length: 128000 },
+    },
+  ])
+
+  assert.equal(models[0].openrouter_catalog.supports_tools, false)
+  assert.equal(models[1].openrouter_catalog.supports_tools, true)
+  assert.equal(modelCatalogSatisfies(models[0], { tools: true }), false)
+  assert.equal(modelCatalogSatisfies(models[1], { tools: true }), true)
+})
+
+test('preserves OpenRouter tiered pricing instead of dropping it', () => {
+  const [model] = buildOpenRouterCatalog([
+    {
+      id: 'vendor/tiered-model',
+      name: 'Tiered Model',
+      supported_parameters: ['tools'],
+      pricing: [
+        { prompt: '0.000002', completion: '0.000006' },
+        { prompt: '0.000004', completion: '0.000012', min_context: 200000 },
+      ],
+      top_provider: { context_length: 1000000 },
+    },
+  ])
+
+  assert.deepEqual(model.openrouter_catalog.pricing_usd_per_1m_tokens, {
+    input: 2,
+    output: 6,
+  })
+  assert.deepEqual(model.openrouter_catalog.pricing_tiers_usd_per_1m_tokens, [
+    { min_context: 0, input: 2, output: 6 },
+    { min_context: 200000, input: 4, output: 12 },
+  ])
+})
+
+test('strict price ceilings conservatively account for every tiered price', () => {
+  const [model] = buildOpenRouterCatalog([
+    {
+      id: 'vendor/tiered-model',
+      name: 'Tiered Model',
+      supported_parameters: [],
+      pricing: [
+        { prompt: '0.000002', completion: '0.000006' },
+        { prompt: '0.000004', completion: '0.000012', min_context: 200000 },
+      ],
+      top_provider: { context_length: 1000000 },
+    },
+  ])
+
+  assert.equal(modelCatalogSatisfies(model, { maxOutputPrice: 10 }), false)
+  assert.equal(modelCatalogSatisfies(model, { maxOutputPrice: 12 }), true)
+})
+
 test('groups ZDR endpoints and exposes operational constraints', () => {
   const result = groupZdrEndpointsByModel([
     {
@@ -140,6 +206,7 @@ test('ZDR price constraints use the actual endpoint price', () => {
     supports_tools: true,
     context_length: 128000,
     pricing_usd_per_1m_tokens: { input: 2, output: 12 },
+    pricing_tiers_usd_per_1m_tokens: null,
   }
   assert.equal(
     endpointSatisfies(endpoint, {
@@ -150,6 +217,21 @@ test('ZDR price constraints use the actual endpoint price', () => {
     }),
     false,
   )
+})
+
+test('ZDR price constraints also fail closed across tiered endpoint pricing', () => {
+  const endpoint = {
+    supports_tools: true,
+    context_length: 400000,
+    pricing_usd_per_1m_tokens: { input: 1, output: 5 },
+    pricing_tiers_usd_per_1m_tokens: [
+      { min_context: 0, input: 1, output: 5 },
+      { min_context: 200000, input: 3, output: 15 },
+    ],
+  }
+
+  assert.equal(endpointSatisfies(endpoint, { maxOutputPrice: 10 }), false)
+  assert.equal(endpointSatisfies(endpoint, { maxOutputPrice: 15 }), true)
 })
 
 test('missing OpenRouter numeric fields stay null instead of becoming zero', () => {

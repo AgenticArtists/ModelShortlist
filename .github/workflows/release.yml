@@ -7,30 +7,49 @@ on:
 
 permissions:
   contents: write
+  id-token: write
 
 jobs:
   release:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
+      - name: Set up Node.js for trusted publishing
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: npm
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+
+      - name: Pin npm CLI for trusted publishing
+        run: npm install --global npm@11.15.0
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Verify tag matches package version
+      - name: Verify tag and distribution versions match
         shell: bash
         run: |
           VERSION="$(node -p "require('./package.json').version")"
+          LOCK_VERSION="$(node -p "require('./package-lock.json').version")"
+          REGISTRY_VERSION="$(node -p "require('./server.json').version")"
+          REGISTRY_PACKAGE_VERSION="$(node -e "const s=require('./server.json'); process.stdout.write(s.packages[0].version)")"
           test "v$VERSION" = "$GITHUB_REF_NAME" || {
             echo "Tag $GITHUB_REF_NAME does not match package version v$VERSION"
+            exit 1
+          }
+          test "$LOCK_VERSION" = "$VERSION" || {
+            echo "package-lock.json version $LOCK_VERSION does not match package.json $VERSION"
+            exit 1
+          }
+          test "$REGISTRY_VERSION" = "$VERSION" || {
+            echo "server.json version $REGISTRY_VERSION does not match package.json $VERSION"
+            exit 1
+          }
+          test "$REGISTRY_PACKAGE_VERSION" = "$VERSION" || {
+            echo "server.json package version $REGISTRY_PACKAGE_VERSION does not match package.json $VERSION"
             exit 1
           }
 
@@ -40,18 +59,82 @@ jobs:
       - name: Check syntax
         run: npm run check
 
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high
+
       - name: Validate npm package
         run: npm run pack:check
 
       - name: Build and validate MCPB bundle
         run: npm run mcpb:build
 
+      - name: Publish npm package if version is not already public
+        shell: bash
+        run: |
+          PACKAGE="$(node -p "require('./package.json').name")"
+          VERSION="$(node -p "require('./package.json').version")"
+          if npm view "$PACKAGE@$VERSION" version >/dev/null 2>&1; then
+            echo "$PACKAGE@$VERSION is already published; skipping npm publish."
+          else
+            npm publish --access public
+          fi
+
+      - name: Install verified MCP Registry publisher
+        shell: bash
+        run: |
+          URL="https://github.com/modelcontextprotocol/registry/releases/download/v1.8.1/mcp-publisher_linux_amd64.tar.gz"
+          curl --fail --location --silent --show-error "$URL" --output mcp-publisher.tar.gz
+          echo "a06c9096dcb9727c13555b6be26c7effa707b01f06a4c561ba7a3635443cf2cc  mcp-publisher.tar.gz" | sha256sum --check --strict
+          tar xzf mcp-publisher.tar.gz mcp-publisher
+          ./mcp-publisher --help >/dev/null
+
+      - name: Publish Official MCP Registry metadata
+        shell: bash
+        run: |
+          VERSION="$(node -p "require('./package.json').version")"
+          REGISTRY_VERSION_URL="https://registry.modelcontextprotocol.io/v0.1/servers/io.github.AgenticArtists%2Fmodelshortlist/versions/$VERSION"
+          STATUS="$(curl --silent --show-error --output /dev/null --write-out '%{http_code}' "$REGISTRY_VERSION_URL")"
+
+          if [ "$STATUS" = "200" ]; then
+            echo "Official MCP Registry already contains ModelShortlist $VERSION; skipping publish."
+            exit 0
+          fi
+
+          if [ "$STATUS" != "404" ]; then
+            echo "Unexpected MCP Registry lookup status: $STATUS"
+            exit 1
+          fi
+
+          ./mcp-publisher login github-oidc
+          for ATTEMPT in 1 2 3; do
+            if ./mcp-publisher publish; then
+              exit 0
+            fi
+
+            STATUS="$(curl --silent --show-error --output /dev/null --write-out '%{http_code}' "$REGISTRY_VERSION_URL")"
+            if [ "$STATUS" = "200" ]; then
+              echo "Registry version is visible after publish attempt $ATTEMPT."
+              exit 0
+            fi
+
+            if [ "$ATTEMPT" -eq 3 ]; then
+              echo "MCP Registry publication failed after $ATTEMPT attempts."
+              exit 1
+            fi
+            sleep $((ATTEMPT * 10))
+          done
+
       - name: Publish GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
-          gh release create "$GITHUB_REF_NAME" \
-            dist/*.mcpb \
-            --title "ModelShortlist $GITHUB_REF_NAME" \
-            --generate-notes
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            echo "GitHub Release $GITHUB_REF_NAME already exists; refreshing MCPB asset."
+            gh release upload "$GITHUB_REF_NAME" dist/*.mcpb --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" \
+              dist/*.mcpb \
+              --title "ModelShortlist $GITHUB_REF_NAME" \
+              --generate-notes
+          fi

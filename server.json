@@ -3,7 +3,7 @@
   "name": "io.github.AgenticArtists/modelshortlist",
   "title": "ModelShortlist",
   "description": "Local BYOK MCP for AI model shortlisting using OpenRouter + Artificial Analysis.",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "websiteUrl": "https://modelshortlist.com",
   "repository": {
     "url": "https://github.com/AgenticArtists/ModelShortlist",
@@ -14,7 +14,7 @@
       "registryType": "npm",
       "registryBaseUrl": "https://registry.npmjs.org",
       "identifier": "@agentic.artists/modelshortlist",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "runtimeHint": "npx",
       "transport": {
         "type": "stdio"
