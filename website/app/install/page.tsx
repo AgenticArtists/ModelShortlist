@@ -7,7 +7,7 @@ const NPM_URL = 'https://www.npmjs.com/package/@agentic.artists/modelshortlist'
 
 export const metadata: Metadata = {
   title: 'Install ModelShortlist',
-  description: 'Install ModelShortlist in Hermes Desktop, Cursor, Claude Code, or VS Code/Copilot with client-specific copy-paste configuration.',
+  description: 'Install ModelShortlist in Claude Desktop, Hermes Desktop, Cursor, Claude Code, or VS Code/Copilot with client-specific copy-paste configuration.',
   alternates: { canonical: 'https://modelshortlist.com/install' },
 }
 
@@ -28,6 +28,9 @@ export default function InstallPage() {
             </h1>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-muted-foreground">
               You need Node.js 20+, an Artificial Analysis API key, and an OpenRouter API key. Pick your client below and ModelShortlist will generate the exact config or command for you.
+            </p>
+            <p className="mt-4 text-sm leading-6 text-muted-foreground">
+              First-class setup is available for Claude Desktop, Hermes Desktop, Cursor, Claude Code, and VS Code / Copilot.
             </p>
           </div>
 
