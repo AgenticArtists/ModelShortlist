@@ -1,3 +1,3 @@
 {
-  "_comment": "Map OpenRouter model_id -> Artificial Analysis slug. Add only manually verified exceptions. Exact normalized matching is attempted first."
+  "_comment": "Map OpenRouter model_id -> Artificial Analysis slug. Add only manually verified exceptions. Verified aliases are checked first; otherwise only exact normalized matching is attempted."
 }
