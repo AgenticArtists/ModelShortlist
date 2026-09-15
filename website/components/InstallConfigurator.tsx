@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react'
 import { Check, Copy, KeyRound, Laptop, ShieldCheck, Terminal } from 'lucide-react'
 
-const clients = ['Hermes Desktop', 'Cursor', 'Claude Code', 'VS Code / Copilot'] as const
+const clients = ['Claude Desktop', 'Hermes Desktop', 'Cursor', 'Claude Code', 'VS Code / Copilot'] as const
 type Client = (typeof clients)[number]
 
 function shellQuote(value: string) {
@@ -11,7 +11,7 @@ function shellQuote(value: string) {
 }
 
 export default function InstallConfigurator() {
-  const [client, setClient] = useState<Client>('Hermes Desktop')
+  const [client, setClient] = useState<Client>('Claude Desktop')
   const [aaKey, setAaKey] = useState('')
   const [orKey, setOrKey] = useState('')
   const [windows, setWindows] = useState(false)
@@ -71,13 +71,17 @@ export default function InstallConfigurator() {
   }
 
   const destination =
-    client === 'Hermes Desktop'
-      ? 'Hermes Desktop → Skills & Tools → MCP → Import JSON'
-      : client === 'Cursor'
-        ? 'Save as ~/.cursor/mcp.json, or open Customize → MCPs'
-        : client === 'Claude Code'
-          ? 'Paste this command into your terminal'
-          : 'Command Palette → MCP: Open User Configuration, then paste the JSON'
+    client === 'Claude Desktop'
+      ? windows
+        ? 'Claude Desktop → Settings → Developer → Edit Config, then add this server to claude_desktop_config.json'
+        : 'Claude Desktop → Settings → Developer → Edit Config, then add this server to claude_desktop_config.json'
+      : client === 'Hermes Desktop'
+        ? 'Hermes Desktop → Skills & Tools → MCP → Import JSON'
+        : client === 'Cursor'
+          ? 'Save as ~/.cursor/mcp.json, or open Customize → MCPs'
+          : client === 'Claude Code'
+            ? 'Paste this command into your terminal'
+            : 'Command Palette → MCP: Open User Configuration, then paste the JSON'
 
   return (
     <div className="overflow-hidden rounded-2xl border border-blue-500/20 bg-card/65 shadow-xl shadow-blue-950/5">
@@ -102,7 +106,7 @@ export default function InstallConfigurator() {
       <div className="grid gap-0 lg:grid-cols-[0.9fr_1.1fr]">
         <div className="border-b border-border/60 p-5 sm:p-6 lg:border-b-0 lg:border-r">
           <div className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">1. Choose your client</div>
-          <div className="mt-3 grid grid-cols-2 gap-2">
+          <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-2">
             {clients.map((name) => (
               <button
                 key={name}
