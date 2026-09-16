@@ -100,20 +100,7 @@ const manifest = {
       node: '>=20',
     },
   },
-  tools: [
-    {
-      name: 'recommend_models',
-      description: 'Build a workload-specific model shortlist using current catalog, pricing, capability, optional ZDR, and benchmark evidence.',
-    },
-    {
-      name: 'compare_models',
-      description: 'Compare current OpenRouter and Artificial Analysis evidence for a specified set of model IDs.',
-    },
-    {
-      name: 'modelshortlist_status',
-      description: 'Report catalog, ZDR, model-matching, cache, and upstream metadata coverage.',
-    },
-  ],
+  tools_generated: true,
 }
 
 await writeFile(path.join(stagingDir, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`)

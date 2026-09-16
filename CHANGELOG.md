@@ -2,6 +2,14 @@
 
 All notable public changes to ModelShortlist will be documented here.
 
+## 0.2.4 - 2026-09-16
+
+### Packaging
+
+- Mark MCPB tools as dynamically generated instead of embedding incomplete static tool metadata.
+- Improve compatibility with MCPB consumers such as Smithery while preserving runtime tool discovery through the MCP protocol.
+- Synchronize npm package and Official MCP Registry metadata to 0.2.4.
+
 ## 0.2.3 - 2026-09-15
 
 ### Reliability
