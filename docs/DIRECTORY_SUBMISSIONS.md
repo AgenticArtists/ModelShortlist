@@ -12,7 +12,7 @@ Last verified: **2026-09-16**.
 - GitHub: https://github.com/AgenticArtists/ModelShortlist
 - npm: `@agentic.artists/modelshortlist`
 - Official MCP Registry: `io.github.AgenticArtists/modelshortlist`
-- Current public version: **0.2.4**
+- Current public version: **0.2.5**
 - License: MIT
 - Transport: local stdio MCP
 - Maintainer: AgenticArtists
@@ -22,9 +22,9 @@ Last verified: **2026-09-16**.
 
 | Surface | Status | Verified notes |
 | --- | --- | --- |
-| Official MCP Registry | **Published** | `io.github.AgenticArtists/modelshortlist` v0.2.4 is active/latest |
-| npm | **Published** | `@agentic.artists/modelshortlist` v0.2.4; trusted-publisher provenance enabled |
-| GitHub Release | **Published** | `v0.2.4` includes the validated MCPB bundle |
+| Official MCP Registry | **Published** | `io.github.AgenticArtists/modelshortlist` v0.2.5 is active/latest |
+| npm | **Published** | `@agentic.artists/modelshortlist` v0.2.5; trusted-publisher provenance enabled |
+| GitHub Release | **Published** | `v0.2.5` includes the validated MCPB bundle |
 | Website | **Live** | `modelshortlist.com` and browser-only install configurator |
 | MCP.Directory | **Submitted / discoverable upstream** | Public intake accepted the repo; service also consumes the Official Registry |
 | AllMCPs | **Pending** | Existing `ModelShortlist` entry confirmed pending; duplicate submission correctly rejected |
@@ -36,7 +36,7 @@ Last verified: **2026-09-16**.
 | TrackMCP | **Outreach sent** | Listing request sent; no reply at last verification |
 | MCP Surge | **Outreach sent** | Listing request sent; no reply at last verification |
 | Glama | **Existing listing / claim required** | New submission was rejected as a duplicate because an MCP server already exists for this repository; locate and claim the existing listing rather than resubmitting |
-| Smithery | **Published** | Published under the `agenticartists` namespace using the validated v0.2.4 MCPB bundle |
+| Smithery | **Published** | Published under the `agenticartists` namespace using the validated v0.2.4 MCPB bundle; v0.2.5 MCPB resubmission pending |
 | MCP.Pub | **Submitted / editorial review** | Browser submission completed; repository queued for editorial review |
 | mcp.so | **Skipped** | Current practical submission route is account/paid gated; no spend recommended |
 | mcp-get | **Skipped** | Original registry is archived/deprecated |
@@ -145,7 +145,7 @@ Glama rejected a new submission because an MCP server already exists for this re
 
 ### Smithery
 
-Published under the `agenticartists` namespace using the validated `modelshortlist-0.2.4.mcpb` release artifact. ModelShortlist remains a local stdio MCP; do not submit `https://modelshortlist.com` as though it were a remote Streamable HTTP MCP endpoint. See [`MCPB_DISTRIBUTION.md`](./MCPB_DISTRIBUTION.md) for packaging details.
+Published under the `agenticartists` namespace using the validated `modelshortlist-0.2.4.mcpb` release artifact. The v0.2.5 bundle (`modelshortlist-0.2.5.mcpb`, attached to the v0.2.5 GitHub Release) has not been resubmitted yet. ModelShortlist remains a local stdio MCP; do not submit `https://modelshortlist.com` as though it were a remote Streamable HTTP MCP endpoint. See [`MCPB_DISTRIBUTION.md`](./MCPB_DISTRIBUTION.md) for packaging details.
 
 ### MCP.Pub
 
