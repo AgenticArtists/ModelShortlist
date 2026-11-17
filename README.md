@@ -145,6 +145,10 @@ The primary workload-specific recommendation tool. It accepts hard constraints s
 
 When ZDR is not required, it considers the full OpenRouter catalog. When ZDR is explicitly required, it filters against ZDR endpoint evidence and verifies hard constraints against the same endpoint.
 
+OpenRouter "~…-latest" alias entries are never recommended: an alias is a moving target with no benchmark identity of its own. The concrete model each alias currently points to is considered directly instead. Candidates are ordered evidence-first (Artificial Analysis matched before unmatched) before the limit is applied, and the response reports `evidence_coverage` — how many returned candidates actually carry benchmark evidence — with an explicit warning when a shortlist has little or none.
+
+Pass `incumbent_model_ids` to name the model(s) the user currently uses or is evaluating. Each incumbent that satisfies the hard constraints is guaranteed a place in the returned candidates (flagged `is_incumbent`), and the response reports an outcome for every ID supplied.
+
 Artificial Analysis benchmark data is attached only when the model can be confidently reconciled. Models without a confident benchmark match remain eligible with missing benchmark fields rather than being silently removed.
 
 Strict price ceilings account conservatively for all pricing tiers that OpenRouter publishes for a model or endpoint rather than assuming the cheapest/base tier applies universally.

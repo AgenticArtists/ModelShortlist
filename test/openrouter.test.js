@@ -234,6 +234,34 @@ test('ZDR price constraints also fail closed across tiered endpoint pricing', ()
   assert.equal(endpointSatisfies(endpoint, { maxOutputPrice: 15 }), true)
 })
 
+test('preserves alias identity and alias_target for latest aliases', () => {
+  const models = buildOpenRouterCatalog([
+    {
+      id: '~google/gemini-flash-latest',
+      name: 'Google: Gemini Flash Latest',
+      supported_parameters: ['tools'],
+      pricing: { prompt: '0.0000015', completion: '0.0000075' },
+      top_provider: { context_length: 1048576 },
+      alias_target: { slug: 'google/gemini-4-hydrogen', name: 'Google: Gemini 4 Hydrogen' },
+    },
+    {
+      id: 'google/gemini-4-hydrogen',
+      name: 'Google: Gemini 4 Hydrogen',
+      supported_parameters: ['tools'],
+      pricing: { prompt: '0.0000015', completion: '0.0000075' },
+      top_provider: { context_length: 1048576 },
+    },
+  ])
+
+  assert.equal(models[0].is_alias, true)
+  assert.deepEqual(models[0].alias_target, {
+    model_id: 'google/gemini-4-hydrogen',
+    name: 'Google: Gemini 4 Hydrogen',
+  })
+  assert.equal(models[1].is_alias, false)
+  assert.equal(models[1].alias_target, null)
+})
+
 test('missing OpenRouter numeric fields stay null instead of becoming zero', () => {
   const models = groupZdrEndpointsByModel([
     {

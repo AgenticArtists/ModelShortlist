@@ -7,7 +7,11 @@ import { serveStdio } from '@modelcontextprotocol/server/stdio'
 import * as z from 'zod/v4'
 import packageJson from '../package.json' with { type: 'json' }
 import { getMergedCatalog } from '../lib/catalog.js'
-import { endpointSatisfies, modelCatalogSatisfies } from '../lib/openrouter.js'
+import {
+  evidenceCoverageWarning,
+  resolveModelId,
+  selectCandidates,
+} from '../lib/recommend.js'
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 loadLocalEnv(path.join(ROOT, '.env.local'))
@@ -59,13 +63,14 @@ function max(values) {
   return nums.length ? Math.max(...nums) : null
 }
 
-function compactCandidate(model, { requiresZdr = false, eligibleZdrEndpoints = [] } = {}) {
+function compactCandidate(model, { requiresZdr = false, eligibleZdrEndpoints = [], isIncumbent = false } = {}) {
   const aa = model.artificial_analysis
   const zdrEndpoints = requiresZdr ? eligibleZdrEndpoints : model.zdr_endpoint_options ?? []
 
   return {
     model_id: model.model_id,
     model_name: model.model_name,
+    is_incumbent: isIncumbent,
     creator: aa?.creator ?? model.author ?? null,
     release_date: aa?.release_date ?? null,
     artificial_analysis: aa
@@ -114,50 +119,6 @@ function compactCandidate(model, { requiresZdr = false, eligibleZdrEndpoints = [
     },
     reconciliation: model.reconciliation,
   }
-}
-
-function filterCandidates(models, args) {
-  const query = args.query?.trim().toLowerCase() || null
-  const creator = args.creator?.trim().toLowerCase() || null
-  const requiresZdr = args.requires_zdr === true
-  const constraints = {
-    tools: args.requires_tools === true,
-    minContext: args.min_context ?? null,
-    maxInputPrice: args.max_input_price ?? null,
-    maxOutputPrice: args.max_output_price ?? null,
-  }
-
-  const results = []
-  for (const model of models) {
-    if (query) {
-      const haystack = [
-        model.model_id,
-        model.model_name,
-        model.artificial_analysis?.name,
-        model.artificial_analysis?.slug,
-      ].filter(Boolean).join(' ').toLowerCase()
-      if (!haystack.includes(query)) continue
-    }
-
-    if (creator) {
-      const creatorText = `${model.author ?? ''} ${model.artificial_analysis?.creator ?? ''}`.toLowerCase()
-      if (!creatorText.includes(creator)) continue
-    }
-
-    if (requiresZdr) {
-      const eligibleZdrEndpoints = (model.zdr_endpoint_options ?? []).filter((endpoint) =>
-        endpointSatisfies(endpoint, constraints),
-      )
-      if (eligibleZdrEndpoints.length === 0) continue
-      results.push(compactCandidate(model, { requiresZdr: true, eligibleZdrEndpoints }))
-      continue
-    }
-
-    if (!modelCatalogSatisfies(model, constraints)) continue
-    results.push(compactCandidate(model, { requiresZdr: false }))
-  }
-
-  return results.sort((a, b) => a.model_id.localeCompare(b.model_id))
 }
 
 function assertZdrEvidenceAvailable(catalog) {
@@ -219,6 +180,9 @@ const recommendationSchema = z.object({
   ),
   creator: z.string().optional().describe('Optional model creator/provider family filter.'),
   query: z.string().optional().describe('Optional model-name substring filter.'),
+  incumbent_model_ids: z.array(z.string()).max(12).optional().describe(
+    'OpenRouter model IDs the user currently uses or is explicitly evaluating as the incumbent to beat. Each one that exists in the catalog and satisfies the hard constraints is guaranteed a place in the returned candidates (flagged is_incumbent), even if it would otherwise fall outside the limit. A "~...-latest" alias ID is resolved to its current concrete target. The incumbents field in the response reports the outcome for every ID supplied.',
+  ),
   limit: z.number().int().min(1).max(100).default(50),
   force_refresh: z.boolean().default(false).describe(
     'Force fresh upstream API requests. Use sparingly because AA Free has a quota.',
@@ -251,9 +215,22 @@ function createServer() {
         const requiresZdr = args.requires_zdr === true
         if (requiresZdr) assertZdrEvidenceAvailable(catalog)
 
-        const candidates = filterCandidates(catalog.models, args).slice(0, args.limit)
+        const selection = selectCandidates(catalog.models, args)
+        const candidates = selection.candidates.map(({ model, is_incumbent, eligibleZdrEndpoints }) =>
+          compactCandidate(model, {
+            requiresZdr,
+            eligibleZdrEndpoints,
+            isIncumbent: is_incumbent,
+          }))
+        const coverageWarning = evidenceCoverageWarning(selection.evidence_coverage)
         const selectionInstructions = [
           ...freshnessInstructions(catalog, { requiresZdr }),
+          ...(coverageWarning ? [coverageWarning] : []),
+          'OpenRouter "~...-latest" alias entries are excluded from recommendations: an alias is a moving target with no benchmark identity of its own. Its current concrete target is considered directly instead.',
+          'Candidates are ordered evidence-first (Artificial Analysis matched before unmatched) before the limit is applied; order within the response is not a ranking. Choose weights based on the stated use case rather than position.',
+          ...(selection.incumbent_status.length
+            ? ['Candidates flagged is_incumbent are the incumbent models the user named. Include them in the comparison and state explicitly whether the recommendation beats the incumbent and on what evidence. Incumbents that could not be included are reported in the incumbents field with their status.']
+            : []),
           requiresZdr
             ? 'ZDR is an explicit hard requirement. Only recommend candidates with a reported ZDR endpoint that satisfies all hard constraints on that same endpoint.'
             : 'ZDR is not a requirement for this request. Do not exclude a model because it lacks a ZDR endpoint; treat ZDR availability as optional metadata only.',
@@ -278,6 +255,12 @@ function createServer() {
           selection_instructions: selectionInstructions,
           generated_at: catalog.generated_at,
           freshness: catalog.freshness,
+          warnings: [
+            ...(catalog.freshness?.warnings ?? []),
+            ...(coverageWarning ? [coverageWarning] : []),
+          ],
+          evidence_coverage: selection.evidence_coverage,
+          incumbents: selection.incumbent_status,
           cache: catalog.cache,
           candidate_count: candidates.length,
           candidates,
@@ -333,15 +316,25 @@ function createServer() {
         const requiresZdr = requires_zdr === true
         if (requiresZdr) assertZdrEvidenceAvailable(catalog)
 
-        const wanted = new Set(model_ids)
+        const modelsById = new Map(catalog.models.map((model) => [model.model_id, model]))
+        const resolvedAliases = {}
+        const resolvedIds = new Set()
+        const missing = []
+        for (const id of model_ids) {
+          const resolved = resolveModelId(modelsById, id)
+          if (!resolved) {
+            missing.push(id)
+            continue
+          }
+          if (resolved.model_id !== id) resolvedAliases[id] = resolved.model_id
+          resolvedIds.add(resolved.model_id)
+        }
         const models = catalog.models
-          .filter((model) => wanted.has(model.model_id))
+          .filter((model) => resolvedIds.has(model.model_id))
           .map((model) => compactCandidate(model, {
             requiresZdr,
             eligibleZdrEndpoints: model.zdr_endpoint_options ?? [],
           }))
-        const found = new Set(models.map((model) => model.model_id))
-        const missing = model_ids.filter((id) => !found.has(id))
 
         return {
           content: [{
@@ -352,6 +345,7 @@ function createServer() {
               cache: catalog.cache,
               zdr_required: requiresZdr,
               models,
+              resolved_aliases: resolvedAliases,
               missing_model_ids: missing,
               response_instructions: [
                 ...freshnessInstructions(catalog, { requiresZdr }),
