@@ -2,6 +2,24 @@
 
 All notable public changes to ModelShortlist will be documented here.
 
+## 0.2.5 - 2026-11-17
+
+### Fixed
+
+- `recommend_models` no longer returns OpenRouter "~…-latest" alias entries. Aliases are moving targets with no benchmark identity; the concrete model each alias currently points to is considered directly instead. (On the current 470-model catalog, locale-alphabetical ordering had filled a limit-10 shortlist entirely with aliases carrying no Artificial Analysis evidence.)
+- Candidate selection is now evidence-first: models with a confident Artificial Analysis match are ordered before unmatched models before the limit is applied, instead of pure alphabetical order deciding which models survive the slice.
+
+### Added
+
+- `recommend_models` accepts `incumbent_model_ids`: models the user currently uses or is evaluating are guaranteed a place in the returned candidates when they satisfy the hard constraints, are flagged `is_incumbent`, and every supplied ID gets an explicit outcome in the response's `incumbents` field (`included`, `not_found`, or `excluded_by_constraints`). An alias ID is resolved to its current concrete target.
+- `recommend_models` responses now report `evidence_coverage` (how many returned candidates carry Artificial Analysis evidence) and surface a warning in `warnings` and `selection_instructions` when a shortlist has little or no benchmark evidence, instead of reporting a bare "current" freshness state.
+- `compare_models` resolves a "~…-latest" alias ID to its current concrete target and reports the mapping in `resolved_aliases`.
+- OpenRouter `alias_target` data is preserved in the catalog layer (`is_alias`, `alias_target`) instead of being discarded.
+
+### Dependencies
+
+- `@modelcontextprotocol/server` 2.0.0 → 2.4.0, `zod` 4.5.4 → 4.6.7 (supersedes the pending Dependabot update).
+
 ## 0.2.4 - 2026-09-16
 
 ### Packaging
