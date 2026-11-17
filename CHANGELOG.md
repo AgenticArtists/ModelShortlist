@@ -19,6 +19,7 @@ All notable public changes to ModelShortlist will be documented here.
 ### Dependencies
 
 - `@modelcontextprotocol/server` 2.0.0 → 2.4.0, `zod` 4.5.4 → 4.6.7 (supersedes the pending Dependabot update).
+- Website `next` 16.3.3 → 16.4.6: the pinned version had fallen into a critical advisory range (including RCE in Image Optimization) and was failing the CI production-dependency audit on otherwise unrelated changes.
 
 ## 0.2.4 - 2026-09-16
 
